@@ -1,0 +1,65 @@
+/* First Light: the hero's critical CSS. Inline in <head>, after the site tokens (--bg --ink --win-bk --ease-out --grain).
+   Needs html.js set by a one-line inline script in <head>, before first paint, so the pinned layout never shifts. */
+.hero{--hz:56svh;--span:100svh;--z-sky:0;--z-copy:2;
+  --lit:#fff8ee;--lit-2:#eceef5;
+  --night-0:#02050d;--night-1:#081026;--night-2:#1c2240;--night-3:#121731;--night-4:#0b1022;--night-5:#060a17;
+  position:relative}
+/* the css-only paths change once, at a threshold: a short hold is all they need */
+html.nogl .hero{--span:40svh}
+.hero-stage{position:relative;height:100vh;height:100svh;overflow:hidden;isolation:isolate;
+  /* first paint: a still of the shader's first frame, so the canvas fades in over itself */
+  background:
+    radial-gradient(34% 9% at 50% var(--hz),rgb(122 58 34 / .55),transparent 100%),
+    radial-gradient(90% 26% at 50% var(--hz),rgb(66 38 52 / .55),transparent 100%),
+    linear-gradient(to bottom,var(--night-0) 0,var(--night-1) calc(var(--hz)*.62),var(--night-2) calc(var(--hz) - 1px),
+      var(--night-3) var(--hz),var(--night-4) calc(var(--hz) + 9svh),var(--night-5) 100%)}
+html.js .hero{height:calc(100lvh + var(--span))}
+html.js .hero-stage{position:sticky;top:0;height:100vh;height:100lvh}
+/* without script: the night simply gives way to the page */
+html:not(.js) .hero-stage::after{content:"";position:absolute;inset:auto 0 0;height:28%;background:linear-gradient(to bottom,transparent,var(--bg))}
+
+.sky-gl,.sky-day,.sky-css{position:absolute;inset:0;z-index:var(--z-sky);pointer-events:none}
+.sky-gl{width:100%;height:100%;display:block;opacity:0;transition:opacity 1100ms var(--ease-out)}
+html.gl .sky-gl{opacity:1}
+.sky-day{background:var(--bg);opacity:0;transition:opacity 900ms var(--ease-out)}
+.hero.lit .sky-day{opacity:1}
+/* no WebGL: a designed still in the shader's terms. the source sits under the sea, a little right of centre; only a
+   few openings pass light, unevenly, and each shaft fades as it climbs. grain kept to dither strength */
+.sky-css{display:none}
+html.nogl .sky-css,html.gllost .sky-css{display:block}
+html.gllost .sky-gl{transition:none}
+.sky-css::before{content:"";position:absolute;left:50%;top:var(--hz);width:190vmax;height:95vmax;translate:-50% -100%;
+  background:conic-gradient(from 270deg at 50.8% calc(100% + 20vh),transparent 0deg,transparent 53deg,rgb(255 206 160 / .11) 57deg,rgb(255 206 160 / .085) 60.5deg,transparent 64deg,
+    transparent 75.5deg,rgb(255 206 160 / .045) 77deg,transparent 78.5deg,transparent 102deg,rgb(255 206 160 / .1) 105deg,rgb(255 206 160 / .07) 108.5deg,transparent 111deg,
+    transparent 123deg,rgb(255 206 160 / .035) 124.5deg,transparent 126deg,transparent 180deg);
+  -webkit-mask:radial-gradient(30% 68% at 50% 100%,#000 0%,rgb(0 0 0 / .42) 34%,transparent 76%);mask:radial-gradient(30% 68% at 50% 100%,#000 0%,rgb(0 0 0 / .42) 34%,transparent 76%);
+  filter:blur(6px)}
+.sky-css::after{content:"";position:absolute;inset:0;background:var(--grain);opacity:.07;mix-blend-mode:overlay}
+
+.hero-copy{position:absolute;inset:0 0 auto;height:100svh;z-index:var(--z-copy);text-align:center;padding-inline:16px}
+.hero h1{position:absolute;left:0;right:0;margin:0;
+  font-size:clamp(3.75rem,2.1rem + 5.4vw,6rem);font-weight:700;line-height:1;letter-spacing:-0.035em;text-wrap:balance;
+  top:calc(var(--hz) - .86em);color:var(--lit);
+  text-shadow:0 0 .02em rgb(255 236 210 / .9),0 0 .45em rgb(255 176 112 / .22);
+  transition:color 300ms var(--ease-out),text-shadow 300ms var(--ease-out)}
+.byline{position:absolute;left:0;right:0;margin:0;top:calc(var(--hz) + clamp(22px,3.2svh,30px));
+  font-size:clamp(15px,.9rem + .2vw,17px);font-weight:450;line-height:1.55;letter-spacing:.01em;color:var(--lit-2);
+  transition:color 300ms var(--ease-out)}
+/* daylight: the word stops being light and becomes ink on the page */
+.hero.day h1{color:var(--ink);text-shadow:0 0 0 transparent,0 0 0 transparent}
+/* around the flip the small line goes to the ends of its range (white just before, near-black just after, then back to
+   ink), so there is never a mid-tone sky where neither colour reads and the guard has almost nothing to do */
+.hero.dusk .byline{color:#fff}
+.hero.day2 .byline{color:var(--win-bk)}
+.hero.day2.day3 .byline{color:var(--ink)}
+
+@media (max-width:640px){
+  /* portrait: a lower horizon gives the shafts the tall sky to stand up in; the word fills the width, not a crop of desktop */
+  .hero{--hz:61svh}
+  .hero h1{font-size:min(19.5vw,5.25rem);letter-spacing:-0.04em}
+}
+/* reduced motion: one still frame, and the handoff is a plain crossfade to the page (the stage still holds, it just doesn't animate) */
+@media (prefers-reduced-motion:reduce){
+  .hero,html.nogl .hero{--span:40svh}
+  .hero .sky-gl,.hero .sky-day,.hero h1,.hero .byline{transition-duration:120ms;transition-timing-function:ease}
+}

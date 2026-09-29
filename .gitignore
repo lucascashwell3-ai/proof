@@ -9,3 +9,7 @@ anti-ai-slop-agreement.md
 # OS / editor
 .DS_Store
 .claude/
+
+# dev tooling
+node_modules/
+_dev/
