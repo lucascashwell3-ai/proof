@@ -1,5 +1,5 @@
-/* Proof, Who am I: copy the email address (with a note that says so), the nav hairline once the page scrolls,
-   and the footer measurement. The page is complete without it: the email row is a plain mailto link. */
+/* Proof, Who am I: copy the email address, with a note that says so. The nav and the footer measurement come from
+   site.js, as on the home page. The page is complete without it: the email row is a plain mailto link. */
 (function () {
   "use strict";
   var D = document, W = window, ADDR = "lucascashwell3@gmail.com";
@@ -54,30 +54,4 @@
       }
     });
   }
-
-  /* ---------- nav: a hairline under the bar once the page has scrolled ---------- */
-  var nav = D.getElementById("nav"), ticking = false;
-  function frame() {
-    ticking = false;
-    if (nav) nav.classList.toggle("lined", (W.scrollY || W.pageYOffset) > 0);
-  }
-  W.addEventListener("scroll", function () { if (!ticking) { ticking = true; W.requestAnimationFrame(frame); } }, { passive: true });
-  frame();
-
-  /* ---------- footer: what this visit actually cost, from the Performance API ---------- */
-  function measure() {
-    var P = W.performance, out = D.getElementById("measure");
-    if (!out || !P || !P.getEntriesByType) return;
-    var nv = P.getEntriesByType("navigation")[0];
-    if (!nv || !nv.loadEventEnd) return;
-    var bytes = nv.transferSize || 0, res = P.getEntriesByType("resource");
-    for (var i = 0; i < res.length; i++) bytes += res[i].transferSize || 0;
-    var ms = Math.round(nv.loadEventEnd - nv.startTime).toLocaleString("en-US");
-    var kb = Math.max(1, Math.round(bytes / 1000)).toLocaleString("en-US");
-    out.innerHTML = bytes > 0
-      ? " Your browser just loaded this page: <span class=\"num\">" + kb + "</span> KB in <span class=\"num\">" + ms + "</span> ms."
-      : " Your browser just loaded this page from its cache in <span class=\"num\">" + ms + "</span> ms.";
-  }
-  function afterLoad() { setTimeout(measure, 0); }
-  if (D.readyState === "complete") afterLoad(); else W.addEventListener("load", afterLoad);
 })();

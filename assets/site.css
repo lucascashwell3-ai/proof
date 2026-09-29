@@ -1,5 +1,42 @@
-/* ================= product windows: shared chrome, fields, Skillproof + Modelproof bodies =================
-   Needs the page tokens: --bg --line --chrome --ink-3 --font --mono --win-bk --grain --spring --ease-out --z-win */
+/* ================= the site: fonts, tokens and base, one copy for every page =================
+   The home page's inline hero CSS reads these tokens too; this file blocks render, so they are in place for first paint. */
+@font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400 900;font-display:swap;src:url(fonts/schibsted-grotesk.woff2) format("woff2")}
+@font-face{font-family:"Fragment Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/fragment-mono.woff2) format("woff2")}
+/* Arial resized to Schibsted's metrics, so the swap doesn't move the layout */
+@font-face{font-family:"Schibsted Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans");
+  size-adjust:105.8%;ascent-override:92.3%;descent-override:24.4%;line-gap-override:0%}
+:root{
+  --bg:oklch(0.978 0.002 255);--mat:oklch(0.948 0.004 255);--mat-line:oklch(0.905 0.005 255);
+  --line:oklch(0.9 0.004 250);--line-strong:oklch(0.84 0.005 250);--chrome:oklch(0.995 0.001 255);
+  --ink:oklch(0.2 0.01 255);--ink-2:oklch(0.41 0.01 255);--ink-3:oklch(0.49 0.01 255);
+  --font:"Schibsted Grotesk","Schibsted Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease-out:cubic-bezier(0.25,1,0.5,1);--ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --spring:cubic-bezier(0.2,0.9,0.25,1);--spring-firm:cubic-bezier(0.2,0.85,0.3,1);
+  /* row spacing follows the screen's height too, so a product and its caption fit one laptop screen */
+  --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(16px,4svh,48px);
+  --mat-pad:clamp(16px,min(4vw,4.5svh),56px);--col-gap:clamp(24px,3vw,48px);
+  --z-win:1;--z-main:1;--z-nav:10;--z-tip:20;--z-toast:25;--z-skip:30;
+  /* inside every product window: one black, one hairline, two inks */
+  --win-bk:#0b0d11;--win-line:#1e232b;--win-ink:#e8eaed;--win-dim:#9aa3b1;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@supports (transition-timing-function:linear(0,1)){
+  :root{
+    /* damped spring, zeta 0.7 (about 4% overshoot) */
+    --spring:linear(0, .033, .1154, .2265, .3501, .4746, .592, .6973, .7878, .8626, .9221, .9675, 1.0004, 1.0228, 1.0367, 1.0438, 1.046, 1.0446, 1.0409, 1.0358, 1.0302, 1.0244, 1.019, 1.0141, 1.0099, 1.0065, 1.0037, 1.0016, 1, .999, .9983, .998, .9979, .9979, .9981, .9983, 1);
+    /* firmer spring, zeta 0.8 (about 1.5% overshoot) */
+    --spring-firm:linear(0, .0253, .0889, .1755, .2737, .3752, .474, .5664, .6499, .7235, .7867, .84, .8838, .9193, .9472, .9688, .985, .9967, 1.0049, 1.0102, 1.0133, 1.0148, 1.0152, 1.0147, 1.0136, 1.0123, 1.0108, 1.0092, 1.0077, 1.0064, 1.0051, 1.004, 1.0031, 1.0023, 1.0017, 1.0011, 1);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--nav-h);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--font);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+
+/* ================= product windows: shared chrome, fields, the three product bodies ================= */
 
 /* ---------- the gallery wall: each product on its own tinted, grained field ---------- */
 .mat{position:relative;isolation:isolate;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;
@@ -40,98 +77,62 @@
 }
 @media (prefers-reduced-motion:reduce){.win:hover{transform:none}}
 
-/* ---------- Skillproof: the live site, still — hero terminal finished, short list below ----------
-   Colours, radii and spacing are the live site's own; only the fonts are this page's.
-   The terminal shows every line (no clipped rows); the short list is a fixed-height strip cut by the window edge. */
+/* ---------- Skillproof: the live site, still. One window: the finished terminal session, then the short list ----------
+   The terminal's colours are the live demo's own; the list is the site's, set on the shared window black. */
 @font-face{font-family:"Fragment Fallback";src:local("Menlo"),local("Menlo-Regular"),local("DejaVu Sans Mono"),local("Liberation Mono");size-adjust:102.7%}
-.spx{--sp-ink:#232a36;--sp-ink-3:#68707f;--sp-ink-4:#99a0ac;--sp-blue-d:#2e5480;
-  container-type:inline-size;background:#ece8dd;padding:20px 20px 0;font-family:var(--font);color:var(--sp-ink)}
-.spx-term{position:relative;background:#1e1e1e;border-radius:12px;
-  box-shadow:0 0 0 1px rgb(255 255 255 / .08),0 2px 4px rgb(40 48 65 / .06),0 10px 24px -10px rgb(40 48 65 / .1),0 32px 68px -28px rgb(46 84 128 / .3)}
-/* the terminal's border beam, parked where the live site parks it for reduced motion */
-.spx-term::before,.spx-term::after{content:"";position:absolute;inset:-3px;border-radius:15px;padding:3px;pointer-events:none;z-index:1;
-  background:conic-gradient(from 40deg,transparent 0turn,transparent .74turn,rgb(109 91 246 / .7) .82turn,#8fbbe8 .88turn,rgb(255 255 255 / .9) .9turn,#7fd9b4 .94turn,transparent 1turn);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.spx-term::before{filter:blur(7px)}
-.spx-bar{position:relative;display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:12px 12px 0 0;
-  background:linear-gradient(#3a3a3a,#2c2c2c);border-bottom:1px solid #111}
-.spx-bar>i{width:12px;height:12px;border-radius:50%;flex:none}
-.spx-bar>i:nth-child(1){background:#ff5f57}.spx-bar>i:nth-child(2){background:#febc2e}.spx-bar>i:nth-child(3){background:#28c840}
-.spx-bar>span{position:absolute;left:0;right:0;text-align:center;font:500 12px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#bbb}
-.spx-bar>b{margin-left:auto;display:flex;gap:6px}
-.spx-bar>b i{width:7px;height:7px;border-radius:50%;background:#444}
-.spx-bar>b i:first-child{background:#8ab4ff}
-/* type scales with the window so the lines break alike at any desktop width */
-.spx-tb{padding:14px 18px 18px;font-family:"Fragment Mono","Fragment Fallback",ui-monospace,monospace;
-  font-size:12.5px;font-size:clamp(12px,calc((100cqw - 76px) / 57),13.5px);line-height:1.7;color:#d4d4d4;border-radius:0 0 12px 12px}
-.spx-tb>div{min-height:1.7em}
-.spx-tb .you{margin-bottom:8px}.spx-tb .you::before{content:"> ";color:#8ab4ff}
-.spx-tb .tool::before{content:"\23FA\FE0E  ";color:#7ee787}
-.spx-tb .sub{color:#8b949e;padding-left:18px}.spx-tb .sub::before{content:"\23BF  ";color:#555}
-.spx-tb .ask{margin:8px 0;padding:8px 12px;border:1px solid #444;border-radius:6px;background:#242424}
-.spx-tb .opt{color:#7ee787}
-.spx-tb .banner{display:inline-block;border:1px solid #6b5bd6;border-radius:6px;padding:6px 12px;color:#c9c2ff;margin-bottom:10px}
-.spx-tb .banner b{color:#d97757;font-weight:600}
-.spx-tb .ok{color:#7ee787}.spx-tb .warn{color:#ff7b72}.spx-tb .y{color:#e3b341}
-.spx-tb .dim{color:#8a8a8a} /* live #7a7a7a, lifted to 4.8:1 */
-/* the short list: its first skill whole, then cut by the window's edge as the page would scroll */
-.spx-panel{margin-top:20px;height:112px;overflow:hidden;border-radius:22px 22px 0 0;
-  background:linear-gradient(168deg,rgb(255 255 255 / .88),rgb(255 255 255 / .74));
-  box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px rgb(255 255 255 / .75),0 1px 2px rgb(40 48 65 / .06),0 6px 14px -6px rgb(40 48 65 / .05),0 18px 40px -16px rgb(46 84 128 / .24)}
-.spx-head{display:flex;align-items:center;gap:10px;padding:12px 15px 11px;border-bottom:1px solid rgb(40 48 65 / .06)}
-.spx-head>span{font-size:12px;line-height:1.2;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sp-ink-3)}
-.spx-head>span b{color:var(--sp-ink)}
-.spx-head>em{margin-left:auto;font:normal 11.5px/1 "Fragment Mono","Fragment Fallback",ui-monospace,monospace;color:#465061;letter-spacing:-.02em}
-.spx-rows{padding:4px 9px 0}
-.spx-row{position:relative;display:flex;align-items:flex-start;gap:11px;padding:9px 9px 9px 10px}
-.spx-row+.spx-row{margin-top:2px}
-.spx-row+.spx-row::before{content:"";position:absolute;left:10px;right:10px;top:-1.5px;height:1px;background:rgb(40 48 65 / .055)}
-.spx-ico{display:grid;place-items:center;width:32px;height:32px;flex:none;margin-top:1px;border-radius:10px;
-  background:linear-gradient(140deg,#6f9bcb,#3d6da6);box-shadow:inset 0 1px 0 rgb(255 255 255 / .25),0 2px 6px -2px rgb(46 84 128 / .45)}
-.spx-ico svg{width:16px;height:16px;color:#fff}
-.spx-rb{flex:1;min-width:0}
-.spx-rt{display:flex;align-items:center;gap:8px;line-height:1.4}
-.spx-rt>b{font-size:14.9px;font-weight:700;letter-spacing:-.018em;white-space:nowrap}
-.spx-rt>em{margin-left:auto;flex:none;padding-right:2px;font:normal 11.5px/1.4 "Fragment Mono","Fragment Fallback",ui-monospace,monospace;color:var(--sp-ink-3);letter-spacing:-.02em}
-.spx-rb>p{margin-top:1px;font-size:12.9px;line-height:1.55;color:var(--sp-ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.spx-rr{display:flex;align-items:center;gap:8px;flex:none;padding-top:3px}
-.spx-rr>svg{width:20px;height:13px;color:var(--sp-ink-4)}
-.spx-rr>span{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:76px;height:29px;padding:0 12px;border-radius:999px;
-  font-size:12.3px;font-weight:700;color:var(--sp-blue-d);background:rgb(61 109 166 / .1);box-shadow:inset 0 0 0 1px rgb(61 109 166 / .22)}
-.spx-rr>span svg{width:12px;height:12px}
+.sp{container-type:inline-size;background:var(--win-bk);color:#d4d4d4;font-family:var(--font)}
+.sp :where(p){margin:0}
+/* type scales with the window, about 100 characters a line, so the lines break alike at any desktop width */
+.sp-term{padding:16px 20px 18px;font-family:"Fragment Mono","Fragment Fallback",ui-monospace,monospace;
+  font-size:12.5px;font-size:clamp(12px,calc((100cqw - 40px) / 60),13.5px);line-height:1.7}
+.sp-term>div{min-height:1.7em}
+/* hanging indents: a wrapped line starts under the text, not under the marker */
+.sp-term .you,.sp-term .tool,.sp-term .sub{padding-left:2ch;text-indent:-2ch}
+.sp-term .you::before,.sp-term .tool::before,.sp-term .sub::before{display:inline-block;width:2ch;text-indent:0}
+.sp-term .you{margin-bottom:8px}.sp-term .you::before{content:">";color:#8ab4ff}
+.sp-term .tool::before{content:"\23FA\FE0E";color:#7ee787}
+/* a reply hangs under the command it answers: its bracket under the command's text, its words two spaces on */
+.sp-term .sub{padding-left:5ch;text-indent:-3ch;color:#9aa1a9}.sp-term .sub::before{width:3ch;content:"\23BF";color:#6e6e6e}
+.sp-term .ask{margin:8px 0;padding:8px 12px;border:1px solid #333a44;border-radius:6px;background:#161a20}
+.sp-term .opt,.sp-term .ok{color:#7ee787}
+.sp-term .banner{display:inline-block;margin-bottom:10px;padding:6px 12px;border:1px solid #6b5bd6;border-radius:6px;color:#c9c2ff}
+.sp-term .banner b{color:#e0876a;font-weight:400}
+.sp-term .warn{color:#ff7b72}.sp-term .y{color:#e3b341}.sp-term .dim{color:#949494}
+/* the short list: flat rows under a hairline, each whole */
+.sp-list{padding:0 20px 6px;box-shadow:inset 0 1px 0 var(--win-line)}
+.sp-lh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:13px 0 11px;
+  font-size:14px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:var(--win-ink)}
+.sp-lh b{margin-left:4px;font:400 12px/1 var(--mono);letter-spacing:0;color:var(--win-dim)}
+.sp-lh .sp-src{font:400 11.5px/1.3 var(--mono);letter-spacing:-0.01em;color:var(--win-dim);white-space:nowrap}
+.sp-row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:20px;align-items:center;padding:10px 0 11px;
+  box-shadow:inset 0 1px 0 var(--win-line)}
+.sp-rt{display:flex;align-items:baseline;gap:10px;min-width:0;line-height:1.4}
+.sp-rt b{font-size:14.5px;font-weight:600;letter-spacing:-0.01em;color:var(--win-ink)}
+.sp-rt em{font:normal 11.5px/1.4 var(--mono);color:var(--win-dim);white-space:nowrap}
+.sp-rd{grid-column:1;margin-top:2px;font-size:13px;line-height:1.5;color:var(--win-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-add{grid-column:2;grid-row:1 / span 2;display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;
+  font-size:12.5px;font-weight:600;line-height:1;color:var(--win-ink);box-shadow:inset 0 0 0 1px #2c333d;white-space:nowrap}
 /* narrow window (phone): the live site's phone terminal. As there, the welcome banner has scrolled away */
 @container (max-width:600px){
-  .spx-term::before{filter:blur(5px)}
-  .spx-bar{height:30px;gap:6px;padding:0 10px}
-  .spx-bar>i{width:10px;height:10px}
-  .spx-bar>span{font-size:11px}
-  .spx-bar>b{display:none}
-  .spx-tb{padding:10px 12px 12px;font-size:10.2px;line-height:1.6}
-  .spx-tb>div{min-height:1.6em}
-  .spx-tb .banner{display:none}
-  .spx-tb .sub{padding-left:12px}
-  .spx-tb .ask{padding:6px 9px}
-  .spx-panel{margin-top:14px;height:136px;border-radius:16px 16px 0 0;
-    -webkit-mask-image:linear-gradient(#000 calc(100% - 30px),transparent);mask-image:linear-gradient(#000 calc(100% - 30px),transparent)}
-  .spx-head{padding:10px 12px 9px}
-  .spx-head>span{font-size:11px}
-  .spx-head>em{font-size:10.5px}
-  .spx-rows{padding:2px 6px 0}
-  .spx-row{gap:9px;padding:8px 6px}
-  .spx-ico{width:28px;height:28px;border-radius:9px}
-  .spx-ico svg{width:14px;height:14px}
-  .spx-rt{flex-wrap:wrap;gap:0 8px}
-  .spx-rt>b{font-size:14px}
-  .spx-rt>em{margin-left:0;font-size:10.5px}
-  .spx-rb>p{font-size:12px;line-height:1.45;white-space:normal}
-  .spx-rr{gap:4px}
-  .spx-rr>span{min-width:0;height:26px;padding:0 10px;font-size:11.5px}
+  .sp-term{padding:10px 12px 12px;font-size:10.2px;line-height:1.6}
+  .sp-term>div{min-height:1.6em}
+  .sp-term .banner{display:none}
+  .sp-term .sub{padding-left:4ch;text-indent:-2.5ch}.sp-term .sub::before{width:2.5ch}
+  .sp-term .you{margin-bottom:6px}
+  .sp-term .ask{margin:6px 0;padding:6px 9px}
+  .sp-list{padding:0 12px 2px}
+  .sp-lh{padding:10px 0 8px;font-size:13px}
+  .sp-lh b{font-size:11px}
+  .sp-lh .sp-src{font-size:10.5px}
+  /* a phone row is its name, its installs and Add; a description cut mid-word says less than none */
+  .sp-row{column-gap:12px;padding:9px 0 10px}
+  .sp-rt b{font-size:13.5px}
+  .sp-rt em{font-size:10.5px}
+  .sp-rd{display:none}
+  .sp-add{grid-row:1;height:24px;padding:0 9px;font-size:11.5px}
 }
-@media (max-width:640px){.spx{padding:12px 10px 0}}
 /* a short screen: as on the phone, the welcome banner has scrolled away, so the product fits one screen */
-@media (max-height:840px){.spx-tb .banner{display:none}}
-/* a tall screen has room for a second whole skill */
-@media (min-height:1000px){@container (min-width:601px){.spx-panel{height:172px}}}
+@media (max-height:840px){.sp-term .banner{display:none}}
 
 /* ---------- Modelproof: a capture of the live board ----------
    Desktop: captured 840px wide at the board's own 100% zoom and shown 1:1, so the window crops the board instead of
@@ -146,10 +147,10 @@
 }
 
 /* ---------- DATproof: its field on the wall, and the product's own look inside the shared window ---------- */
-#datproof .mat,.mat-datproof{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.36 0.07 152) 0%,oklch(0.26 0.045 156) 42%,transparent 100%),oklch(0.175 0.024 162)}
+.mat-datproof{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.36 0.07 152) 0%,oklch(0.26 0.045 156) 42%,transparent 100%),oklch(0.175 0.024 162)}
 
 /* sized by its own width (container), not the viewport, so it holds up wherever the window sits */
-.dp{--dp-panel:#101318;--dp-line:#1e232b;--dp-ink:#e8eaed;--dp-dim:#9aa3b1;--dp-green:#56d77a;
+.dp{--dp-panel:#101318;--dp-line:var(--win-line);--dp-ink:var(--win-ink);--dp-dim:var(--win-dim);--dp-green:#56d77a;
   /* intensity ramp: c0 = no buy that week, c1..c4 = the four levels in scripts/build-datproof.mjs */
   --c0:#1a1f27;--c1:#1c4a2b;--c2:#23793d;--c3:#35b057;--c4:#5ee183;
   container-type:inline-size;background:var(--win-bk);color:var(--dp-ink);font-family:var(--font)}
@@ -222,8 +223,7 @@
   .dp-legend{flex-direction:column;align-items:flex-start;gap:6px}
 }
 
-/* ================= the page: nav, alternating rows, captions, How it's built, footer =================
-   Tokens, fonts and the hero's critical CSS are inlined in <head>. */
+/* ================= the page: nav, alternating rows, captions, How it's built, footer ================= */
 
 .sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .wrap{max-width:1360px;margin:0 auto;padding-inline:var(--gut)}
@@ -279,7 +279,6 @@ main{position:relative;z-index:var(--z-main);background:linear-gradient(transpar
 .btn svg{display:block;width:16px;height:16px;flex:none;transition:transform 500ms var(--spring-firm)}
 .btn-ink{background:var(--ink);color:#fff}
 .btn-line{background:var(--bg);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-strong)}
-.btn-line:focus-visible{box-shadow:inset 0 0 0 1px var(--line-strong)}
 /* one designed focus ring: a 2px ink ring that springs in, offset from the control */
 .btn::after,.chapters a::after,.brand::after{content:"";position:absolute;inset:-4px;border-radius:999px;box-shadow:0 0 0 2px var(--ink);
   opacity:0;transform:scale(.92);pointer-events:none;transition:opacity 120ms var(--ease-out),transform 420ms var(--spring)}

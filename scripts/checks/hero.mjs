@@ -244,7 +244,7 @@ export async function gpuFrameTime(page, opts = {}) {
 // Needs a browser launched with bfcacheLaunchOptions. Loads `url`, scrolls a little, leaves for another same-origin
 // page, comes back, and checks the page came out of the cache, threw nothing, and the canvas draws again.
 export async function bfcacheRestore(page, url, opts = {}) {
-  const { awayUrl = new URL('/assets/hero.css', url).href, scroll = 300 } = opts;
+  const { awayUrl = new URL('/assets/site.css', url).href, scroll = 300 } = opts;
   const { errors, off } = collectErrors(page);
   await page.addInitScript(() => {
     addEventListener('pageshow', e => { (window.__pageshows ||= []).push(e.persisted); });

@@ -14,41 +14,8 @@
 <link rel="preload" href="assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/fragment-mono.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400 900;font-display:swap;src:url(assets/fonts/schibsted-grotesk.woff2) format("woff2")}
-@font-face{font-family:"Fragment Mono";font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/fragment-mono.woff2) format("woff2")}
-/* Arial resized to Schibsted's metrics, so the swap doesn't move the layout */
-@font-face{font-family:"Schibsted Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans");
-  size-adjust:105.8%;ascent-override:92.3%;descent-override:24.4%;line-gap-override:0%}
-:root{
-  --bg:oklch(0.978 0.002 255);--mat:oklch(0.948 0.004 255);--mat-line:oklch(0.905 0.005 255);
-  --line:oklch(0.9 0.004 250);--line-strong:oklch(0.84 0.005 250);--chrome:oklch(0.995 0.001 255);
-  --ink:oklch(0.2 0.01 255);--ink-2:oklch(0.41 0.01 255);--ink-3:oklch(0.49 0.01 255);
-  --font:"Schibsted Grotesk","Schibsted Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --ease-out:cubic-bezier(0.25,1,0.5,1);--ease-expo:cubic-bezier(0.16,1,0.3,1);
-  --spring:cubic-bezier(0.2,0.9,0.25,1);--spring-firm:cubic-bezier(0.2,0.85,0.3,1);
-  /* row spacing follows the screen's height too, so a product and its caption fit one laptop screen */
-  --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(16px,4svh,48px);
-  --mat-pad:clamp(16px,min(4vw,4.5svh),56px);--col-gap:clamp(24px,3vw,48px);
-  --z-win:1;--z-main:1;--z-nav:10;--z-tip:20;--z-skip:30;
-  --win-bk:#0b0d11;
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-@supports (transition-timing-function:linear(0,1)){
-  :root{
-    /* damped spring, zeta 0.7 (about 4% overshoot) */
-    --spring:linear(0, .033, .1154, .2265, .3501, .4746, .592, .6973, .7878, .8626, .9221, .9675, 1.0004, 1.0228, 1.0367, 1.0438, 1.046, 1.0446, 1.0409, 1.0358, 1.0302, 1.0244, 1.019, 1.0141, 1.0099, 1.0065, 1.0037, 1.0016, 1, .999, .9983, .998, .9979, .9979, .9981, .9983, 1);
-    /* firmer spring, zeta 0.8 (about 1.5% overshoot) */
-    --spring-firm:linear(0, .0253, .0889, .1755, .2737, .3752, .474, .5664, .6499, .7235, .7867, .84, .8838, .9193, .9472, .9688, .985, .9967, 1.0049, 1.0102, 1.0133, 1.0148, 1.0152, 1.0147, 1.0136, 1.0123, 1.0108, 1.0092, 1.0077, 1.0064, 1.0051, 1.004, 1.0031, 1.0023, 1.0017, 1.0011, 1);
-  }
-}
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--nav-h);background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--font);
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
-h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
-p{margin:0;text-wrap:pretty}
-/* First Light: the hero's critical CSS. Inline in <head>, after the site tokens (--bg --ink --win-bk --ease-out --grain).
+/* First Light: the hero's critical CSS, and its only copy. Reads the site tokens (--bg --ink --win-bk --ease-out --grain)
+   from assets/site.css, which blocks render, so they are there at first paint.
    Needs html.js set by a one-line inline script in <head>, before first paint, so the pinned layout never shifts. */
 .hero{--hz:56svh;--span:100svh;--z-sky:0;--z-copy:2;
   --lit:#fff8ee;--lit-2:#eceef5;
@@ -175,50 +142,27 @@ html.gllost .sky-gl{transition:none}
   <div class="fit">
     <figure class="win">
       <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="wtitle">lucascashwell3-ai.github.io/Skillproof</span></div>
-      <div class="wbody spx" aria-hidden="true">
-        <div class="spx-term">
-          <div class="spx-bar"><i></i><i></i><i></i><span>claude — 96×28</span><b><i></i><i></i><i></i></b></div>
-          <div class="spx-tb">
-            <div class="banner"><b>✻</b> Welcome to <b>Claude Code</b>! <span class="dim">/help for help · cwd: ~/projects/app</span></div>
-            <div class="sub">What do you want your AI to do better? Not sure? Tell me what you use AI for, or say “look”.</div>
-            <div class="you">not sure honestly — the answers are always way too long</div>
-            <div class="tool">Read(<span class="y">CLAUDE.md</span>, <span class="y">~/.claude/skills/</span>) <span class="dim">· read-only</span></div>
-            <div class="sub">1. Add <span class="ok">caveman</span> — Type /caveman, and your AI answers in far fewer words until you say “normal mode”.</div>
-            <div class="sub">2. Add <span class="ok">show-me</span> — Your AI now shows long answers as one page you can scan, instead of a wall of text.</div>
-            <div class="ask">One clash: your rule <span class="warn">“always explain your reasoning in full”</span> would cancel caveman. Soften that rule to “explain when asked”? Backup first<br><span class="opt">❯ 1. Go</span> &nbsp; 2. Skip the rule change &nbsp; 3. No</div>
-            <div class="tool">Edit(CLAUDE.md) <span class="dim">· 1 line, backed up</span> &nbsp; <span class="ok">✓</span></div>
-            <div class="tool">Installed. <span class="ok">caveman</span> · <span class="ok">show-me</span> → ~/.claude/skills/ <span class="dim">· undo: move both folders out</span></div>
-            <div class="you">why is my checkout page slow?</div>
-            <div class="sub">Two reasons, biggest first: full-size product images, then a font that blocks the page. Fix the images?</div>
-          </div>
+      <div class="wbody sp" aria-hidden="true">
+        <div class="sp-term">
+          <div class="banner"><b>✻</b> Welcome to <b>Claude Code</b>! <span class="dim">/help for help · cwd: ~/projects/app</span></div>
+          <div class="sub">What do you want your AI to do better? Not sure? Tell me what you use AI for, or say “look”.</div>
+          <div class="you">not sure honestly — the answers are always way too long</div>
+          <div class="tool">Read(<span class="y">CLAUDE.md</span>, <span class="y">~/.claude/skills/</span>) <span class="dim">· read-only</span></div>
+          <div class="sub">1. Add <span class="ok">caveman</span> — Type /caveman, and your AI answers in far fewer words until you say “normal mode”.</div>
+          <div class="sub">2. Add <span class="ok">show-me</span> — Your AI now shows long answers as one page you can scan, instead of a wall of text.</div>
+          <div class="ask">One clash: your rule <span class="warn">“always explain your reasoning in full”</span> would cancel caveman. Soften that rule to “explain when asked”? Backup first<br><span class="opt">❯ 1. Go</span> &nbsp; 2. Skip the rule change &nbsp; 3. No</div>
+          <div class="tool">Edit(CLAUDE.md) <span class="dim">· 1 line, backed up</span> &nbsp; <span class="ok">✓</span></div>
+          <div class="tool">Installed. <span class="ok">caveman</span> · <span class="ok">show-me</span> → ~/.claude/skills/ <span class="dim">· undo: move both folders out</span></div>
+          <div class="you">why is my checkout page slow?</div>
+          <div class="sub">Two reasons, biggest first: full-size product images, then a font that blocks the page. Fix the images?</div>
         </div>
-        <div class="spx-panel">
-          <div class="spx-head"><span>Short list <b>20</b></span><em>installs from skills.sh</em></div>
-          <div class="spx-rows">
-            <div class="spx-row">
-              <span class="spx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.1 4.9L19 10l-4.9 2.1L12 17l-2.1-4.9L5 10l4.9-2.1L12 3z"/><path d="M18.5 16.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg></span>
-              <div class="spx-rb"><div class="spx-rt"><b>grill-me</b><em>1.2M installs</em></div><p>Asks you questions in rounds, each with a suggested answer, until your plan or decision holds up.</p></div>
-              <div class="spx-rr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span><svg viewBox="0 0 12 12" fill="currentColor"><rect x="5" width="2" height="12" rx="1"/><rect y="5" width="12" height="2" rx="1"/></svg>Add</span></div>
-            </div>
-            <div class="spx-row">
-              <span class="spx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.1 4.9L19 10l-4.9 2.1L12 17l-2.1-4.9L5 10l4.9-2.1L12 3z"/><path d="M18.5 16.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg></span>
-              <div class="spx-rb"><div class="spx-rt"><b>show-me</b></div><p>Turns a long, many-part answer into one page you can scan instead of a wall of text.</p></div>
-              <div class="spx-rr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span><svg viewBox="0 0 12 12" fill="currentColor"><rect x="5" width="2" height="12" rx="1"/><rect y="5" width="12" height="2" rx="1"/></svg>Add</span></div>
-            </div>
-            <div class="spx-row">
-              <span class="spx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.1 4.9L19 10l-4.9 2.1L12 17l-2.1-4.9L5 10l4.9-2.1L12 3z"/><path d="M18.5 16.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg></span>
-              <div class="spx-rb"><div class="spx-rt"><b>humanizer</b><em>8k installs</em></div><p>Rewrites AI-sounding text so it reads like a person, without changing what it says.</p></div>
-              <div class="spx-rr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span><svg viewBox="0 0 12 12" fill="currentColor"><rect x="5" width="2" height="12" rx="1"/><rect y="5" width="12" height="2" rx="1"/></svg>Add</span></div>
-            </div>
-            <div class="spx-row">
-              <span class="spx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.1 4.9L19 10l-4.9 2.1L12 17l-2.1-4.9L5 10l4.9-2.1L12 3z"/><path d="M18.5 16.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg></span>
-              <div class="spx-rb"><div class="spx-rt"><b>caveman</b><em>544.2k installs</em></div><p>Makes your AI answer in far fewer words while keeping every fact.</p></div>
-              <div class="spx-rr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span><svg viewBox="0 0 12 12" fill="currentColor"><rect x="5" width="2" height="12" rx="1"/><rect y="5" width="12" height="2" rx="1"/></svg>Add</span></div>
-            </div>
-          </div>
+        <div class="sp-list">
+          <div class="sp-lh"><p>Short list <b>20</b></p><p class="sp-src">installs from skills.sh</p></div>
+          <div class="sp-row"><p class="sp-rt"><b>grill-me</b><em>1.2M installs</em></p><p class="sp-rd">Asks you questions in rounds, each with a suggested answer, until your plan or decision holds up.</p><span class="sp-add">+ Add</span></div>
+          <div class="sp-row"><p class="sp-rt"><b>show-me</b></p><p class="sp-rd">Turns a long, many-part answer into one page you can scan instead of a wall of text.</p><span class="sp-add">+ Add</span></div>
         </div>
       </div>
-      <figcaption class="sr">Skillproof's site with its terminal demo finished. Asked what they want their AI to do better, the user says the answers are always way too long. Skillproof reads their setup without changing it and suggests two skills from its list, caveman and show-me. It finds one rule that would cancel caveman and asks before softening it, with a backup first. After a yes it edits one line, installs both skills and says how to undo it, and the next answer comes back short. Below the terminal, the short list of 20 checked skills starts with grill-me at 1.2 million installs, show-me, humanizer at 8 thousand and caveman at 544 thousand.</figcaption>
+      <figcaption class="sr">Skillproof's site with its terminal session finished. Asked what they want their AI to do better, the user says the answers are always way too long. Skillproof reads their setup without changing it and suggests two skills from its catalog, caveman and show-me. It finds one rule that would cancel caveman and asks before softening it, with a backup first. After a yes it edits one line, installs both skills and says how to undo it, and the next answer comes back short. Below the session, the site's short list of 20 skills starts with grill-me, at 1.2 million installs from skills.sh, then show-me.</figcaption>
     </figure>
   </div>
 </div>
@@ -256,7 +200,7 @@ html.gllost .sky-gl{transition:none}
 </div>
 <div class="dp-act">
 <div class="dp-act-h"><p class="dp-h">Purchase activity</p><p class="dp-wk">321 weeks · 189 purchases</p></div>
-<div class="dp-rows" id="dpRows" role="img" aria-label="Weekly bitcoin purchases, Aug 2020 to Sep 2026. Strategy (MSTR): 795,327 BTC over 109 purchases. Strive (ASST): 25,123 BTC over 28 purchases. Metaplanet (3350): 42,970 BTC over 52 purchases. Total 863,420 BTC." data-weeks="321">
+<div class="dp-rows" id="dpRows" role="img" aria-label="Weekly bitcoin purchases, Aug 2020 to Sep 2026. Strategy (MSTR): 795,327 BTC over 109 purchases. Strive (ASST): 25,123 BTC over 28 purchases. Metaplanet (3350): 42,970 BTC over 52 purchases. Total 863,420 BTC." data-weeks="321" data-pitch="5" data-cell="4">
 <div class="dp-axis" aria-hidden="true"><span style="left:6.55%">2021</span><span style="left:22.76%">2022</span><span style="left:38.97%">2023</span><span style="left:55.17%">2024</span><span style="left:71.38%">2025</span><span style="left:87.59%">2026</span></div>
 <div class="dp-row"><span class="dp-label"><em>All DATs</em></span><svg viewBox="0 0 1604 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="c0" d="M0 .5H1604" stroke-dasharray="4 1"/><path class="l4" data-w="0" d="M0 0h4v1h-4z"/><path class="l4" data-w="4" d="M25 0h4v1h-4z"/><path class="l3" data-w="16" d="M80 0h4v1h-4z"/><path class="l2" data-w="20" d="M115 0h4v1h-4z"/><path class="l2" data-w="24" d="M125 0h4v1h-4z"/><path class="l2" data-w="28" d="M145 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="32" d="M170 0h4v1h-4z"/><path class="l2" data-w="36" d="M195 0h4v1h-4z"/><path class="l2" data-w="40" d="M200 0h4v1h-4z"/><path class="l3" data-w="52" d="M270 0h4v1h-4z"/><path class="l3" data-w="56" d="M285 0h4v1h-4z"/><path class="l3" data-w="68" d="M340 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="72" d="M360 0h4v1h-4z"/><path class="l2" data-w="76" d="M385 0h4v1h-4z"/><path class="l3" data-w="84" d="M430 0h4v1h-4z"/><path class="l2" data-w="96" d="M490 0h4v1h-4z"/><path class="l2" data-w="108" d="M550 0h4v1h-4z"/><path class="l3" data-w="124" d="M620 0h4v1h-4z"/><path class="l3" data-w="136" d="M685 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="148" d="M750 0h4v1h-4z"/><path class="l3" data-w="160" d="M815 0h4v1h-4z"/><path class="l4" data-w="172" d="M860 0h4v1h-4z"/><path class="l4" data-w="176" d="M880 0h4v1h-4z"/><path class="l3" data-w="184" d="M925 0h4v1h-4z"/><path class="l4" data-w="184" d="M935 0h4v1h-4z"/><path class="l3" data-w="188" d="M940 0h4v1h-4z"/><path class="l1" data-w="192" d="M965 0h4v1h-4zm10 0h4v1h-4z"/><path class="l1" data-w="200" d="M1000 0h4v1h-4zm15 0h4v1h-4z"/><path class="l4" data-w="200" d="M1005 0h4v1h-4z"/><path class="l1" data-w="204" d="M1020 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="208" d="M1045 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="212" d="M1070 0h4v1h-4z"/><path class="l4" data-w="212" d="M1065 0h4v1h-4z"/><path class="l2" data-w="216" d="M1080 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="220" d="M1100 0h4v1h-4z"/><path class="l4" data-w="220" d="M1110 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="224" d="M1120 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="228" d="M1140 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="232" d="M1175 0h4v1h-4z"/><path class="l4" data-w="232" d="M1160 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="236" d="M1180 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="236" d="M1185 0h4v1h-4z"/><path class="l2" data-w="240" d="M1200 0h4v1h-4z"/><path class="l3" data-w="240" d="M1205 0h4v1h-4z"/><path class="l4" data-w="240" d="M1210 0h4v1h-4z"/><path class="l3" data-w="244" d="M1220 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="244" d="M1230 0h4v1h-4z"/><path class="l3" data-w="248" d="M1245 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="248" d="M1240 0h4v1h-4z"/><path class="l3" data-w="252" d="M1260 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="252" d="M1265 0h4v1h-4z"/><path class="l2" data-w="256" d="M1295 0h4v1h-4z"/><path class="l3" data-w="256" d="M1280 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="260" d="M1305 0h4v1h-4z"/><path class="l3" data-w="260" d="M1310 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="260" d="M1300 0h4v1h-4z"/><path class="l2" data-w="264" d="M1330 0h4v1h-4z"/><path class="l3" data-w="264" d="M1320 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="264" d="M1335 0h4v1h-4z"/><path class="l2" data-w="268" d="M1350 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="268" d="M1340 0h4v1h-4z"/><path class="l2" data-w="272" d="M1360 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="272" d="M1370 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="276" d="M1385 0h4v1h-4z"/><path class="l4" data-w="276" d="M1390 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="280" d="M1405 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="280" d="M1415 0h4v1h-4z"/><path class="l2" data-w="284" d="M1430 0h4v1h-4z"/><path class="l3" data-w="284" d="M1425 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="284" d="M1420 0h4v1h-4z"/><path class="l2" data-w="288" d="M1445 0h4v1h-4z"/><path class="l3" data-w="288" d="M1440 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="288" d="M1455 0h4v1h-4z"/><path class="l3" data-w="292" d="M1465 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="292" d="M1460 0h4v1h-4z"/><path class="l3" data-w="296" d="M1490 0h4v1h-4z"/><path class="l4" data-w="296" d="M1480 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="300" d="M1500 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="300" d="M1505 0h4v1h-4z"/><path class="l3" data-w="304" d="M1520 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="308" d="M1540 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="312" d="M1560 0h4v1h-4zm10 0h4v1h-4z"/><path class="l2" data-w="312" d="M1565 0h4v1h-4z"/><path class="l3" data-w="312" d="M1575 0h4v1h-4z"/><path class="l2" data-w="316" d="M1590 0h4v1h-4z"/><path class="l3" data-w="316" d="M1580 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l3" data-w="320" d="M1600 0h4v1h-4z"/></svg></div>
 <div class="dp-row"><span class="dp-label"><em>Strategy</em> · MSTR</span><svg viewBox="0 0 1604 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="c0" d="M0 .5H1604" stroke-dasharray="4 1"/><path class="l4" data-w="0" d="M0 0h4v1h-4z"/><path class="l4" data-w="4" d="M25 0h4v1h-4z"/><path class="l3" data-w="16" d="M80 0h4v1h-4z"/><path class="l2" data-w="20" d="M115 0h4v1h-4z"/><path class="l2" data-w="24" d="M125 0h4v1h-4z"/><path class="l2" data-w="28" d="M145 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="32" d="M170 0h4v1h-4z"/><path class="l2" data-w="36" d="M195 0h4v1h-4z"/><path class="l2" data-w="40" d="M200 0h4v1h-4z"/><path class="l3" data-w="52" d="M270 0h4v1h-4z"/><path class="l3" data-w="56" d="M285 0h4v1h-4z"/><path class="l3" data-w="68" d="M340 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="72" d="M360 0h4v1h-4z"/><path class="l2" data-w="76" d="M385 0h4v1h-4z"/><path class="l3" data-w="84" d="M430 0h4v1h-4z"/><path class="l2" data-w="96" d="M490 0h4v1h-4z"/><path class="l2" data-w="108" d="M550 0h4v1h-4z"/><path class="l3" data-w="124" d="M620 0h4v1h-4z"/><path class="l3" data-w="136" d="M685 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="148" d="M750 0h4v1h-4z"/><path class="l3" data-w="160" d="M815 0h4v1h-4z"/><path class="l4" data-w="172" d="M860 0h4v1h-4z"/><path class="l4" data-w="176" d="M880 0h4v1h-4z"/><path class="l3" data-w="184" d="M925 0h4v1h-4z"/><path class="l4" data-w="184" d="M935 0h4v1h-4z"/><path class="l3" data-w="188" d="M940 0h4v1h-4z"/><path class="l4" data-w="200" d="M1005 0h4v1h-4z"/><path class="l3" data-w="212" d="M1070 0h4v1h-4z"/><path class="l4" data-w="212" d="M1065 0h4v1h-4z"/><path class="l4" data-w="220" d="M1110 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="224" d="M1120 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="228" d="M1140 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="232" d="M1175 0h4v1h-4z"/><path class="l4" data-w="232" d="M1160 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="236" d="M1185 0h4v1h-4z"/><path class="l2" data-w="240" d="M1200 0h4v1h-4z"/><path class="l3" data-w="240" d="M1205 0h4v1h-4z"/><path class="l4" data-w="240" d="M1210 0h4v1h-4z"/><path class="l3" data-w="244" d="M1220 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="244" d="M1230 0h4v1h-4z"/><path class="l2" data-w="248" d="M1255 0h4v1h-4z"/><path class="l3" data-w="248" d="M1245 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="248" d="M1240 0h4v1h-4z"/><path class="l2" data-w="252" d="M1270 0h4v1h-4z"/><path class="l3" data-w="252" d="M1260 0h4v1h-4zm15 0h4v1h-4z"/><path class="l4" data-w="252" d="M1265 0h4v1h-4z"/><path class="l3" data-w="256" d="M1285 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="260" d="M1305 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="260" d="M1315 0h4v1h-4z"/><path class="l4" data-w="260" d="M1300 0h4v1h-4z"/><path class="l2" data-w="264" d="M1330 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="264" d="M1320 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="268" d="M1340 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="272" d="M1360 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="272" d="M1375 0h4v1h-4z"/><path class="l2" data-w="276" d="M1385 0h4v1h-4z"/><path class="l4" data-w="276" d="M1390 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="280" d="M1405 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="280" d="M1415 0h4v1h-4z"/><path class="l2" data-w="284" d="M1430 0h4v1h-4z"/><path class="l3" data-w="284" d="M1425 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="284" d="M1420 0h4v1h-4z"/><path class="l2" data-w="288" d="M1445 0h4v1h-4z"/><path class="l3" data-w="288" d="M1440 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="288" d="M1455 0h4v1h-4z"/><path class="l3" data-w="292" d="M1465 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="292" d="M1460 0h4v1h-4z"/><path class="l3" data-w="296" d="M1490 0h4v1h-4z"/><path class="l4" data-w="296" d="M1480 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="300" d="M1500 0h4v1h-4z"/><path class="l4" data-w="300" d="M1505 0h4v1h-4z"/><path class="l2" data-w="304" d="M1530 0h4v1h-4z"/><path class="l3" data-w="304" d="M1520 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="316" d="M1595 0h4v1h-4z"/><path class="l3" data-w="316" d="M1580 0h4v1h-4z"/><path class="l3" data-w="320" d="M1600 0h4v1h-4z"/></svg></div>

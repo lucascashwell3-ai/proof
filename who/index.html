@@ -11,41 +11,6 @@
 <meta property="og:type" content="profile">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b1f26'/%3E%3Cpath d='M7 21a9 9 0 0 1 18 0z' fill='%23ffd7a6'/%3E%3Crect x='5' y='21' width='22' height='2' rx='1' fill='%23f7f8f9'/%3E%3C/svg%3E">
 <link rel="preload" href="../assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
-<style>
-@font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400 900;font-display:swap;src:url(../assets/fonts/schibsted-grotesk.woff2) format("woff2")}
-@font-face{font-family:"Fragment Mono";font-style:normal;font-weight:400;font-display:swap;src:url(../assets/fonts/fragment-mono.woff2) format("woff2")}
-/* Arial resized to Schibsted's metrics, so the swap doesn't move the layout */
-@font-face{font-family:"Schibsted Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans");
-  size-adjust:105.8%;ascent-override:92.3%;descent-override:24.4%;line-gap-override:0%}
-:root{
-  --bg:oklch(0.978 0.002 255);--mat:oklch(0.948 0.004 255);--mat-line:oklch(0.905 0.005 255);
-  --line:oklch(0.9 0.004 250);--line-strong:oklch(0.84 0.005 250);--chrome:oklch(0.995 0.001 255);
-  --ink:oklch(0.2 0.01 255);--ink-2:oklch(0.41 0.01 255);--ink-3:oklch(0.49 0.01 255);
-  --font:"Schibsted Grotesk","Schibsted Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --ease-out:cubic-bezier(0.25,1,0.5,1);--ease-expo:cubic-bezier(0.16,1,0.3,1);
-  --spring:cubic-bezier(0.2,0.9,0.25,1);--spring-firm:cubic-bezier(0.2,0.85,0.3,1);
-  --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(24px,5.5vh,48px);
-  --mat-pad:clamp(16px,4vw,56px);--col-gap:clamp(24px,3vw,48px);
-  --z-win:1;--z-nav:10;--z-tip:20;--z-toast:25;--z-skip:30;
-  --win-bk:#0b0d11;
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-@supports (transition-timing-function:linear(0,1)){
-  :root{
-    /* damped spring, zeta 0.7 (about 4% overshoot) */
-    --spring:linear(0, .033, .1154, .2265, .3501, .4746, .592, .6973, .7878, .8626, .9221, .9675, 1.0004, 1.0228, 1.0367, 1.0438, 1.046, 1.0446, 1.0409, 1.0358, 1.0302, 1.0244, 1.019, 1.0141, 1.0099, 1.0065, 1.0037, 1.0016, 1, .999, .9983, .998, .9979, .9979, .9981, .9983, 1);
-    /* firmer spring, zeta 0.8 (about 1.5% overshoot) */
-    --spring-firm:linear(0, .0253, .0889, .1755, .2737, .3752, .474, .5664, .6499, .7235, .7867, .84, .8838, .9193, .9472, .9688, .985, .9967, 1.0049, 1.0102, 1.0133, 1.0148, 1.0152, 1.0147, 1.0136, 1.0123, 1.0108, 1.0092, 1.0077, 1.0064, 1.0051, 1.004, 1.0031, 1.0023, 1.0017, 1.0011, 1);
-  }
-}
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--nav-h);background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--font);
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
-h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
-p{margin:0;text-wrap:pretty}
-</style>
 <link rel="stylesheet" href="../assets/site.css">
 <style>
 /* ================= Who am I: the name column beside the words, the links under the name ================= */
@@ -53,9 +18,12 @@ p{margin:0;text-wrap:pretty}
 .chapters a[aria-current="page"]{color:var(--ink)}
 .chapters a[aria-current="page"]::before{content:"";position:absolute;left:0;right:0;bottom:calc((34px - var(--nav-h)) / 2);height:2px;background:var(--ink);pointer-events:none}
 
-.about{padding-block:clamp(44px,7.5vw,112px) 0}
+/* a short page: it fills the screen, the words sit a little above its middle, the footer rests on the bottom edge */
+body{display:flex;flex-direction:column;min-height:100vh;min-height:100svh}
+main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
+.about{padding-block:clamp(44px,7.5vw,112px) clamp(64px,10vw,160px)}
 .about-in{--h1:clamp(2.5rem,1.9rem + 1.6vw,3.375rem);--lede:clamp(1.25rem,1.1rem + .45vw,1.5rem);display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:start;
-  grid-template-areas:"name words" "reach words" ". art";grid-template-rows:auto 1fr auto}
+  grid-template-areas:"name words" "reach words";grid-template-rows:auto 1fr}
 .about h1{grid-area:name;font-size:var(--h1);line-height:1;letter-spacing:-0.035em}
 /* at these sizes the lede's cap height already starts level with the name's (measured within 1px, 1100 to 1920 wide) */
 .words{grid-area:words;max-width:60ch}
@@ -95,10 +63,11 @@ p{margin:0;text-wrap:pretty}
 .toast svg{display:block;flex:none;width:16px;height:16px}
 .toast span{color:oklch(0.82 0.008 255);overflow:hidden;text-overflow:ellipsis}
 
+.foot{padding-top:0}
 .foot a{white-space:nowrap}
 
 @media (max-width:1023px){
-  .about-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"name" "words" "reach" "art";grid-template-rows:none}
+  .about-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"name" "words" "reach";grid-template-rows:none}
   .words{margin-top:22px}
   .reach{margin-top:36px;max-width:34rem}
 }
@@ -110,17 +79,7 @@ p{margin:0;text-wrap:pretty}
   .rl:hover .ra,.rl:active{transform:none!important}
 }
 </style>
-<!-- painting:start -->
-<style>
-/* the painting, framed like a product window on a dusk field taken from its own sky */
-.art{grid-area:art;margin-top:clamp(48px,5vw,72px)}
-.mat-coast{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.37 0.07 282) 0%,oklch(0.265 0.045 280) 42%,transparent 100%),oklch(0.18 0.026 278)}
-.mat-coast .fit{max-width:780px}
-.coast{background:#2b3a6b}
-.coast img{display:block;width:100%;height:auto}
-@media (max-width:1023px){.art{margin-top:clamp(48px,8vw,64px)}}
-</style>
-<!-- painting:end -->
+<script defer src="../assets/site.js"></script>
 <script defer src="../assets/who.js"></script>
 </head>
 <body>
@@ -158,24 +117,6 @@ p{margin:0;text-wrap:pretty}
         <li id="mail"><a class="rl" href="mailto:lucascashwell3@gmail.com"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-8,144H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></svg><span class="rt"><span class="rk">Email</span><span class="rv">lucascashwell3@gmail.com</span></span></a></li>
       </ul>
 
-<!-- painting:start -->
-      <div class="art">
-        <div class="mat mat-coast">
-          <div class="fit">
-            <figure class="win">
-              <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="wtitle">coast.webp</span></div>
-              <div class="wbody coast">
-                <picture>
-                  <source media="(max-width: 640px)" srcset="../assets/img/coast-720.webp" width="720" height="402">
-                  <img src="../assets/img/coast-780.webp" srcset="../assets/img/coast-780.webp 1x, ../assets/img/coast-1560.webp 2x" width="780" height="435" loading="lazy" decoding="async"
-                    alt="A painting of a coastline at golden hour. The sun sets into the sea, a couple walks a red dog along the beach, a small white plane rests on the grass above the sand, sunflowers and purple wildflowers fill the foreground, and three crosses stand on the headland.">
-                </picture>
-              </div>
-            </figure>
-          </div>
-        </div>
-      </div>
-<!-- painting:end -->
     </div>
   </article>
 </main>

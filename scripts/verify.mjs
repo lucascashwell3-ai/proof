@@ -784,14 +784,19 @@ async function linkChecks(linkMap) {
       while (queue.length) {
         const u = queue.shift();
         const page = await ctx.newPage();
-        let status = null, final = u, hops = 0, err = null;
-        try {
-          const res = await page.goto(u, { waitUntil: 'domcontentloaded', timeout: 30000 });
-          if (res) {
-            status = res.status(); final = res.url();
-            for (let q = res.request().redirectedFrom(); q; q = q.redirectedFrom()) hops++;
-          }
-        } catch (e) { err = cut(e.message.split('\n')[0], 120); }
+        let status = null, final = u, hops = 0, err = null, tries = 0;
+        // one retry on a thrown navigation error (a network stall), and the retry is printed; a real status never retries
+        while (tries < 2) {
+          tries++; err = null;
+          try {
+            const res = await page.goto(u, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            if (res) {
+              status = res.status(); final = res.url();
+              for (let q = res.request().redirectedFrom(); q; q = q.redirectedFrom()) hops++;
+            }
+            break;
+          } catch (e) { err = cut(e.message.split('\n')[0], 120); }
+        }
         await page.close().catch(() => {});
         const host = (() => { try { return new URL(u).host; } catch { return ''; } })();
         // only a true 200 passes. One exception is printed as SKIP, never PASS: www.linkedin.com answering 999 with
@@ -803,6 +808,7 @@ async function linkChecks(linkMap) {
           ok = 'skip';
           v = `999 ${u} (LinkedIn answers 999 to every automated client; not machine-checkable — confirm by hand)`;
         } else v = `${status} ${u}${redir}`;
+        if (tries > 1) v += ` (after 1 retry)`;
         line(ok, at(u), '7 external link', v);
       }
     };
@@ -901,7 +907,7 @@ async function main() {
 
   const linkMap = new Map();
   let away = null;
-  for (const c of ['assets/hero.css', 'assets/datproof.js']) {
+  for (const c of ['assets/site.css', 'assets/datproof.js']) {
     try { const r = await fetch(new URL(c, base)); if (r.ok) { away = new URL(c, base).href; break; } } catch {}
   }
 
