@@ -251,10 +251,12 @@ export async function bfcacheRestore(page, url, opts = {}) {
     for (const t of ['webglcontextlost', 'webglcontextrestored']) document.addEventListener(t, () => (window.__glEvents ||= []).push(t.slice(12)), true);
   });
   await page.goto(url, { waitUntil: 'load' });
-  await heroReady(page);
+  // pages without the hero (e.g. /who/) still get the cache round trip, just no canvas checks
+  const hasHero = await page.evaluate(() => !!document.querySelector('canvas.sky-gl'));
+  if (hasHero) await heroReady(page);
   await page.evaluate(y => scrollTo(0, y), scroll);
   await sleep(800);
-  const before = await page.evaluate(() => window.__hero.frameCount());
+  const before = hasHero ? await page.evaluate(() => window.__hero.frameCount()) : 0;
   await page.goto(awayUrl, { waitUntil: 'load' });
   await sleep(500);
   await page.goBack({ waitUntil: 'commit' });
@@ -262,6 +264,11 @@ export async function bfcacheRestore(page, url, opts = {}) {
   try { await page.waitForFunction(() => (window.__pageshows || []).includes(true), null, { timeout: 5000 }); persisted = true; } catch {}
   const why = persisted ? null : await page.evaluate(() => { const n = performance.getEntriesByType('navigation')[0]; return n && n.notRestoredReasons ? JSON.stringify(n.notRestoredReasons) : null; }).catch(() => null);
   let canvasPaintsAfter = 0, nonBlank = false, mode = null;
+  if (!hasHero) {
+    await sleep(800); off();
+    const ev = await page.evaluate(() => ({ pageshows: window.__pageshows })).catch(() => ({}));
+    return { persisted, errors, hero: false, canvasPaintsAfter: null, nonBlank: null, mode: null, pageshows: ev.pageshows, contextEvents: [], notRestoredReasons: why };
+  }
   try {
     await page.waitForFunction(b => window.__hero && window.__hero.state().mode === 'gl' && window.__hero.frameCount() > b, before, { timeout: 8000 });
     await sleep(1500);
@@ -281,7 +288,7 @@ export async function bfcacheRestore(page, url, opts = {}) {
   } catch (e) { errors.push('check: ' + e.message.split('\n')[0]); }
   off();
   const ev = await page.evaluate(() => ({ pageshows: window.__pageshows, gl: window.__glEvents || [] })).catch(() => ({}));
-  return { persisted, errors, canvasPaintsAfter, nonBlank, mode, pageshows: ev.pageshows, contextEvents: ev.gl, notRestoredReasons: why };
+  return { persisted, errors, hero: true, canvasPaintsAfter, nonBlank, mode, pageshows: ev.pageshows, contextEvents: ev.gl, notRestoredReasons: why };
 }
 
 // ---------- noWebGL ----------
