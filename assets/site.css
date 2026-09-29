@@ -133,6 +133,9 @@ p{margin:0;text-wrap:pretty}
 }
 /* a short screen: as on the phone, the welcome banner has scrolled away, so the product fits one screen */
 @media (max-height:840px){.sp-term .banner{display:none}}
+/* with the banner hidden, the opening question leads the session instead of hanging off nothing as a reply */
+@media (max-height:840px){.sp-term .banner+.sub{padding-left:0;text-indent:0;color:#d4d4d4}.sp-term .banner+.sub::before{content:none}}
+@container (max-width:600px){.sp-term .banner+.sub{padding-left:0;text-indent:0;color:#d4d4d4}.sp-term .banner+.sub::before{content:none}}
 
 /* ---------- Modelproof: a capture of the live board ----------
    Desktop: captured 840px wide at the board's own 100% zoom and shown 1:1, so the window crops the board instead of

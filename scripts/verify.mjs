@@ -405,7 +405,7 @@ async function stepScroll(page, { frac = 0.6, wait = 250, onStep } = {}) {
 const VIS_SELECTOR = 'header,nav,main,footer,h1,h2,h3,h4,h5,h6,p,li,dt,dd,a,button,figcaption,summary,label,time,' +
   'img,picture,video,svg,figure,[data-total],.win,.mat,.dp-rows path[data-w]';
 
-async function visibilityRun(browser, url, ctxOpts, jsOff) {
+async function visibilityRun(browser, url, ctxOpts, jsOff, openPanels = false) {
   const { ctx, page } = await fresh(browser, ctxOpts);
   try {
     await page.goto(url, { waitUntil: 'load' });
@@ -413,6 +413,11 @@ async function visibilityRun(browser, url, ctxOpts, jsOff) {
     if (PLANT_CSS) await page.evaluate(css => { const s = document.createElement('style'); s.textContent = css; document.head.append(s); }, PLANT_CSS);
     await page.evaluate(() => document.fonts && document.fonts.ready).catch(() => {});
     await sleep(jsOff ? 300 : 1200);
+    // open every disclosure first, so text that only shows in an open panel is checked too
+    if (openPanels) {
+      await page.evaluate(() => { for (const b of document.querySelectorAll('[aria-expanded="false"][aria-controls]')) b.click(); });
+      await sleep(900);
+    }
     await page.evaluate(PAGE_LIB);
     const probe = () => page.evaluate(VIS_PROBE, { jsOff, selector: VIS_SELECTOR, finish: false });
     await stepScroll(page, { onStep: probe });
@@ -928,6 +933,11 @@ async function main() {
         const r = await visibilityRun(gpu, P.url, { reducedMotion: 'reduce' }, false);
         visLine(P.label, '3 reduced-motion visibility', r);
         if (P.role === 'home') line(r.gridCells > 0 && r.gridOk === r.gridCells, P.label, '9 DATproof grid (reduced mo.)', r.gridCells ? `${r.gridOk}/${r.gridCells} cells visible` : 'no grid cells (.dp-rows path[data-w])');
+      });
+      if (P.role === 'home') await guard(P.label, '3b reduced-motion, panels open', async () => {
+        const r = await visibilityRun(gpu, P.url, { reducedMotion: 'reduce' }, false, true);
+        visLine(P.label, '3b reduced-motion, panels open', r);
+        if (r.closed) line(false, P.label, '3b panels opened', `${r.closed} elements still in closed panels after clicking every toggle`);
       });
       await guard(P.label, '4 JS-off visibility', async () => {
         const r = await visibilityRun(gpu, P.url, { javaScriptEnabled: false }, true);
