@@ -315,6 +315,50 @@ export async function noWebGL(page, url, opts = {}) {
   return { fallback: fallback && r.skyCss === 'block' && +r.canvasOpacity === 0, h1Visible, errors, ...r };
 }
 
+// ---------- fontMetricFallback ----------
+// Loads the page twice: once as is, once with canvas text metrics that lack fontBoundingBoxAscent (as in engines
+// without font metrics). Every float uniform the hero sends is watched; a value that isn't a finite number is recorded
+// with its uniform's name. Returns the horizon (uBase) each load drew with, so the fallback can be compared to the real
+// metric, plus mode, frames drawn and errors.
+export async function fontMetricFallback(page, url, { stub = true, settleMs = 1500 } = {}) {
+  const { errors, off } = collectErrors(page);
+  await page.addInitScript(stub => {
+    if (stub) {
+      const mt = CanvasRenderingContext2D.prototype.measureText;
+      CanvasRenderingContext2D.prototype.measureText = function (t) {
+        const m = mt.call(this, t);
+        return { width: m.width, actualBoundingBoxLeft: m.actualBoundingBoxLeft, actualBoundingBoxRight: m.actualBoundingBoxRight,
+          actualBoundingBoxAscent: m.actualBoundingBoxAscent, actualBoundingBoxDescent: m.actualBoundingBoxDescent };
+      };
+    }
+    const P = WebGL2RenderingContext.prototype, names = new WeakMap(), gul = P.getUniformLocation;
+    const bad = window.__badUniforms = [], last = window.__lastUniforms = {};
+    let calls = 0; window.__uniformCalls = () => calls;
+    P.getUniformLocation = function (p, n) { const l = gul.call(this, p, n); if (l) names.set(l, n); return l; };
+    for (const k of ['uniform1f', 'uniform2f', 'uniform3f', 'uniform4f', 'uniform1fv', 'uniform2fv', 'uniform3fv', 'uniform4fv']) {
+      const f = P[k];
+      P[k] = function (l, ...a) {
+        calls++;
+        const vals = k.endsWith('v') ? Array.from(a[0] || []) : a;
+        const n = names.get(l) || '?';
+        if (vals.some(v => !Number.isFinite(v))) { if (bad.length < 20) bad.push(`${n}=${vals.join(',')}`); }
+        else last[n] = vals;
+        return f.call(this, l, ...a);
+      };
+    }
+  }, stub);
+  await page.goto(url, { waitUntil: 'load' });
+  let st = null;
+  try { st = await heroReady(page); } catch (e) { errors.push('check: hero never drew: ' + e.message.split('\n')[0]); }
+  await sleep(settleMs);
+  const r = await page.evaluate(() => ({
+    bad: window.__badUniforms, calls: window.__uniformCalls(), uBase: (window.__lastUniforms.uBase || [])[0], uHz: (window.__lastUniforms.uHz || [])[0],
+    canvasH: document.querySelector('canvas.sky-gl').getBoundingClientRect().height, frames: window.__hero.frameCount(), mode: window.__hero.state().mode,
+  }));
+  off();
+  return { ...r, errors, ready: !!st };
+}
+
 // ---------- frameCounts ----------
 // Frames the hero draws per second in each state. Expect ~30 idle, ~60 while the pointer moves or the page scrolls,
 // and 0 when hidden, handed off, off-screen or reduced. Chrome under Playwright never reports a background tab as

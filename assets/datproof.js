@@ -7,6 +7,8 @@
   var W = window, doc = document, rows = doc.getElementById("dpRows");
   if (!rows) return;
   var NW = +rows.getAttribute("data-weeks");
+  /* build geometry in SVG units, written by the build script: one week = PITCH wide, its cell = CELL wide */
+  var PITCH = +rows.getAttribute("data-pitch"), CELL = +rows.getAttribute("data-cell");
   var mm = function (q) { return W.matchMedia ? W.matchMedia(q) : { matches: false }; };
 
   /* ---------- one-time fill ---------- */
@@ -62,7 +64,8 @@
   }
 
   /* ---------- hover readout: week, row, BTC ---------- */
-  if (!mm("(hover: hover) and (pointer: fine)").matches) return;
+  /* no geometry, no readout: a guess could point at the wrong week */
+  if (!(PITCH > 0 && CELL > 0) || !mm("(hover: hover) and (pointer: fine)").matches) return;
   var data;
   try { data = JSON.parse(doc.getElementById("dpData").textContent); } catch (e) { return; }
   var svgs = rows.querySelectorAll("svg"), labels = rows.querySelectorAll(".dp-label"), box = rows.parentNode;
@@ -85,9 +88,8 @@
       if (e.clientY >= r.top - 3 && e.clientY <= r.bottom + 3) break;
     }
     if (k === svgs.length || e.clientX < r.left || e.clientX > r.right) return hide();
-    /* 5 = one week in SVG units (PITCH in scripts/build-datproof.mjs) */
     var vw = svgs[k].viewBox.baseVal.width, px = r.width / vw;
-    var w = Math.max(0, Math.min(NW - 1, Math.floor((e.clientX - r.left) / px / 5)));
+    var w = Math.max(0, Math.min(NW - 1, Math.floor((e.clientX - r.left) / px / PITCH)));
     var d = new Date(t0 + w * 6048e5), v = vals[k][w];
     if (!tip) {
       tip = doc.createElement("div");
@@ -102,9 +104,9 @@
     tip.innerHTML = names[k] + " <span>· week of " + MON[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear() +
       " ·</span> " + (v ? fmt(v) + " BTC" : "no buys");
     var b = box.getBoundingClientRect(), tw = tip.offsetWidth;
-    /* ring the hovered week: 4 of 5 units is the cell (CELL in the build script) */
-    mark.style.cssText = "left:" + (r.left - b.left + w * 5 * px).toFixed(1) + "px;top:" + (r.top - b.top).toFixed(1) +
-      "px;width:" + (4 * px).toFixed(1) + "px;height:" + r.height + "px";
+    /* ring the hovered week: the cell, not the gap after it */
+    mark.style.cssText = "left:" + (r.left - b.left + w * PITCH * px).toFixed(1) + "px;top:" + (r.top - b.top).toFixed(1) +
+      "px;width:" + (CELL * px).toFixed(1) + "px;height:" + r.height + "px";
     mark.classList.add("on");
     var x = Math.max(8, Math.min(b.width - tw - 8, e.clientX - b.left - tw / 2));
     tip.style.transform = "translate(" + Math.round(x) + "px," + Math.round(r.top - b.top - tip.offsetHeight - 8) + "px)";

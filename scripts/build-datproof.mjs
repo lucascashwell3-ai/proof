@@ -34,6 +34,7 @@ export const THRESHOLDS = [100, 1000, 10000];
 export const level = (v) => (v <= 0 ? 0 : 1 + THRESHOLDS.filter((t) => v >= t).length);
 
 // Geometry in SVG user units, stretched to each row's CSS box: one week = PITCH, one cell = CELL wide.
+// Both are written onto #dpRows (data-pitch, data-cell) so the hover readout reads them, never a copy.
 const PITCH = 5;
 const CELL = 4;
 // The fill replays the grid in chunks of CHUNK weeks: one path per (chunk, level), and the
@@ -218,7 +219,7 @@ export function renderFragment(m) {
 </div>
 <div class="dp-act">
 <div class="dp-act-h"><p class="dp-h">Purchase activity</p><p class="dp-wk">${m.weeks} weeks · ${m.count} purchases</p></div>
-<div class="dp-rows" id="dpRows" role="img" aria-label="${esc(label)}" data-weeks="${m.weeks}">
+<div class="dp-rows" id="dpRows" role="img" aria-label="${esc(label)}" data-weeks="${m.weeks}" data-pitch="${PITCH}" data-cell="${CELL}">
 <div class="dp-axis" aria-hidden="true">${axis}</div>
 ${rows}
 <span class="dp-head" aria-hidden="true"></span>

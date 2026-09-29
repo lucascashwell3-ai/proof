@@ -402,25 +402,33 @@ function startGL() {
       const cs = getComputedStyle(h1), fs = parseFloat(cs.fontSize);
       mctx.font = `${cs.fontWeight} ${fs * sy}px ${cs.fontFamily}`;
       mctx.fillStyle = '#f00'; mctx.textBaseline = 'alphabetic'; mctx.textAlign = 'left';
-      const asc = mctx.measureText('W').fontBoundingBoxAscent / sy;
       const node = h1.firstChild, text = node.textContent, rg = D.createRange();
-      let base = 0;
+      /* top of a letter's box to its baseline, read from the page: a zero-size probe sits on the baseline */
+      const dropOf = (el, tn) => {
+        const pb = D.createElement('i'); pb.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+        el.prepend(pb); const b = pb.getBoundingClientRect().bottom; pb.remove();
+        rg.setStart(tn, 0); rg.setEnd(tn, 1); return b - rg.getBoundingClientRect().top;
+      };
+      /* the font's own ascent where the browser reports it; engines without font metrics measure the page instead */
+      let asc = mctx.measureText('W').fontBoundingBoxAscent / sy;
+      if (!Number.isFinite(asc)) asc = dropOf(h1, node);
+      let base = NaN;
       for (let i = 0; i < text.length; i++) {
         rg.setStart(node, i); rg.setEnd(node, i + 1);
         const r = rg.getBoundingClientRect();
         base = r.top - cr.top + asc;
         mctx.fillText(text[i], (r.left - cr.left) * sx, base * sy);
       }
-      hz = 1 - base / cr.height;
-      capH = mctx.measureText('W').actualBoundingBoxAscent / MH;   // cap height, in canvas units
+      /* nothing that isn't a number reaches the GPU: keep the last good horizon and cap height instead */
+      const hz1 = 1 - base / cr.height, cap1 = mctx.measureText('W').actualBoundingBoxAscent / MH;   // cap height, in canvas units
+      if (Number.isFinite(hz1)) hz = hz1;
+      if (Number.isFinite(cap1)) capH = cap1;
       /* the small line goes in the green channel: it casts no light, the contrast guard just needs its shape */
       const bs = getComputedStyle(byl), bn = byl.firstChild, bt = bn.textContent;
       mctx.font = `${bs.fontWeight} ${parseFloat(bs.fontSize) * sy}px ${bs.fontFamily}`; mctx.fillStyle = '#0f0';
-      /* its baseline, read from the page itself (a zero-size probe sits on it), not inferred from font metrics:
+      /* its baseline, read from the page itself, not inferred from font metrics:
          at this size the two disagree by a pixel or so, and the guard has to sit exactly on the letters */
-      const pb = D.createElement('i'); pb.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-      byl.prepend(pb); const pbB = pb.getBoundingClientRect().bottom; pb.remove();
-      rg.setStart(bn, 0); rg.setEnd(bn, 1); const drop = pbB - rg.getBoundingClientRect().top;   // top of a letter's box to its baseline
+      const drop = dropOf(byl, bn);
       for (let i = 0; i < bt.length; i++) {
         rg.setStart(bn, i); rg.setEnd(bn, i + 1);
         const r = rg.getBoundingClientRect();

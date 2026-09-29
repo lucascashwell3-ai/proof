@@ -9,15 +9,17 @@
 //   --lh-runs  Lighthouse runs per page (median reported). Default 5.
 //   --quick    skip Lighthouse and the sunset scan.
 //   --sheet    also write the sunset scan's contact sheet to this file.
+//   --plant-css <css>  add this CSS to every page in the visibility runs (checks 3 and 4), to prove they can fail.
 //
-// Output: one line per check, "PASS|FAIL  <page>  <check>  <measured value>", then a summary line.
-// Exit code 0 only when every check passes. Progress notes go to stderr, prefixed "#".
+// Output: one line per check, "PASS|FAIL|SKIP  <page>  <check>  <measured value>", then a summary line.
+// SKIP is used for exactly one case: a LinkedIn profile link, which answers 999 to every automated client.
+// Exit code 0 only when no check fails; skips don't fail, and the summary counts them. Progress notes go to stderr, prefixed "#".
 
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { serve } from './serve.mjs';
-import { sunsetScan, gpuFrameTime, bfcacheRestore, noWebGL, heroReady, frameCounts, gpuLaunchOptions, bfcacheLaunchOptions } from './checks/hero.mjs';
+import { sunsetScan, gpuFrameTime, bfcacheRestore, noWebGL, heroReady, frameCounts, fontMetricFallback, gpuLaunchOptions, bfcacheLaunchOptions } from './checks/hero.mjs';
 import { csvTotal, pageTotal } from './checks/datproof.mjs';
 
 const REPO = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
@@ -33,6 +35,7 @@ const QUICK = flag('--quick');
 const LH_RUNS = Math.max(1, parseInt(opt('--lh-runs', '5'), 10) || 5);
 const SHEET = opt('--sheet', null);
 const PAGE_PATHS = opt('--pages', '/,/who/').split(',').map(s => s.trim()).filter(Boolean);
+const PLANT_CSS = opt('--plant-css', null);
 
 // ---------- budgets ----------
 const B = {
@@ -45,9 +48,11 @@ const PHONE = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isM
 // ---------- output ----------
 const results = [];
 let PW = 4;
+// ok: true = PASS, false = FAIL, 'skip' = SKIP (not machine-checkable; counted apart, never as a pass)
 function line(ok, page, check, value) {
-  const status = ok ? 'PASS' : 'FAIL';
-  results.push({ ok, page, check, value });
+  const skip = ok === 'skip';
+  const status = skip ? 'SKIP' : ok ? 'PASS' : 'FAIL';
+  results.push({ ok: !!ok && !skip, skip, page, check, value });
   process.stdout.write(`${status}  ${page.padEnd(PW)}  ${check.padEnd(30)}  ${String(value).replace(/\s+/g, ' ').trim()}\n`);
 }
 const cut = (s, n = 160) => { s = String(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
@@ -110,7 +115,10 @@ const PAGE_LIB = () => {
     const parts = m[1].split(',');
     return parts.length === 4 && parseFloat(parts[3]) === 0;
   };
-  const TEXT = /^(h1|h2|h3|p|li|a|button)$/i;
+  const TEXT = /^(h[1-6]|p|li|dt|dd|a|button|figcaption|summary|label|blockquote|td|th)$/i;
+  // an element with a text node of its own (not only text inside its children)
+  const own = el => { for (const n of el.childNodes) if (n.nodeType === 3 && n.nodeValue.trim()) return true; return false; };
+  const texty = el => TEXT.test(el.tagName) || own(el);
   // why an element can't be seen, or null when it can
   const hiddenWhy = (el, noClip) => {
     for (let a = el; a && a.nodeType === 1; a = a.parentElement)
@@ -137,21 +145,45 @@ const PAGE_LIB = () => {
       if (R - L < 0.5 || Bm - T < 0.5) return 'clipped to zero by ' + sel(a);
       if (ar && (zeroClipPath(ac.clipPath, ar.width, ar.height) || zeroClip(ac))) return 'clipped to zero by clip on ' + sel(a);
     }
-    if (TEXT.test(el.tagName) && transparent(c.color) && !el.querySelector('img,svg,picture,video,canvas')) return 'text colour transparent';
+    if (texty(el) && transparent(c.color) && !el.querySelector('img,svg,picture,video,canvas')) return 'text colour transparent';
     return null;
   };
-  window.__vlib = { cs, sel, isSR, hiddenWhy, TEXT };
+  // the box an element paints in: its own box cut by every ancestor that clips overflow (html/body excepted)
+  const paintBox = el => {
+    const r = el.getBoundingClientRect();
+    let L = r.left, T = r.top, R = r.right, Bm = r.bottom;
+    for (let a = el.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement) {
+      const ac = cs(a);
+      const cx = ac.overflowX !== 'visible', cy = ac.overflowY !== 'visible';
+      if (!cx && !cy) continue;
+      const ar = a.getBoundingClientRect();
+      if (cx) { L = Math.max(L, ar.left); R = Math.min(R, ar.right); }
+      if (cy) { T = Math.max(T, ar.top); Bm = Math.min(Bm, ar.bottom); }
+    }
+    return { r, L, T, R, B: Bm };
+  };
+  window.__vlib = { cs, sel, isSR, hiddenWhy, TEXT, own, texty, paintBox };
 };
 
 // Visibility probe. Called at every scroll step; keeps each element's best state, so an element passes if it was
 // fully visible at some point of the scroll (e.g. the hero word at the top, a section once it is in view).
+// Collects from the whole <body>: every element in `selector`, plus any element with a text node of its own
+// (so span, em, b, time and every other bit of text count with no list to keep up). Inside an <svg> only the
+// DATproof grid cells and <text> count; <title>/<desc> and friends never render. Collected again at every step, so
+// content the page's own script writes later (the footer's measured numbers) is checked too; an element the script
+// has since replaced is dropped at the end and counted apart.
 const VIS_PROBE = ({ jsOff, selector, finish }) => {
-  const { sel, isSR, hiddenWhy, TEXT } = window.__vlib;
-  const st = window.__vis || (window.__vis = { els: null, best: new Map() });
-  if (!st.els) {
-    const set = new Set();
-    for (const root of document.querySelectorAll('main, footer')) for (const el of root.querySelectorAll(selector)) set.add(el);
-    st.els = [...set];
+  const { sel, isSR, hiddenWhy, TEXT, own } = window.__vlib;
+  const st = window.__vis || (window.__vis = { set: new Set(), els: [], best: new Map() });
+  {
+    const NEVER = /^(script|style|template|title|desc|metadata|br|wbr|source|track|param|option)$/i;
+    for (const el of document.body.querySelectorAll('*')) {
+      if (st.set.has(el) || NEVER.test(el.tagName) || el.closest('script,style,template') || el.id === '__hitpe') continue;
+      const svg = el.tagName.toLowerCase() !== 'svg' && el.closest('svg');
+      if (svg) { if (el.matches('.dp-rows path[data-w]') || (/^(text|tspan)$/i.test(el.tagName) && own(el))) st.set.add(el); continue; }
+      if (el.matches(selector) || own(el)) st.set.add(el);
+    }
+    st.els = [...st.set];
   }
   // closed disclosures: aria-expanded=false + aria-controls, and closed <details> (summary stays visible)
   const closed = new Set();
@@ -188,9 +220,10 @@ const VIS_PROBE = ({ jsOff, selector, finish }) => {
     if (rn >= rp) st.best.set(el, state);
   }
   if (!finish) return null;
-  let checked = 0, exempt = 0, closedN = 0, empty = 0, crop = 0, toggle = 0, gridCells = 0, gridOk = 0;
+  let checked = 0, exempt = 0, closedN = 0, empty = 0, crop = 0, toggle = 0, gridCells = 0, gridOk = 0, gone = 0;
   const fails = [];
   for (const el of st.els) {
+    if (!el.isConnected) { gone++; continue; }
     const s = st.best.get(el);
     const isCell = el.matches('.dp-rows path[data-w]');
     if (isCell) gridCells++;
@@ -203,8 +236,81 @@ const VIS_PROBE = ({ jsOff, selector, finish }) => {
     if (s === 'ok') { if (isCell) gridOk++; continue; }
     fails.push({ el: sel(el), why: s ? s.why : 'not connected', cell: isCell });
   }
+  const hit = st.hit || { tested: 0, core: 0, other: 0, otherOf: 0, fails: [] };
+  for (const f of hit.fails) fails.push({ el: f.el, why: f.why, cell: false });
+  const kinds = {};
+  for (const el of st.els) { if (!el.isConnected) continue; const k = el.tagName.toLowerCase(); kinds[k] = (kinds[k] || 0) + 1; }
   delete window.__vis;
-  return { total: st.els.length, checked, exempt, closed: closedN, empty, crop, toggle, gridCells, gridOk, fails };
+  return { total: st.els.length - gone, gone, checked, exempt, closed: closedN, empty, crop, toggle, gridCells, gridOk, fails,
+    hit: { tested: hit.tested, core: hit.core, other: hit.other, otherOf: hit.otherOf, fails: hit.fails.length },
+    landmarks: ['header', 'nav', 'main', 'footer', 'h1', 'dt', 'dd'].map(k => `${k} ${kinds[k] || 0}`).join(', ') };
+};
+
+// ---------- paint check: is the element really what is drawn at its centre? ----------
+// For every text element that passed the style checks (no sampling: the cost is per scroll step, not per element),
+// scroll it to the middle of the viewport, then confirm its
+// painted box lies inside the document, has a size, and that the topmost painted element at the centre of that box
+// is the element itself, something inside it, or an ancestor within the same component. pointer-events is forced
+// on for the test, so hit-testing follows paint order only; layers at opacity ~0 paint nothing and are passed over.
+const HIT_SETUP = () => {
+  const { texty } = window.__vlib;
+  const st = window.__vis;
+  const CORE = /^(h[1-6]|a|button|dt|dd|summary|label|figcaption)$/i;
+  const list = [];
+  let core = 0, other = 0, otherOf = 0;
+  for (const el of st.els) {
+    if (!el.isConnected || st.best.get(el) !== 'ok' || el.closest('svg') || !texty(el)) continue;
+    if (CORE.test(el.tagName)) core++; else { other++; otherOf++; }
+    list.push(el);
+  }
+  const s = document.createElement('style'); s.id = '__hitpe';
+  s.textContent = '*{pointer-events:auto!important}';
+  document.head.append(s);
+  st.hit = { list, done: new Set(), tries: new Map(), core, other, otherOf, tested: 0, fails: [] };
+  scrollTo(0, 0);
+  return list.length;
+};
+const HIT_STEP = () => {
+  const { cs, sel, paintBox } = window.__vlib;
+  const h = window.__vis.hit;
+  const vw = innerWidth, vh = innerHeight, de = document.documentElement;
+  const docW = Math.max(de.scrollWidth, document.body.scrollWidth), docH = Math.max(de.scrollHeight, document.body.scrollHeight);
+  const COMP = 'header,nav,footer,section,article,aside,figure,dl,ul,ol,table,form,.win,.mat';
+  const faint = el => { let o = 1; for (let a = el; a && a.nodeType === 1; a = a.parentElement) o *= parseFloat(cs(a).opacity); return o < 0.05; };
+  const test = (el, b) => {
+    const { r } = b;
+    if (r.width < 0.5 || r.height < 0.5) return `size ${Math.round(r.width)}x${Math.round(r.height)} at paint`;
+    const L = b.L + scrollX, T = b.T + scrollY, R = b.R + scrollX, B = b.B + scrollY;
+    if (R - L < 0.5 || B - T < 0.5) return 'painted box clipped to nothing';
+    if (L < -0.5 || T < -0.5 || R > docW + 0.5 || B > docH + 0.5) return `painted box outside the document (x ${Math.round(L)}..${Math.round(R)} of ${docW}, y ${Math.round(T)}..${Math.round(B)} of ${docH})`;
+    const x = (Math.max(b.L, 0) + Math.min(b.R, vw)) / 2, y = (Math.max(b.T, 0) + Math.min(b.B, vh)) / 2;
+    if (x <= 0 || y <= 0 || x >= vw || y >= vh) return 'not in view after scrolling to it';
+    const top = document.elementsFromPoint(x, y).find(e => !faint(e));
+    if (!top) return 'nothing painted at its centre';
+    if (top === el || el.contains(top)) return null;
+    const comp = (el.parentElement && el.parentElement.closest(COMP)) || document.body;
+    if (top.contains(el) && comp.contains(top)) return null;
+    return 'covered by ' + sel(top);
+  };
+  let next = null;
+  for (const el of h.list) {
+    if (h.done.has(el)) continue;
+    if (!el.isConnected) { h.done.add(el); continue; }   // replaced by the page's script mid-pass
+    const b = paintBox(el);
+    const cy = (b.T + b.B) / 2;
+    const tall = b.B - b.T > vh * 0.7;
+    const inBand = tall ? b.T < vh * 0.5 && b.B > vh * 0.5 : b.T >= vh * 0.15 && b.B <= vh * 0.85;
+    const tries = h.tries.get(el) || 0;
+    if (inBand || tries >= 1) {
+      // a second look where it could not be centred (top or bottom of the page): test it where it is
+      h.done.add(el); h.tested++;
+      const why = test(el, b);
+      if (why) h.fails.push({ el: sel(el), why: 'paint: ' + why });
+    } else if (!next) { next = el; h.tries.set(el, tries + 1); }
+  }
+  if (!next) { document.getElementById('__hitpe')?.remove(); return { left: 0 }; }
+  const b = next.getBoundingClientRect();
+  return { left: h.list.length - h.done.size, y: Math.max(0, Math.round(scrollY + (b.top + b.bottom) / 2 - vh / 2)) };
 };
 
 // Horizontal overflow probe at phone width: page scroll width, and the element whose visible box (after clipping by
@@ -295,18 +401,32 @@ async function stepScroll(page, { frac = 0.6, wait = 250, onStep } = {}) {
   if (onStep) await onStep();
 }
 
-const VIS_SELECTOR = 'h1,h2,h3,p,li,a,button,img,svg,[data-total],.win,.mat,figure,.dp-rows path[data-w]';
+// landmarks and every kind of content element; VIS_PROBE adds any element with its own text on top of these
+const VIS_SELECTOR = 'header,nav,main,footer,h1,h2,h3,h4,h5,h6,p,li,dt,dd,a,button,figcaption,summary,label,time,' +
+  'img,picture,video,svg,figure,[data-total],.win,.mat,.dp-rows path[data-w]';
 
 async function visibilityRun(browser, url, ctxOpts, jsOff) {
   const { ctx, page } = await fresh(browser, ctxOpts);
   try {
     await page.goto(url, { waitUntil: 'load' });
+    // appended directly: page.addStyleTag waits for a load event that never comes with JS off
+    if (PLANT_CSS) await page.evaluate(css => { const s = document.createElement('style'); s.textContent = css; document.head.append(s); }, PLANT_CSS);
     await page.evaluate(() => document.fonts && document.fonts.ready).catch(() => {});
     await sleep(jsOff ? 300 : 1200);
     await page.evaluate(PAGE_LIB);
     const probe = () => page.evaluate(VIS_PROBE, { jsOff, selector: VIS_SELECTOR, finish: false });
     await stepScroll(page, { onStep: probe });
     await sleep(jsOff ? 200 : 3200);   // at the top again: past the hero's opening fade
+    await probe();
+    // paint pass: walk the page again, centring each sampled element, and hit-test it
+    await page.evaluate(HIT_SETUP);
+    await sleep(jsOff ? 150 : 400);
+    for (let i = 0; i < 500; i++) {
+      const s = await page.evaluate(HIT_STEP);
+      if (!s.left) break;
+      await page.evaluate(y => scrollTo(0, y), s.y);
+      await sleep(jsOff ? 150 : 400);
+    }
     return await page.evaluate(VIS_PROBE, { jsOff, selector: VIS_SELECTOR, finish: true });
   } finally { await ctx.close(); }
 }
@@ -321,10 +441,14 @@ function visLine(label, check, r) {
   if (r.empty) extra.push(`${r.empty} empty`);
   if (r.crop) extra.push(`${r.crop} aria-hidden, cropped by their window`);
   if (r.toggle) extra.push(`${r.toggle} in disclosure toggles hidden without JS`);
-  const ok = r.fails.length === 0 && r.checked > 0;
-  line(ok, label, check, `${r.checked - r.fails.length}/${r.checked} visible` + (extra.length ? ` (skipped: ${extra.join(', ')})` : '') +
+  if (r.gone) extra.push(`${r.gone} replaced by the page's script, their replacements checked`);
+  const ok = r.fails.length === 0 && r.checked > 0 && r.hit.tested > 0;
+  const styleFails = r.fails.length - r.hit.fails;
+  line(ok, label, check, `whole body, ${r.total} elements (${r.landmarks}): ${r.checked - styleFails}/${r.checked} visible` +
+    (extra.length ? ` (skipped: ${extra.join(', ')})` : '') +
+    `; paint hit-test ${r.hit.tested - r.hit.fails}/${r.hit.tested} (every text element that passed: ${r.hit.core} headings/links/buttons/dt/dd + ${r.hit.other} other)` +
     (cellFails ? `; ${cellFails} grid cells hidden` : '') + (shown ? `; failures: ${shown}` + (fl.length > 4 ? ` +${fl.length - 4} more` : '') : '') +
-    (r.checked === 0 ? '; nothing found inside main/footer' : ''));
+    (r.checked === 0 ? '; nothing found in body' : ''));
 }
 
 // ---------- page checks ----------
@@ -485,6 +609,62 @@ async function phoneOverflow(browser, P, wantLcp) {
   } finally { await ctx.close(); }
 }
 
+// ---------- DATproof grid fill, motion on ----------
+// The grid is complete in the HTML; with motion on, the script hides the cells until the grid scrolls into view,
+// then fills them once. Proves: hidden before entering view, filling just after, all visible 3 s later, and
+// scrolling away and back never replays it (every cell stays at full opacity on every frame after returning).
+async function gridFillCheck(browser, P) {
+  const { ctx, page } = await fresh(browser, { ...DESK, reducedMotion: 'no-preference' });
+  const errors = watchErrors(page, P.url);
+  try {
+    await page.goto(P.url, { waitUntil: 'load' });
+    await sleep(800);   // the observer's first report arms the fill
+    const count = () => page.evaluate(() => {
+      const rows = document.getElementById('dpRows'); if (!rows) return null;
+      const cells = [...rows.querySelectorAll('path[data-w]')], r = rows.getBoundingClientRect();
+      let hidden = 0, part = 0, running = 0;
+      for (const c of cells) {
+        let o = 1; for (let a = c; a && a.nodeType === 1; a = a.parentElement) o *= parseFloat(getComputedStyle(a).opacity);
+        if (o < 0.01) hidden++; else if (o < 0.99) part++;
+        running += c.getAnimations().filter(a => a.playState === 'running').length;
+      }
+      return { n: cells.length, hidden, part, running, inView: r.top < innerHeight && r.bottom > 0 };
+    });
+    const before = await count();
+    if (!before) { line(false, P.label, '9 DATproof grid fill (motion)', 'no #dpRows on page'); return; }
+    await page.evaluate(() => document.getElementById('dpRows').scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await sleep(250);
+    const during = await count();
+    await sleep(3000);
+    const after = await count();
+    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await sleep(800);
+    const again = await page.evaluate(async () => {
+      const rows = document.getElementById('dpRows'), cells = [...rows.querySelectorAll('path[data-w]')];
+      rows.scrollIntoView({ block: 'center', behavior: 'instant' });
+      let minO = 1, frames = 0, running = 0;
+      const t0 = performance.now();
+      while (performance.now() - t0 < 1500) {
+        await new Promise(r => requestAnimationFrame(r)); frames++;
+        let run = 0;
+        for (const c of cells) {
+          let o = 1; for (let a = c; a && a.nodeType === 1; a = a.parentElement) o *= parseFloat(getComputedStyle(a).opacity);
+          minO = Math.min(minO, o); run += c.getAnimations().filter(a => a.playState === 'running').length;
+        }
+        running = Math.max(running, run);
+      }
+      return { minO: Math.round(minO * 100) / 100, frames, running };
+    });
+    const filled = !before.inView && before.n > 0 && before.hidden === before.n && during.hidden + during.part > 0;
+    const ok = filled && after.hidden === 0 && after.part === 0 && again.minO >= 0.99 && again.running === 0 && !errors.length;
+    line(ok, P.label, '9 DATproof grid fill (motion)',
+      `before view ${before.hidden}/${before.n} hidden${before.inView ? ' (grid already in view at load)' : ''}; ` +
+      `250 ms after entering ${during.hidden} hidden, ${during.part} fading; 3 s later ${after.hidden}/${after.n} hidden, ${after.part} fading; ` +
+      `away and back: min cell opacity ${again.minO} over ${again.frames} frames, ${again.running} animations running; ${errors.length} errors` +
+      (errors.length ? ': ' + errors.slice(0, 2).join(' | ') : ''));
+  } finally { await ctx.close(); }
+}
+
 // ---------- hero ----------
 async function hasHero(page) {
   try { await page.waitForSelector('canvas.sky-gl', { state: 'attached', timeout: 3000 }); } catch { return false; }
@@ -499,7 +679,7 @@ async function heroChecks(gpu, P) {
     let ok = false;
     try { await page.goto(P.url, { waitUntil: 'load' }); ok = await hasHero(page); } finally { await ctx.close(); }
     if (!ok) {
-      for (const c of ['8b sunset scan', '8c gpu frame 1440x900', '8c gpu frame 390x844', '8d no-WebGL fallback', '8e frames off-screen/handoff/RM'])
+      for (const c of ['8b sunset scan', '8c gpu frame 1440x900', '8c gpu frame 390x844', '8d no-WebGL fallback', '8e frames off-screen/handoff/RM', '8f font-metric fallback'])
         if (!(QUICK && c.startsWith('8b'))) line(false, L, c, 'no hero on page (canvas.sky-gl / window.__hero missing)');
       return;
     }
@@ -516,7 +696,8 @@ async function heroChecks(gpu, P) {
         (f.length ? ': p ' + f.slice(0, 8).map(x => `${x.p}(${x.darkWord}+${x.darkLine}px)`).join(' ') : '') + (SHEET ? `; sheet ${SHEET}` : ''));
     } finally { await ctx.close(); }
   });
-  // 1440x900 is gated at dpr 2 (a laptop's real pixel count; the hero caps its buffer at 1.5x); dpr 1 printed for reference
+  // The budget is on the MEAN GPU time per frame, gated at 1440x900 dpr 2 (a laptop's real pixel count; the hero caps its
+  // buffer at 1.5x). p95 is printed beside every mean, and dpr 1 is printed for reference, so neither hides.
   const gpuRun = async o => {
     const { ctx, page } = await fresh(gpu, o);
     try { await page.goto(P.url, { waitUntil: 'load' }); return await gpuFrameTime(page); } finally { await ctx.close(); }
@@ -526,8 +707,8 @@ async function heroChecks(gpu, P) {
       const r = await gpuRun(o);
       if (r.error) { line(false, L, c, r.error); return; }
       const r1 = ref ? await gpuRun(ref) : null;
-      line(r.mean <= budget && r.frames > 0, L, c, `mean ${r.mean} ms, p95 ${r.p95} ms (budget ${budget}) over ${r.frames} frames at dpr ${r.dpr}` +
-        (r1 && !r1.error ? `; dpr ${r1.dpr}: mean ${r1.mean}, p95 ${r1.p95}` : '') + `; ${cut(r.renderer, 48)}`);
+      line(r.mean <= budget && r.frames > 0, L, c, `dpr ${r.dpr}: mean ${r.mean} ms, p95 ${r.p95} ms over ${r.frames} frames (budget: mean ≤ ${budget} ms at dpr ${r.dpr})` +
+        (r1 ? r1.error ? `; dpr 1: ${r1.error}` : `; dpr ${r1.dpr} for reference: mean ${r1.mean} ms, p95 ${r1.p95} ms` : '') + `; ${cut(r.renderer, 48)}`);
     });
   }
   await guard(L, '8d no-WebGL fallback', async () => {
@@ -538,6 +719,16 @@ async function heroChecks(gpu, P) {
         `fallback ${r.fallback} (mode ${r.mode}, sky-css ${r.skyCss}, canvas opacity ${r.canvasOpacity}), h1 visible ${r.h1Visible}, ${r.errors.length} errors` +
         (r.errors.length ? ': ' + r.errors.slice(0, 3).join(' | ') : ''));
     } finally { await ctx.close(); }
+  });
+  await guard(L, '8f font-metric fallback', async () => {
+    // an engine without fontBoundingBoxAscent must still draw, with no NaN in any uniform and no errors
+    const run = async stub => { const { ctx, page } = await fresh(gpu, DESK); try { return await fontMetricFallback(page, P.url, { stub }); } finally { await ctx.close(); } };
+    const s = await run(true), real = await run(false);
+    const dPx = Number.isFinite(s.uBase) && Number.isFinite(real.uBase) ? Math.abs(s.uBase - real.uBase) * s.canvasH : NaN;
+    const ok = s.ready && s.mode === 'gl' && s.frames > 0 && s.calls > 0 && !s.bad.length && !s.errors.length && dPx <= 1.5;
+    line(ok, L, '8f font-metric fallback', `metric stubbed out: mode ${s.mode}, ${s.frames} frames, ${s.calls} float uniforms sent, ${s.bad.length} not finite` +
+      (s.bad.length ? ` (${s.bad.slice(0, 3).join('; ')})` : '') + `, ${s.errors.length} errors` + (s.errors.length ? ': ' + s.errors.slice(0, 2).join(' | ') : '') +
+      `; horizon uBase ${s.uBase} vs ${real.uBase} with the real metric (${Number.isFinite(dPx) ? dPx.toFixed(2) : 'n/a'} css px apart, ≤ 1.5 allowed)`);
   });
   await guard(L, '8e frames off-screen/handoff/RM', async () => {
     note(`frame counts ${L} (~40 s)`);
@@ -557,10 +748,12 @@ async function bfCheck(bf, P, awayUrl) {
   const { ctx, page } = await fresh(bf, DESK);
   try {
     const r = await bfcacheRestore(page, P.url, { awayUrl });
-    const heroOk = r.hero ? r.canvasPaintsAfter > 0 && r.nonBlank : P.role !== 'home';
+    // with the hero, the page must let go of the GPU on the way out and build it again on the way back
+    const ev = JSON.stringify(r.contextEvents || []);
+    const heroOk = r.hero ? r.canvasPaintsAfter > 0 && r.nonBlank && ev === '["lost","restored"]' : P.role !== 'home';
     line(r.persisted && !r.errors.length && heroOk, P.label, '6 back/forward cache',
       `persisted ${r.persisted}, ${r.errors.length} errors` +
-      (r.hero ? `, canvas paints after ${r.canvasPaintsAfter}, non-blank ${r.nonBlank}` : P.role === 'home' ? ', no hero canvas on page' : '') +
+      (r.hero ? `, context events ${ev} (want ["lost","restored"]), canvas paints after ${r.canvasPaintsAfter}, non-blank ${r.nonBlank}` : P.role === 'home' ? ', no hero canvas on page' : '') +
       (r.errors.length ? ': ' + r.errors.slice(0, 3).join(' | ') : '') + (r.notRestoredReasons ? '; not restored: ' + cut(r.notRestoredReasons, 200) : ''));
   } finally { await ctx.close(); }
 }
@@ -601,12 +794,14 @@ async function linkChecks(linkMap) {
         } catch (e) { err = cut(e.message.split('\n')[0], 120); }
         await page.close().catch(() => {});
         const host = (() => { try { return new URL(u).host; } catch { return ''; } })();
+        // only a true 200 passes. One exception is printed as SKIP, never PASS: www.linkedin.com answering 999 with
+        // no redirect. LinkedIn sends 999 to every automated client, so no script can tell a live profile from a dead one.
         let ok = status === 200, v;
         const redir = hops ? ` -> ${final} (${hops} redirect${hops > 1 ? 's' : ''})` : '';
         if (err) v = `${u} error: ${err}`;
-        else if (status === 999 && host === 'www.linkedin.com') {
-          ok = hops === 0;
-          v = ok ? `999 PASS(999: LinkedIn blocks automated clients) ${u}` : `999 ${u}${redir}: LinkedIn link redirects, use the canonical URL`;
+        else if (status === 999 && host === 'www.linkedin.com' && hops === 0) {
+          ok = 'skip';
+          v = `999 ${u} (LinkedIn answers 999 to every automated client; not machine-checkable — confirm by hand)`;
         } else v = `${status} ${u}${redir}`;
         line(ok, at(u), '7 external link', v);
       }
@@ -733,6 +928,7 @@ async function main() {
         visLine(P.label, '4 JS-off visibility', r);
         if (P.role === 'home') line(r.gridCells > 0 && r.gridOk === r.gridCells, P.label, '9 DATproof grid (JS off)', r.gridCells ? `${r.gridOk}/${r.gridCells} cells visible` : 'no grid cells (.dp-rows path[data-w])');
       });
+      if (P.role === 'home') await guard(P.label, '9 DATproof grid fill (motion)', () => gridFillCheck(gpu, P));
     }
     for (const P of live.filter(p => p.role === 'home')) {
       note(`hero checks ${P.label}`);
@@ -768,9 +964,11 @@ async function main() {
   }
 
   if (server) await server.close();
-  const fails = results.filter(r => !r.ok).length;
+  const skips = results.filter(r => r.skip).length;
+  const passes = results.filter(r => r.ok).length;
+  const fails = results.length - passes - skips;
   const secs = ((Date.now() - T0) / 1000).toFixed(0);
-  process.stdout.write(`${fails ? 'FAIL' : 'PASS'}  summary  ${results.length} checks, ${results.length - fails} passed, ${fails} failed, ${secs} s${QUICK ? ' (quick: no Lighthouse, no sunset scan)' : ''}\n`);
+  process.stdout.write(`${fails ? 'FAIL' : 'PASS'}  summary  ${results.length} checks, ${passes} passed, ${fails} failed, ${skips} skipped, ${secs} s${QUICK ? ' (quick: no Lighthouse, no sunset scan)' : ''}\n`);
   process.exitCode = fails ? 1 : 0;
 }
 
