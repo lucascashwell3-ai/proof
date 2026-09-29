@@ -1,0 +1,14 @@
+{
+  "name": "proof",
+  "private": true,
+  "description": "Dev-only tooling for the Proof site. The site itself has no build step and no runtime dependencies.",
+  "type": "module",
+  "scripts": {
+    "verify": "node scripts/verify.mjs",
+    "serve": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "lighthouse": "^12.8.0",
+    "playwright": "^1.55.0"
+  }
+}

@@ -1,1065 +1,291 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Proof — Lucas Cashwell</title>
-<meta name="description" content="Proof — verifiable work, not vibes. A record of what Lucas Cashwell has built: DATproof, Skillproof, Modelproof, and more." />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Cg%20fill='%23f0b95f'%3E%3Crect%20x='43'%20y='28'%20width='14'%20height='44'%20rx='1.5'/%3E%3Crect%20x='28'%20y='43'%20width='44'%20height='14'%20rx='1.5'/%3E%3Crect%20x='12'%20y='12'%20width='11'%20height='11'%20rx='1.5'/%3E%3Crect%20x='77'%20y='12'%20width='11'%20height='11'%20rx='1.5'/%3E%3Crect%20x='12'%20y='77'%20width='11'%20height='11'%20rx='1.5'/%3E%3Crect%20x='77'%20y='77'%20width='11'%20height='11'%20rx='1.5'/%3E%3C/g%3E%3C/svg%3E">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof · Skillproof, DATproof, Modelproof</title>
+<meta name="description" content="Skillproof finds Claude skills that fit your setup. DATproof tracks corporate Bitcoin buys from their filings. Modelproof helps you choose and price AI models.">
+<meta name="theme-color" content="#02050d">
+<meta property="og:title" content="Proof · Skillproof, DATproof, Modelproof">
+<meta property="og:description" content="Skillproof finds Claude skills that fit your setup. DATproof tracks corporate Bitcoin buys from their filings. Modelproof helps you choose and price AI models.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b1f26'/%3E%3Cpath d='M7 21a9 9 0 0 1 18 0z' fill='%23ffd7a6'/%3E%3Crect x='5' y='21' width='22' height='2' rx='1' fill='%23f7f8f9'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="preload" href="assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/fragment-mono.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-/* ══════════════════════ BRAND TOKENS ══════════════════════ */
-:root {
-  /* Warm dusk → night: the world after the coastline sun has set (no cosmic purple) */
-  --dusk:         #161226;   /* dusk plum — continues the hero's sea */
-  --dusk-deep:    #100c18;
-  --night:        #0a0810;   /* warm near-black floor */
-  --glow-gold:    rgba(228,172,100,0.13);   /* amber afterglow of the set sun */
-  --ember:        rgba(152,84,78,0.15);      /* low rose ember */
-
-  --gold-shadow:  #a9762f;
-  --gold-mid:     #e0a860;
-  --gold-hi:      #f2c67d;
-  --gold-accent:  #f6c877;
-
-  --glass-bg:     rgba(255,247,235,0.05);
-  --glass-bg-s:   rgba(255,247,235,0.085);
-  --glass-gold:   rgba(224,168,96,0.07);
-  --glass-bd:     rgba(255,246,232,0.12);
-  --glass-edge:   rgba(255,246,232,0.26);
-  --glass-shadow: 0 8px 40px rgba(0,0,0,.45);
-
-  --ink:          #F4F1E8;
-  --ink-muted:    #B9B2A4;
-  --ink-faint:    #6A6459;
-
-  --r: 20px;
-  --maxw: 960px;
-  --serif: "Fraunces", Georgia, serif;
-  --sans:  "Inter", system-ui, sans-serif;
-}
-
-/* ══════════════════════ GOLD METAL (animated specular sweep) ══════════════════════ */
-.gold-metal {
-  background: linear-gradient(135deg, #b07d2e 0%, #f6c877 42%, #e0a860 68%, #b07d2e 100%);
-  background-size: 200% 200%;
-  position: relative; overflow: hidden;
-}
-.gold-metal::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.42) 50%, transparent 60%);
-  transform: translateX(-120%);
-  animation: sweep 5.5s ease-in-out infinite;
-}
-@keyframes sweep { 0%,100%{transform:translateX(-120%)} 55%{transform:translateX(120%)} }
-
-.gold-text {
-  background: linear-gradient(135deg, #e0a860, #f6c877, #e0a860);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-
-/* ══════════════════════ GLASS ══════════════════════ */
-.glass {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-bd);
-  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-edge);
-  border-radius: var(--r);
-}
-
-/* ══════════════════════ RESET ══════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--sans); color: var(--ink); line-height: 1.65;
-  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+/* First Light: the hero's critical CSS, and its only copy. Reads the site tokens (--bg --ink --win-bk --ease-out --grain)
+   from assets/site.css, which blocks render, so they are there at first paint.
+   Needs html.js set by a one-line inline script in <head>, before first paint, so the pinned layout never shifts. */
+.hero{--hz:56svh;--span:100svh;--z-sky:0;--z-copy:2;
+  --lit:#fff8ee;--lit-2:#eceef5;
+  --night-0:#02050d;--night-1:#081026;--night-2:#1c2240;--night-3:#121731;--night-4:#0b1022;--night-5:#060a17;
+  position:relative}
+/* the css-only paths change once, at a threshold: a short hold is all they need */
+html.nogl .hero{--span:40svh}
+.hero-stage{position:relative;height:100vh;height:100svh;overflow:hidden;isolation:isolate;
+  /* first paint: a still of the shader's first frame, so the canvas fades in over itself */
   background:
-    radial-gradient(58% 42% at 80% 3%, var(--glow-gold) 0%, transparent 58%),
-    radial-gradient(72% 55% at 12% 90%, var(--ember) 0%, transparent 62%),
-    linear-gradient(180deg, var(--dusk) 0%, var(--dusk-deep) 46%, var(--night) 100%);
-  min-height: 100vh;
-}
-a { color: inherit; text-decoration: none; }
-h1,h2,h3,h4 { font-family: var(--serif); line-height: 1.1; }
-img { display: block; max-width: 100%; }
+    radial-gradient(34% 9% at 50% var(--hz),rgb(122 58 34 / .55),transparent 100%),
+    radial-gradient(90% 26% at 50% var(--hz),rgb(66 38 52 / .55),transparent 100%),
+    linear-gradient(to bottom,var(--night-0) 0,var(--night-1) calc(var(--hz)*.62),var(--night-2) calc(var(--hz) - 1px),
+      var(--night-3) var(--hz),var(--night-4) calc(var(--hz) + 9svh),var(--night-5) 100%)}
+html.js .hero{height:calc(100lvh + var(--span))}
+html.js .hero-stage{position:sticky;top:0;height:100vh;height:100lvh}
+/* without script: the night simply gives way to the page */
+html:not(.js) .hero-stage::after{content:"";position:absolute;inset:auto 0 0;height:28%;background:linear-gradient(to bottom,transparent,var(--bg))}
 
-canvas#stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.layer { position: relative; z-index: 1; }
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-.eyebrow {
-  display: block; font-family: var(--sans); font-size: .7rem; font-weight: 600;
-  letter-spacing: .22em; text-transform: uppercase; color: var(--gold-hi); margin-bottom: 14px;
-}
+.sky-gl,.sky-day,.sky-css{position:absolute;inset:0;z-index:var(--z-sky);pointer-events:none}
+.sky-gl{width:100%;height:100%;display:block;opacity:0;transition:opacity 1100ms var(--ease-out)}
+html.gl .sky-gl{opacity:1}
+.sky-day{background:var(--bg);opacity:0;transition:opacity 900ms var(--ease-out)}
+.hero.lit .sky-day{opacity:1}
+/* no WebGL: a designed still in the shader's terms. the source sits under the sea, a little right of centre; only a
+   few openings pass light, unevenly, and each shaft fades as it climbs. grain kept to dither strength */
+.sky-css{display:none}
+html.nogl .sky-css,html.gllost .sky-css{display:block}
+html.gllost .sky-gl{transition:none}
+.sky-css::before{content:"";position:absolute;left:50%;top:var(--hz);width:190vmax;height:95vmax;translate:-50% -100%;
+  background:conic-gradient(from 270deg at 50.8% calc(100% + 20vh),transparent 0deg,transparent 53deg,rgb(255 206 160 / .11) 57deg,rgb(255 206 160 / .085) 60.5deg,transparent 64deg,
+    transparent 75.5deg,rgb(255 206 160 / .045) 77deg,transparent 78.5deg,transparent 102deg,rgb(255 206 160 / .1) 105deg,rgb(255 206 160 / .07) 108.5deg,transparent 111deg,
+    transparent 123deg,rgb(255 206 160 / .035) 124.5deg,transparent 126deg,transparent 180deg);
+  -webkit-mask:radial-gradient(30% 68% at 50% 100%,#000 0%,rgb(0 0 0 / .42) 34%,transparent 76%);mask:radial-gradient(30% 68% at 50% 100%,#000 0%,rgb(0 0 0 / .42) 34%,transparent 76%);
+  filter:blur(6px)}
+.sky-css::after{content:"";position:absolute;inset:0;background:var(--grain);opacity:.07;mix-blend-mode:overlay}
 
-/* ══════════════════════ FADE-IN ANIMATION ══════════════════════ */
-.fade-up { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
-.fade-up.visible { opacity: 1; transform: none; }
-.fade-up:nth-child(2){transition-delay:.1s} .fade-up:nth-child(3){transition-delay:.2s} .fade-up:nth-child(4){transition-delay:.3s}
-@media (prefers-reduced-motion:reduce) {
-  .fade-up { opacity:1; transform:none; transition:none; }
-  .gold-metal::after { animation:none; opacity:.22; }
-}
+.hero-copy{position:absolute;inset:0 0 auto;height:100svh;z-index:var(--z-copy);text-align:center;padding-inline:16px}
+.hero h1{position:absolute;left:0;right:0;margin:0;
+  font-size:clamp(3.75rem,2.1rem + 5.4vw,6rem);font-weight:700;line-height:1;letter-spacing:-0.035em;text-wrap:balance;
+  top:calc(var(--hz) - .86em);color:var(--lit);
+  text-shadow:0 0 .02em rgb(255 236 210 / .9),0 0 .45em rgb(255 176 112 / .22);
+  transition:color 300ms var(--ease-out),text-shadow 300ms var(--ease-out)}
+.byline{position:absolute;left:0;right:0;margin:0;top:calc(var(--hz) + clamp(22px,3.2svh,30px));
+  font-size:clamp(15px,.9rem + .2vw,17px);font-weight:450;line-height:1.55;letter-spacing:.01em;color:var(--lit-2);
+  transition:color 300ms var(--ease-out)}
+/* daylight: the word stops being light and becomes ink on the page */
+.hero.day h1{color:var(--ink);text-shadow:0 0 0 transparent,0 0 0 transparent}
+/* around the flip the small line goes to the ends of its range (white just before, near-black just after, then back to
+   ink), so there is never a mid-tone sky where neither colour reads and the guard has almost nothing to do */
+.hero.dusk .byline{color:#fff}
+.hero.day2 .byline{color:var(--win-bk)}
+.hero.day2.day3 .byline{color:var(--ink)}
 
-/* ══════════════════════ NAV (coastline — floats over hero, frosts on scroll) ══════════════════════ */
-.coast-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 30;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 22px clamp(20px, 5vw, 56px);
-  border-bottom: 1px solid transparent;
-  transition: background .3s ease, border-color .3s ease;
+@media (max-width:640px){
+  /* portrait: a lower horizon gives the shafts the tall sky to stand up in; the word fills the width, not a crop of desktop */
+  .hero{--hz:61svh}
+  .hero h1{font-size:min(19.5vw,5.25rem);letter-spacing:-0.04em}
 }
-.coast-nav.scrolled {
-  background: rgba(11,9,16,.92);
-  border-bottom-color: rgba(255,255,255,.08);
-}
-.coast-nav .mk {
-  display: flex; align-items: center; gap: 9px;
-  font-family: var(--serif); font-weight: 500; font-size: 1.1rem;
-  color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.4);
-}
-.coast-nav .mk svg { width: 19px; height: 19px; filter: drop-shadow(0 1px 6px rgba(0,0,0,.4)); }
-.coast-nav .r { display: flex; align-items: center; gap: 6px; }
-.coast-nav .r a {
-  font-size: .86rem; color: rgba(255,255,255,.82); padding: 8px 14px; border-radius: 999px;
-  transition: color .18s ease, background .18s ease; text-shadow: 0 1px 8px rgba(0,0,0,.35);
-}
-.coast-nav .r a.cta { border: 1px solid rgba(255,255,255,.4); color: #fff; }
-@media (hover: hover) and (pointer: fine) {
-  .coast-nav .r a:hover { color: #fff; background: rgba(255,255,255,.12); }
-  .coast-nav .r a.cta:hover { background: rgba(255,255,255,.16); }
-}
-
-/* ═══════════════ HERO (painterly coastline image + code overlays) ═══════════════ */
-.coast-hero {
-  position: relative; z-index: 2; min-height: 100dvh; overflow: hidden;
-  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
-  text-align: left; padding: clamp(116px,18vh,210px) clamp(24px,6vw,88px) 92px;
-  /* on-brand fallback (sky→sea→sand) shown only for the instant before the painting decodes */
-  background: linear-gradient(180deg, #2a3766 0%, #6a5675 34%, #c07a5c 62%, #e7a866 82%, #d8b487 100%);
-}
-.coast-hero .hero-img {
-  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;
-  object-fit: cover; object-position: 50% 46%;
-}
-/* sunset→night grade veil — opacity driven by --hp (scroll progress through the hero) */
-.coast-hero .hero-grade {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(158deg, #1b1c46 0%, #191234 46%, #120d24 74%, #0a0815 100%);
-  opacity: calc(var(--hp, 0) * 0.86);
-}
-/* bottom fade → dusk: dissolves the hero into the projects section (kills the seam) */
-.coast-hero .hero-seam {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 30%; z-index: 2; pointer-events: none;
-  background: linear-gradient(180deg, rgba(22,18,38,0) 0%, rgba(20,16,34,.5) 54%, var(--dusk) 100%);
-}
-/* legibility scrim — darkens top + upper-left where the text sits */
-.coast-hero .hero-scrim {
-  position: absolute; inset: 0; z-index: 3; pointer-events: none;
-  background:
-    linear-gradient(103deg, rgba(9,7,17,.72) 0%, rgba(9,7,17,.48) 25%, rgba(9,7,17,.13) 47%, transparent 64%),
-    linear-gradient(180deg, rgba(9,7,17,.58) 0%, rgba(9,7,17,.1) 16%, transparent 26%);
-}
-.coast-hero .hero-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
-.coast-hero__inner { position: relative; z-index: 5; display: flex; flex-direction: column; align-items: flex-start; max-width: 600px; }
-.coast-hero .eyebrow {
-  font-family: var(--sans); font-size: .72rem; font-weight: 600; letter-spacing: .28em; text-transform: uppercase;
-  color: #ffe7c6; margin-bottom: 18px; text-shadow: 0 2px 18px rgba(30,14,8,.7), 0 1px 3px rgba(0,0,0,.5);
-}
-.coast-hero .wordmark {
-  font-family: var(--serif); font-weight: 400; letter-spacing: -.018em;
-  font-size: clamp(3.6rem, 11vw, 8rem); line-height: .92; color: #fff;
-  text-shadow: 0 4px 40px rgba(10,6,20,.55), 0 1px 4px rgba(0,0,0,.4);
-}
-.coast-hero .tagline {
-  font-family: var(--serif); font-weight: 300; font-style: italic;
-  font-size: clamp(1.05rem, 2.3vw, 1.5rem); color: #f7eeda; margin-top: 20px; max-width: 30ch; line-height: 1.5;
-  text-shadow: 0 2px 20px rgba(10,6,4,.7);
-}
-.coast-hero .tagline b { font-style: normal; font-weight: 400; color: #fff; }
-.coast-hero .cta-row { display: flex; gap: 14px; justify-content: flex-start; margin-top: 38px; flex-wrap: wrap; }
-.coast-hero .btn-primary {
-  display: inline-flex; align-items: center; gap: 9px; padding: 15px 32px; border-radius: 999px;
-  font-weight: 600; font-size: .94rem; color: #2a1a08; background: linear-gradient(135deg, #f6c877, #e0a860);
-  box-shadow: 0 10px 34px rgba(180,120,40,.4); transition: transform .2s ease, box-shadow .2s ease;
-}
-.coast-hero .btn-ghost {
-  display: inline-flex; align-items: center; gap: 7px; padding: 14px 26px; border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.42); color: #fff; font-size: .94rem;
-  transition: background .2s ease;
-}
-.coast-hero .btn-primary:active { transform: translateY(0) scale(.985); }
-@media (hover: hover) and (pointer: fine) {
-  .coast-hero .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 44px rgba(180,120,40,.5); }
-  .coast-hero .btn-ghost:hover { background: rgba(255,255,255,.14); }
-}
-/* Hero entrance */
-.form-in { opacity: 0; transform: translateY(22px); animation: coastup 1.1s cubic-bezier(.22,1,.36,1) forwards; }
-.form-in.d1 { animation-delay: .12s; } .form-in.d2 { animation-delay: .3s; } .form-in.d3 { animation-delay: .48s; }
-@keyframes coastup { to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .form-in { animation: none; opacity: 1; transform: none; } }
-@media (max-width: 600px) {
-  .coast-nav .r a:not(.cta) { display: none; }
-  .coast-hero { padding-top: clamp(104px,15vh,150px); }
-  .coast-hero .hero-img { object-position: 22% 48%; }   /* portrait crop keeps sun + reflection + couple */
-}
-
-.btn-primary {
-  display: inline-flex; align-items: center;
-  padding: 13px 26px; border-radius: 999px;
-  font-weight: 600; font-size: .9rem; color: #1a1406;
-  box-shadow: 0 6px 28px rgba(149,124,81,.32); transition: transform .2s, box-shadow .2s;
-}
-.btn-primary:hover { transform:translateY(-1px); box-shadow:0 12px 36px rgba(149,124,81,.44); }
-.btn-ghost {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 12px 22px; border-radius: 999px;
-  border: 1px solid rgba(176,157,107,.28); color: var(--ink-muted); font-size: .9rem; transition:.2s;
-}
-.btn-ghost:hover { border-color:var(--gold-mid); color:var(--ink); background:rgba(176,157,107,.07); }
-
-/* ══════════════════════ SECTIONS ══════════════════════ */
-section { padding: 72px 0; border-top: 1px solid rgba(255,244,230,.05); }
-#projects { border-top: none; }   /* seamless flow out of the coastline hero */
-section > .wrap > h2 { font-size: clamp(1.7rem, 3.5vw, 2.2rem); font-weight: 400; margin-bottom: 10px; }
-.section-intro { color: var(--ink-muted); max-width: 600px; margin-bottom: 44px; font-size: .96rem; }
-
-/* ══════════════════════ BADGE ══════════════════════ */
-.badge { display:inline-flex; align-items:center; gap:5px; font-size:.68rem; font-weight:600; font-family:var(--sans); letter-spacing:.07em; text-transform:uppercase; padding:4px 11px; border-radius:999px; }
-.badge-live  { background:rgba(52,201,123,.1);  color:#4bd18a; border:1px solid rgba(52,201,123,.28); }
-.badge-pub   { background:rgba(52,201,123,.1);  color:#4bd18a; border:1px solid rgba(52,201,123,.28); }
-.badge-wip   { background:rgba(224,168,96,.1);  color:var(--gold-hi); border:1px solid rgba(224,168,96,.28); }
-.badge-proto { background:rgba(224,168,96,.07); color:var(--ink-muted); border:1px solid rgba(224,168,96,.22); }
-
-/* ══════════════════════ DITHERED / HALFTONE CHART KIT (vanilla, in-file) ══════════════════════ */
-/* Reusable risograph/dither look: gold halftone dots on transparent. */
-.dcols { display:flex; align-items:flex-end; gap:5px; height:54px; }
-.dcols i { flex:1; height:var(--h,50%); border-radius:2px 2px 0 0;
-  background-image:radial-gradient(var(--gold-hi) 1px, transparent 1.35px); background-size:4px 4px; background-position:bottom; }
-.dcols i.lo { opacity:.35; }
-
-/* secondary project cards: copy + dithered viz side-by-side */
-.pcard-grid { display:grid; grid-template-columns:1fr 250px; gap:30px; align-items:center; }
-@media (max-width:760px){ .pcard-grid{ grid-template-columns:1fr; gap:22px; } }
-.pcard-copy { display:flex; flex-direction:column; gap:14px; }
-.pviz { border-radius:13px; padding:18px; background:rgba(9,7,13,.4); border:1px solid rgba(255,246,232,.07); }
-.pviz .lab { font-family:var(--sans); font-size:.6rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase;
-  color:var(--ink-faint); margin-bottom:14px; display:flex; justify-content:space-between; gap:8px; }
-.pviz .lab b { color:var(--gold-hi); font-weight:700; }
-.pviz .rl { font-size:.72rem; color:var(--ink-muted); display:flex; justify-content:space-between; margin:10px 0 4px; }
-.pviz .rl:first-of-type { margin-top:0; }
-.pviz .rl b { color:var(--ink); font-weight:600; }
-.pviz .foot { font-size:.66rem; color:var(--ink-faint); margin-top:13px; }
-
-/* rls-guard scan report */
-.scan .lab { font-family:var(--sans); font-size:.6rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:12px; display:flex; justify-content:space-between; }
-.scan .lab b { color:var(--gold-hi); font-weight:700; }
-.scan .row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid rgba(255,246,232,.06); }
-.scan .row:last-of-type { border-bottom:none; }
-.scan .t { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.78rem; color:var(--ink); }
-.scan .st { font-size:.6rem; font-weight:600; padding:2px 9px; border-radius:999px; white-space:nowrap; }
-.scan .st.open { color:#f0b95f; background:rgba(224,168,96,.12); border:1px solid rgba(224,168,96,.3); }
-.scan .st.safe { color:#4bd18a; background:rgba(52,201,123,.1); border:1px solid rgba(52,201,123,.28); }
-.scan .fix { margin-top:12px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.68rem; line-height:1.55; color:var(--gold-hi); background:rgba(9,7,13,.5); border:1px solid rgba(255,246,232,.06); border-radius:8px; padding:9px 11px; overflow-x:auto; }
-.scan .fix .c { color:var(--ink-faint); }
-
-/* BTC Suite mini dashboard */
-.mdash .lab { font-family:var(--sans); font-size:.6rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:12px; display:flex; justify-content:space-between; }
-.mdash .lab b { color:var(--gold-hi); font-weight:700; }
-.mdash .kpis { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
-.mdash .kpi { background:rgba(255,246,232,.03); border:1px solid rgba(255,246,232,.07); border-radius:9px; padding:10px 11px; }
-.mdash .kpi .k { font-size:.55rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); }
-.mdash .kpi .v { font-family:var(--serif); font-size:1.15rem; color:var(--ink); margin-top:3px; line-height:1; }
-.mdash .kpi .v.gold { background:linear-gradient(135deg,#f6c877,#e0a860); -webkit-background-clip:text; background-clip:text; color:transparent; }
-.mdash .spark { display:block; height:52px; }
-.mdash .foot { font-size:.62rem; color:var(--ink-faint); margin-top:11px; }
-
-/* ══════════════════════ LEAD PROJECT CARDS ══════════════════════ */
-.flagship { position:relative; margin-bottom:26px; padding:32px 34px; border-radius:22px;
-  border:1px solid rgba(224,168,96,.30);
-  background:radial-gradient(120% 130% at 100% 0%, rgba(224,168,96,.12), transparent 52%), var(--glass-bg);
-  box-shadow:0 26px 74px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,236,200,.16); overflow:hidden; }
-.flag-grid { display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:center; }
-@media (max-width:860px){ .flag-grid{ grid-template-columns:1fr; gap:26px; } }
-.flag-eyebrow { display:inline-flex; align-items:center; gap:8px; font-family:var(--sans);
-  font-size:.68rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-hi); }
-.flag-eyebrow .live { width:7px; height:7px; border-radius:50%; background:#34c97b; box-shadow:0 0 0 3px rgba(52,201,123,.16); }
-.flagship h3 { font-family:var(--serif); font-size:clamp(2rem,3.6vw,2.7rem); font-weight:400; margin:14px 0 8px; letter-spacing:-.01em; }
-.flagship .lead { color:var(--ink-muted); font-size:.98rem; line-height:1.62; max-width:46ch; }
-.flag-points { list-style:none; margin:20px 0 0; display:flex; flex-direction:column; gap:9px; }
-.flag-points li { position:relative; padding-left:20px; color:var(--ink-muted); font-size:.87rem; line-height:1.5; }
-.flag-points li::before { content:""; position:absolute; left:0; top:.5em; width:6px; height:6px; border-radius:1px;
-  background:linear-gradient(135deg,#f6c877,#e0a860); transform:rotate(45deg); }
-.flag-points li b { color:var(--ink); font-weight:600; }
-.flag-links { display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; }
-
-/* project stat panel */
-.proofstat { border-radius:16px; padding:24px; background:rgba(9,7,13,.55); border:1px solid rgba(255,246,232,.08); }
-.proofstat .heads { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
-.proofstat .num { font-family:var(--serif); font-weight:400; line-height:.86; }
-.proofstat .disclosed .num { font-size:2rem; color:var(--ink); }
-.proofstat .zero { text-align:right; }
-.proofstat .zero .num { font-size:clamp(3.1rem,7vw,4.4rem);
-  background:linear-gradient(135deg,#f6c877,#e0a860); -webkit-background-clip:text; background-clip:text; color:transparent; }
-.proofstat .k { font-family:var(--sans); font-size:.62rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; margin-top:9px; color:var(--ink-faint); line-height:1.4; }
-.proofstat .zero .k { color:var(--gold-hi); }
-.pmeter { margin-top:22px; }
-.pmeter .track { position:relative; height:44px; border-radius:6px; overflow:hidden;
-  background:rgba(255,246,232,.03); border:1px solid rgba(255,246,232,.07); }
-.pmeter .mass { position:absolute; inset:0;
-  background-image:radial-gradient(rgba(226,180,120,.5) 1px, transparent 1.5px); background-size:6px 6px; opacity:.5; }
-.pmeter .lit { position:absolute; left:0; top:0; bottom:0; width:2px;
-  background:linear-gradient(180deg,#fff1cf,#e0a860); box-shadow:0 0 10px rgba(240,190,90,.6); }
-.pmeter .cap { margin-top:11px; font-size:.75rem; color:var(--ink-muted); display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-.pmeter .cap b { color:var(--ink); font-weight:600; }
-
-/* Modelproof buy-zone scatter */
-.buyzone { border-radius:16px; padding:22px 24px; background:rgba(9,7,13,.55); border:1px solid rgba(255,246,232,.08); }
-.buyzone .bz-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
-.buyzone .bz-head .t { font-family:var(--sans); font-size:.6rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); }
-.buyzone .bz-head b { font-family:var(--serif); font-weight:400; font-size:1.05rem; color:var(--gold-hi); }
-.buyzone .plot { position:relative; margin:14px 0 4px; }
-.buyzone svg { display:block; width:100%; height:auto; overflow:visible; }
-.buyzone .zone { fill:rgba(240,190,90,.06); stroke:rgba(240,190,90,.28); stroke-width:1; stroke-dasharray:3 3; }
-.buyzone .dot { fill:rgba(226,180,120,.4); }
-.buyzone .dot.hl { fill:#fff1cf; }
-.buyzone .ring { fill:none; stroke:#f0be5a; stroke-width:1.2; opacity:.85; }
-.buyzone .zlab { font-family:var(--sans); font-size:8px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; fill:var(--gold-hi); }
-.buyzone .ax { display:flex; justify-content:space-between; font-size:.64rem; color:var(--ink-faint); }
-.buyzone .foot { font-size:.66rem; color:var(--ink-faint); margin-top:12px; }
-.buyzone .foot b { color:var(--ink); font-weight:600; }
-
-/* DATproof activity grid */
-.actgrid { margin-top:22px; }
-.actgrid .lab { margin-bottom:10px; }
-.actgrid .lab .t { font-family:var(--sans); font-size:.6rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); }
-.actgrid svg { display:block; width:100%; height:auto; }
-.actgrid rect.off { fill:rgba(255,246,232,.05); }
-.actgrid rect.on { fill:#e8b366; }
-.actgrid .cap { margin-top:11px; font-size:.7rem; color:var(--ink-faint); display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-
-/* Skillproof terminal — the one-conversation install, compressed */
-.skillterm { border-radius:16px; background:rgba(9,7,13,.72); border:1px solid rgba(255,246,232,.08); overflow:hidden; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.74rem; line-height:1.9; }
-.skillterm .bar { display:flex; align-items:center; gap:6px; padding:10px 14px; background:rgba(255,246,232,.04); border-bottom:1px solid rgba(255,246,232,.06); }
-.skillterm .bar i { width:8px; height:8px; border-radius:50%; background:rgba(255,246,232,.14); }
-.skillterm .bar .ttl { margin-left:6px; font-family:var(--sans); font-size:.62rem; font-weight:600; letter-spacing:.08em; color:var(--ink-faint); }
-.skillterm .body { padding:16px 18px 18px; color:var(--ink-muted); }
-.skillterm .u { color:var(--ink); }
-.skillterm .g { color:#8fd6a8; }
-.skillterm .gold { color:var(--gold-hi); }
-
-
-/* email copied toast */
-.toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,16px);background:rgba(15,13,20,.92);border:1px solid rgba(202,183,125,.45);color:var(--ink);font-size:.85rem;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s cubic-bezier(.22,1,.36,1);z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.45)}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.toast b{color:var(--gold-hi);font-weight:600}
-@media (prefers-reduced-motion:reduce){.toast{transition:opacity .2s ease;transform:translate(-50%,0)}}
-
-/* ══════════════════════ PROJECT CARDS ══════════════════════ */
-.proj-card {
-  padding: 28px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 16px;
-  transition: border-color .22s, transform .22s, box-shadow .22s;
-}
-.proj-card:hover { border-color:rgba(176,157,107,.38); transform:translateY(-2px); box-shadow:0 18px 52px rgba(0,0,0,.5), inset 0 1px 0 rgba(202,183,125,.12); }
-.proj-header { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-.proj-header h3 { font-family:var(--serif); font-size:1.4rem; font-weight:400; }
-.proj-desc { color:var(--ink-muted); font-size:.94rem; line-height:1.7; }
-.proj-points { list-style:none; display:flex; flex-direction:column; gap:9px; }
-.proj-points li { position:relative; padding-left:22px; color:var(--ink-muted); font-size:.88rem; }
-.proj-points li::before { content:""; position:absolute; left:0; top:.65em; width:7px; height:7px; border-radius:1.5px; background:linear-gradient(135deg,#957C51,#CAB77D); transform:rotate(45deg); }
-.proj-points li strong { color:var(--ink); font-weight:500; }
-.chips { display:flex; flex-wrap:wrap; gap:7px; }
-.chip { font-size:.72rem; color:var(--ink-muted); background:rgba(176,157,107,.07); border:1px solid rgba(176,157,107,.2); border-radius:999px; padding:4px 11px; }
-.proj-links { display:flex; gap:8px; flex-wrap:wrap; }
-.proj-link { display:inline-flex; align-items:center; gap:5px; font-size:.8rem; font-weight:500; color:var(--gold-mid); border:1px solid rgba(176,157,107,.28); padding:7px 15px; border-radius:999px; transition:.18s; }
-.proj-link:hover { background:rgba(176,157,107,.1); color:var(--gold-hi); }
-
-/* ══════════════════════ BACKGROUND / BIO ══════════════════════ */
-.bio {
-  font-family: var(--serif); font-weight: 300; font-size: 1.12rem;
-  line-height: 1.85; color: var(--ink); padding: 36px 38px;
-}
-.bio em { font-style: italic; color: var(--gold-hi); }
-
-/* ══════════════════════ CONTACT ══════════════════════ */
-.contact-center { text-align: center; }
-.contact-center h2 { margin-bottom: 8px; }
-.contact-center .sub { color: var(--ink-muted); font-size: .93rem; margin-bottom: 36px; }
-.contact-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-
-/* GitHub card */
-.gh-card {
-  display: flex; align-items: center; gap: 11px;
-  padding: 12px 22px 12px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(176,157,107,.28);
-  color: var(--ink-muted); font-size: .9rem;
-  transition: .2s;
-}
-.gh-card:hover { border-color:var(--gold-mid); color:var(--ink); background:rgba(176,157,107,.07); }
-.gh-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: linear-gradient(135deg, #241b2b, #3a2a26);
-  border: 1px solid rgba(176,157,107,.3);
-  display: flex; align-items: center; justify-content: center;
-  font-size: .9rem; flex-shrink: 0;
-}
-.gh-info { display: flex; flex-direction: column; line-height: 1.25; }
-.gh-name { font-weight: 600; font-size: .82rem; color: var(--ink); }
-.gh-sub  { font-size: .72rem; color: var(--ink-faint); }
-
-/* ══════════════════════ FOOTER ══════════════════════ */
-footer { padding: 48px 0 64px; text-align: center; color: var(--ink-faint); font-size: .78rem; border-top: 1px solid rgba(255,255,255,.04); }
-footer a { color: var(--gold-mid); }
-
-/* ══════════════════════ RESPONSIVE ══════════════════════ */
-@media (max-width:480px) {
-  .wrap { padding: 0 16px; }
-  .proj-card { padding: 20px; }
-  .bio { padding: 24px 22px; font-size: 1rem; }
+/* reduced motion: one still frame, and the handoff is a plain crossfade to the page (the stage still holds, it just doesn't animate) */
+@media (prefers-reduced-motion:reduce){
+  .hero,html.nogl .hero{--span:40svh}
+  .hero .sky-gl,.hero .sky-day,.hero h1,.hero .byline{transition-duration:120ms;transition-timing-function:ease}
 }
 </style>
+<link rel="stylesheet" href="assets/site.css">
+<script type="module" src="assets/hero.js"></script>
+<script defer src="assets/datproof.js"></script>
+<script defer src="assets/site.js" onerror="document.documentElement.classList.add('sx')"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to the work</a>
 
-<canvas id="stars" aria-hidden="true"></canvas>
-
-<!-- ══════════════════════════════════════════════ NAV -->
-<nav class="coast-nav">
-  <a class="mk" href="#top" aria-label="Proof — home">
-    <svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="jx" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe6b8"/><stop offset="1" stop-color="#e0a860"/></linearGradient></defs><g fill="url(#jx)"><rect x="43" y="28" width="14" height="44" rx="1.5"/><rect x="28" y="43" width="44" height="14" rx="1.5"/><rect x="12" y="12" width="11" height="11" rx="1.5"/><rect x="77" y="12" width="11" height="11" rx="1.5"/><rect x="12" y="77" width="11" height="11" rx="1.5"/><rect x="77" y="77" width="11" height="11" rx="1.5"/></g></svg>Proof
-  </a>
-  <span class="r">
-    <a href="#projects">Work</a>
-    <a href="#background">About</a>
-    <a class="cta" href="#contact">Say hello</a>
-  </span>
-</nav>
-
-<!-- ══════════════════════════════════════════════ HERO (coastline) -->
-<header class="coast-hero" id="top">
-  <img class="hero-img" src="assets/hero/coast-web.jpg" alt="Golden-hour view from a wildflower hilltop over a curving beach — a couple and their dog walk the shore, a small plane rests on the bluff, and three crosses stand on the far headland" fetchpriority="high" decoding="async">
-  <div class="hero-grade" aria-hidden="true"></div>
-  <div class="hero-seam" aria-hidden="true"></div>
-  <div class="hero-scrim" aria-hidden="true"></div>
-  <canvas class="hero-fx" aria-hidden="true"></canvas>
-
-  <div class="coast-hero__inner">
-    <span class="eyebrow form-in">Portfolio · Lucas Cashwell</span>
-    <h1 class="wordmark form-in d1">Proof</h1>
-    <p class="tagline form-in d2"><b>Everything I've actually built — led by DATproof, Skillproof, and Modelproof.</b></p>
-    <div class="cta-row form-in d3">
-      <a class="btn-primary" href="#projects">See the proof <span aria-hidden="true">→</span></a>
-      <a class="btn-ghost" href="#contact">Say hello</a>
+<header>
+<section class="hero" id="top" aria-labelledby="welcome">
+  <div class="hero-stage" id="heroStage">
+    <div class="sky-css" aria-hidden="true"></div>
+    <canvas class="sky-gl" id="sky" aria-hidden="true"></canvas>
+    <div class="sky-day" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <h1 id="welcome">Welcome</h1>
+      <p class="byline">Proof Portfolio by Lucas</p>
     </div>
   </div>
+</section>
 </header>
 
-<!-- ══════════════════════════════════════════════ PROJECTS -->
-<section id="projects" class="layer">
-  <div class="wrap">
-    <span class="eyebrow fade-up">Projects</span>
-    <h2 class="fade-up">Things I've built</h2>
-    <p class="section-intro fade-up">Three builds lead the work — <b style="color:var(--ink);font-weight:600">DATproof</b>, <b style="color:var(--ink);font-weight:600">Skillproof</b>, and <b style="color:var(--ink);font-weight:600">Modelproof</b>. Around them: a developer tool that ships on npm, a full-stack app I built to learn on, and a few earlier finance prototypes.</p>
+<nav class="nav" id="nav" aria-label="Site">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">Proof</a>
+    <div class="nav-links">
+      <ul class="chapters" id="chapters">
+        <li><a href="#skillproof">Skillproof</a></li>
+        <li><a href="#datproof">DATproof</a></li>
+        <li><a href="#modelproof">Modelproof</a></li>
+        <li class="who"><a href="who/">Who am I</a></li>
+      </ul>
+      <span class="ind" id="ind" aria-hidden="true"></span>
+    </div>
+  </div>
+</nav>
 
-    <!-- ── DATproof ── -->
-    <div class="flagship fade-up">
-      <div class="flag-grid">
-        <div class="flag-copy">
-          <span class="flag-eyebrow"><span class="live"></span>Live · rebuilt daily</span>
-          <h3>DATproof</h3>
-          <p class="lead">DATproof is an adoption accelerator for digital asset treasuries — an information hub for corporate Bitcoin purchase data.</p>
-          <ul class="flag-points">
-            <li><b>The record.</b> Corporate Bitcoin purchases, and the raises that fund them, straight from company disclosures.</li>
-            <li><b>Always current.</b> The site rebuilds itself from the filings every day.</li>
-            <li><b>The credit side too.</b> STRC and SATA — digital credit — tracked alongside the buys.</li>
-          </ul>
-          <div class="chips" style="margin-top:18px">
-            <span class="chip">Python</span><span class="chip">SEC filings</span><span class="chip">GitHub Actions</span><span class="chip">Static site</span>
-          </div>
-          <div class="flag-links">
-            <a class="proj-link" href="https://lucascashwell3-ai.github.io/datproof/" target="_blank" rel="noopener">Live site ↗</a>
-            <a class="proj-link" href="https://github.com/lucascashwell3-ai/datproof" target="_blank" rel="noopener">GitHub ↗</a>
-          </div>
+<main id="main">
+
+  <section class="work" id="skillproof" aria-labelledby="sp-h">
+    <div class="wrap row">
+      <div class="cap">
+        <h2 id="sp-h">Skillproof</h2>
+        <p class="line">A malice-checked catalog of Claude skills, plus a skill that installs the right one into your setup.</p>
+        <div class="acts">
+          <a class="btn btn-ink visit" href="https://lucascashwell3-ai.github.io/Skillproof/">Visit<span class="sr"> Skillproof</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a>
+          <button class="btn btn-line how-btn" type="button" aria-expanded="false" aria-controls="sp-how">How it’s built<span class="sr">: Skillproof</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z"/></svg></button>
         </div>
-
-        <div class="proofstat" aria-label="848,986 BTC bought across 180 filed buys; 56.2 billion dollars raised across 184 at-the-market sales">
-          <div class="heads">
-            <div class="disclosed"><div class="num">$56.2B</div><div class="k">raised at the market ·<br>184 filed sales</div></div>
-            <div class="zero"><div class="num">848,986</div><div class="k">BTC bought · 180 filed buys<br>as of Aug 2026</div></div>
-          </div>
-          <div class="actgrid" aria-hidden="true">
-            <div class="lab"><span class="t">Buy weeks · last 26 · MSTR / Strive / Metaplanet</span></div>
-            <svg viewBox="0 0 309 33" preserveAspectRatio="xMidYMid meet" role="img">
-              <rect class="on" x="0" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="12" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="24" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="36" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="48" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="60" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="72" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="84" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="96" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="108" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="120" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="132" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="144" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="156" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="168" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="180" y="0" width="9" height="9" rx="2"/>
-              <rect class="on" x="192" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="204" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="216" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="228" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="240" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="252" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="264" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="276" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="288" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="300" y="0" width="9" height="9" rx="2"/>
-              <rect class="off" x="0" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="12" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="24" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="36" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="48" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="60" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="72" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="84" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="96" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="108" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="120" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="132" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="144" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="156" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="168" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="180" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="192" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="204" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="216" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="228" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="240" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="252" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="264" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="276" y="12" width="9" height="9" rx="2"/>
-              <rect class="on" x="288" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="300" y="12" width="9" height="9" rx="2"/>
-              <rect class="off" x="0" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="12" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="24" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="36" y="24" width="9" height="9" rx="2"/>
-              <rect class="on" x="48" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="60" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="72" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="84" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="96" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="108" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="120" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="132" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="144" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="156" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="168" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="180" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="192" y="24" width="9" height="9" rx="2"/>
-              <rect class="on" x="204" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="216" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="228" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="240" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="252" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="264" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="276" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="288" y="24" width="9" height="9" rx="2"/>
-              <rect class="off" x="300" y="24" width="9" height="9" rx="2"/>
-            </svg>
-            <div class="cap"><span>one row per company · lit = a week with a filed buy</span><span>rebuilt daily</span></div>
+        <div class="how" id="sp-how">
+          <div class="how-in">
+            <dl class="how-body">
+              <div class="stack"><dt>Stack</dt><dd>Plain HTML, CSS and JS on GitHub Pages. The skill is six Markdown files. The MCP server runs on Node. A GitHub Action runs the Python feeder that finds and scans new skills.</dd></div>
+              <div class="hard"><dt>Hard problem</dt><dd>The skill reads strangers’ code, then edits your setup. Each is safe alone; together, a README can hide text telling the agent to change your settings. <b>Fix:</b> anything read from a repo is data, never instructions, and a repo that talks to the agent gets quoted to you and flagged. Nothing changes before your yes.</dd></div>
+            </dl>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- ── Skillproof ── -->
-    <div class="flagship fade-up">
-      <div class="flag-grid">
-        <div class="flag-copy">
-          <span class="flag-eyebrow"><span class="live"></span>Live · self-refreshing</span>
-          <h3>Skillproof</h3>
-          <p class="lead">Give your agents the skills they need. A catalog of community skills, plus a Claude Code skill that installs the right one into the setup you already have.</p>
-          <ul class="flag-points">
-            <li><b>A plan you approve.</b> It proposes what fits; you approve each part of the plan before anything changes.</li>
-            <li><b>It fits your setup.</b> It reads what you already have and integrates — it doesn't pile on.</li>
-            <li><b>It maintains itself.</b> A GitHub Action refreshes the catalog every day.</li>
-          </ul>
-          <div class="chips" style="margin-top:18px">
-            <span class="chip">Claude Code skill</span><span class="chip">MCP server</span><span class="chip">Vanilla JS</span><span class="chip">GitHub Actions</span>
-          </div>
-          <div class="flag-links">
-            <a class="proj-link" href="https://lucascashwell3-ai.github.io/Skillproof/" target="_blank" rel="noopener">Live site ↗</a>
-            <a class="proj-link" href="https://github.com/lucascashwell3-ai/Skillproof" target="_blank" rel="noopener">GitHub ↗</a>
-          </div>
+<div class="mat mat-sp">
+  <div class="fit">
+    <figure class="win">
+      <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="wtitle">lucascashwell3-ai.github.io/Skillproof</span></div>
+      <div class="wbody sp" aria-hidden="true">
+        <div class="sp-term">
+          <div class="banner"><b>✻</b> Welcome to <b>Claude Code</b>! <span class="dim">/help for help · cwd: ~/projects/app</span></div>
+          <div class="sub">What do you want your AI to do better? Not sure? Tell me what you use AI for, or say “look”.</div>
+          <div class="you">not sure honestly — the answers are always way too long</div>
+          <div class="tool">Read(<span class="y">CLAUDE.md</span>, <span class="y">~/.claude/skills/</span>) <span class="dim">· read-only</span></div>
+          <div class="sub">1. Add <span class="ok">caveman</span> — Type /caveman, and your AI answers in far fewer words until you say “normal mode”.</div>
+          <div class="sub">2. Add <span class="ok">show-me</span> — Your AI now shows long answers as one page you can scan, instead of a wall of text.</div>
+          <div class="ask">One clash: your rule <span class="warn">“always explain your reasoning in full”</span> would cancel caveman. Soften that rule to “explain when asked”? Backup first<br><span class="opt">❯ 1. Go</span> &nbsp; 2. Skip the rule change &nbsp; 3. No</div>
+          <div class="tool">Edit(CLAUDE.md) <span class="dim">· 1 line, backed up</span> &nbsp; <span class="ok">✓</span></div>
+          <div class="tool">Installed. <span class="ok">caveman</span> · <span class="ok">show-me</span> → ~/.claude/skills/ <span class="dim">· undo: move both folders out</span></div>
+          <div class="you">why is my checkout page slow?</div>
+          <div class="sub">Two reasons, biggest first: full-size product images, then a font that blocks the page. Fix the images?</div>
         </div>
+        <div class="sp-list">
+          <div class="sp-lh"><p>Short list <b>20</b></p><p class="sp-src">installs from skills.sh</p></div>
+          <div class="sp-row"><p class="sp-rt"><b>grill-me</b><em>1.2M installs</em></p><p class="sp-rd">Asks you questions in rounds, each with a suggested answer, until your plan or decision holds up.</p><span class="sp-add">+ Add</span></div>
+          <div class="sp-row"><p class="sp-rt"><b>show-me</b></p><p class="sp-rd">Turns a long, many-part answer into one page you can scan instead of a wall of text.</p><span class="sp-add">+ Add</span></div>
+        </div>
+      </div>
+      <figcaption class="sr">Skillproof's site with its terminal session finished. Asked what they want their AI to do better, the user says the answers are always way too long. Skillproof reads their setup without changing it and suggests two skills from its catalog, caveman and show-me. It finds one rule that would cancel caveman and asks before softening it, with a backup first. After a yes it edits one line, installs both skills and says how to undo it, and the next answer comes back short. Below the session, the site's short list of 20 skills starts with grill-me, at 1.2 million installs from skills.sh, then show-me.</figcaption>
+    </figure>
+  </div>
+</div>
+    </div>
+  </section>
 
-        <div class="skillterm" aria-label="A Skillproof session: one pain point in, one plan, one yes, installed and verified">
-          <div class="bar"><i></i><i></i><i></i><span class="ttl">claude — skillproof</span></div>
-          <div class="body">
-            <span class="u">&gt; my sites all look the same</span><br>
-            <span class="g">●</span> Skillproof: found 3 · best fit <span class="gold">impeccable</span><br>
-            <span class="g">●</span> one clash: your CLAUDE.md bans styling advice<br>
-            &nbsp;&nbsp;Install + soften that line? <span class="gold">› 1. Yes</span><br>
-            <span class="g">✓</span> installed · triggers verified · undo saved
+  <section class="work flip" id="datproof" aria-labelledby="dp-h">
+    <div class="wrap row">
+      <div class="cap">
+        <h2 id="dp-h">DATproof</h2>
+        <p class="line">An adoption accelerator for digital asset treasuries — corporate Bitcoin purchase data, filing-linked, rebuilt daily.</p>
+        <div class="acts">
+          <a class="btn btn-ink visit" href="https://lucascashwell3-ai.github.io/datproof/">Visit<span class="sr"> DATproof</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a>
+          <button class="btn btn-line how-btn" type="button" aria-expanded="false" aria-controls="dp-how">How it’s built<span class="sr">: DATproof</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z"/></svg></button>
+        </div>
+        <div class="how" id="dp-how">
+          <div class="how-in">
+            <dl class="how-body">
+              <div class="stack"><dt>Stack</dt><dd>Python (requests, BeautifulSoup, pypdf) reads SEC 8-K filings and Metaplanet’s PDF notices into CSV files. A Python script renders the static page, and GitHub Actions rebuilds it and deploys to GitHub Pages.</dd></div>
+              <div class="hard"><dt>Hard problem</dt><dd>Keeping yesterday’s data when a source fails is the safe move. But then a broken source looks just like a quiet week, and the run stays green. <b>Fix:</b> each run records every source as ok or failed, with its newest filing date, and goes red if all fail or the data goes stale.</dd></div>
+            </dl>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- ── Modelproof ── -->
-    <div class="flagship fade-up">
-      <div class="flag-grid">
-        <div class="flag-copy">
-          <span class="flag-eyebrow"><span class="live"></span>Live · independent</span>
-          <h3>Modelproof</h3>
-          <p class="lead">Which AI model should you actually use? A calm, independent answer, matched to your work and your budget.</p>
-          <ul class="flag-points">
-            <li><b>An advisor, not a leaderboard.</b> Neutral, cost-first, and built around the tools you already pay for.</li>
-            <li><b>Sourced.</b> Prices come from vendor pages; a blank means not verified.</li>
-            <li><b>Independent.</b> No lab sponsors it; picks are on merit and cost only.</li>
-          </ul>
-          <div class="chips" style="margin-top:18px">
-            <span class="chip">Vanilla JS</span><span class="chip">Client-side</span><span class="chip">52 models · 25 vendors</span><span class="chip">Static site</span>
-          </div>
-          <div class="flag-links">
-            <a class="proj-link" href="https://lucascashwell3-ai.github.io/modelproof/" target="_blank" rel="noopener">Live site ↗</a>
-            <a class="proj-link" href="https://github.com/lucascashwell3-ai/modelproof" target="_blank" rel="noopener">GitHub ↗</a>
-          </div>
-        </div>
-
-        <div class="buyzone" aria-label="The buy zone: AI models plotted by price versus capability; cheap and capable models sit top-left">
-          <div class="bz-head"><span class="t">The buy zone · price vs capability</span><b>52 models</b></div>
-          <div class="plot">
-            <svg viewBox="0 0 260 150" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-              <rect class="zone" x="14" y="16" width="124" height="82" rx="6"/>
-              <text class="zlab" x="18" y="12" style="fill:var(--ink-faint)">capability ↑</text>
-              <circle class="dot" cx="20" cy="130" r="2.4"/>
-              <circle class="dot" cx="49" cy="121" r="2.4"/>
-              <circle class="dot" cx="63" cy="74" r="2.4"/>
-              <circle class="dot" cx="82" cy="69" r="2.4"/>
-              <circle class="dot" cx="106" cy="97" r="2.4"/>
-              <circle class="dot" cx="142" cy="55" r="2.4"/>
-              <circle class="dot" cx="144" cy="88" r="2.4"/>
-              <circle class="dot" cx="144" cy="57" r="2.4"/>
-              <circle class="dot" cx="144" cy="71" r="2.4"/>
-              <circle class="dot" cx="148" cy="83" r="2.4"/>
-              <circle class="dot" cx="152" cy="69" r="2.4"/>
-              <circle class="dot" cx="161" cy="48" r="2.4"/>
-              <circle class="dot" cx="173" cy="43" r="2.4"/>
-              <circle class="dot" cx="173" cy="53" r="2.4"/>
-              <circle class="dot" cx="173" cy="41" r="2.4"/>
-              <circle class="dot" cx="182" cy="39" r="2.4"/>
-              <circle class="dot" cx="211" cy="34" r="2.4"/>
-              <circle class="dot" cx="211" cy="50" r="2.4"/>
-              <circle class="dot" cx="211" cy="32" r="2.4"/>
-              <circle class="dot" cx="240" cy="20" r="2.4"/>
-              <circle class="ring" cx="110" cy="53" r="8"/>
-              <circle class="dot hl" cx="110" cy="53" r="4.2"/>
-              <text class="zlab" x="122" y="50">value</text>
-            </svg>
-          </div>
-          <div class="ax"><span>← cheaper</span><span>pricier →</span></div>
-          <div class="foot">Top-left = cheap <b>and</b> capable. Pricing verified · benchmarks flagged · blank = not sourced.</div>
+      <div class="mat mat-datproof">
+        <div class="fit">
+<figure class="win">
+  <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="wtitle">lucascashwell3-ai.github.io/datproof</span></div>
+  <!-- datproof:grid:start -->
+<div class="wbody dp">
+<div class="dp-top" aria-hidden="true"><span class="dp-logo">DAT<b>proof</b></span><span>latest filing <em>2026-09-28</em></span><span class="wide">MSTR <em>1,665 BTC</em></span><span class="wide">ASST <em>1,107 BTC</em></span></div>
+<div class="dp-hero">
+<p class="dp-num" data-total="863420.0857">863<span class="cm">,</span>420</p>
+<p class="dp-sub"><b>bitcoin</b> bought by tracked companies, <span class="thru">through <time datetime="2026-09-28">Sep 28, 2026</time></span></p>
+</div>
+<div class="dp-act">
+<div class="dp-act-h"><p class="dp-h">Purchase activity</p><p class="dp-wk">321 weeks · 189 purchases</p></div>
+<div class="dp-rows" id="dpRows" role="img" aria-label="Weekly bitcoin purchases, Aug 2020 to Sep 2026. Strategy (MSTR): 795,327 BTC over 109 purchases. Strive (ASST): 25,123 BTC over 28 purchases. Metaplanet (3350): 42,970 BTC over 52 purchases. Total 863,420 BTC." data-weeks="321" data-pitch="5" data-cell="4">
+<div class="dp-axis" aria-hidden="true"><span style="left:6.55%">2021</span><span style="left:22.76%">2022</span><span style="left:38.97%">2023</span><span style="left:55.17%">2024</span><span style="left:71.38%">2025</span><span style="left:87.59%">2026</span></div>
+<div class="dp-row"><span class="dp-label"><em>All DATs</em></span><svg viewBox="0 0 1604 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="c0" d="M0 .5H1604" stroke-dasharray="4 1"/><path class="l4" data-w="0" d="M0 0h4v1h-4z"/><path class="l4" data-w="4" d="M25 0h4v1h-4z"/><path class="l3" data-w="16" d="M80 0h4v1h-4z"/><path class="l2" data-w="20" d="M115 0h4v1h-4z"/><path class="l2" data-w="24" d="M125 0h4v1h-4z"/><path class="l2" data-w="28" d="M145 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="32" d="M170 0h4v1h-4z"/><path class="l2" data-w="36" d="M195 0h4v1h-4z"/><path class="l2" data-w="40" d="M200 0h4v1h-4z"/><path class="l3" data-w="52" d="M270 0h4v1h-4z"/><path class="l3" data-w="56" d="M285 0h4v1h-4z"/><path class="l3" data-w="68" d="M340 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="72" d="M360 0h4v1h-4z"/><path class="l2" data-w="76" d="M385 0h4v1h-4z"/><path class="l3" data-w="84" d="M430 0h4v1h-4z"/><path class="l2" data-w="96" d="M490 0h4v1h-4z"/><path class="l2" data-w="108" d="M550 0h4v1h-4z"/><path class="l3" data-w="124" d="M620 0h4v1h-4z"/><path class="l3" data-w="136" d="M685 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="148" d="M750 0h4v1h-4z"/><path class="l3" data-w="160" d="M815 0h4v1h-4z"/><path class="l4" data-w="172" d="M860 0h4v1h-4z"/><path class="l4" data-w="176" d="M880 0h4v1h-4z"/><path class="l3" data-w="184" d="M925 0h4v1h-4z"/><path class="l4" data-w="184" d="M935 0h4v1h-4z"/><path class="l3" data-w="188" d="M940 0h4v1h-4z"/><path class="l1" data-w="192" d="M965 0h4v1h-4zm10 0h4v1h-4z"/><path class="l1" data-w="200" d="M1000 0h4v1h-4zm15 0h4v1h-4z"/><path class="l4" data-w="200" d="M1005 0h4v1h-4z"/><path class="l1" data-w="204" d="M1020 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="208" d="M1045 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="212" d="M1070 0h4v1h-4z"/><path class="l4" data-w="212" d="M1065 0h4v1h-4z"/><path class="l2" data-w="216" d="M1080 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="220" d="M1100 0h4v1h-4z"/><path class="l4" data-w="220" d="M1110 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="224" d="M1120 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="228" d="M1140 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="232" d="M1175 0h4v1h-4z"/><path class="l4" data-w="232" d="M1160 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="236" d="M1180 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="236" d="M1185 0h4v1h-4z"/><path class="l2" data-w="240" d="M1200 0h4v1h-4z"/><path class="l3" data-w="240" d="M1205 0h4v1h-4z"/><path class="l4" data-w="240" d="M1210 0h4v1h-4z"/><path class="l3" data-w="244" d="M1220 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="244" d="M1230 0h4v1h-4z"/><path class="l3" data-w="248" d="M1245 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="248" d="M1240 0h4v1h-4z"/><path class="l3" data-w="252" d="M1260 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="252" d="M1265 0h4v1h-4z"/><path class="l2" data-w="256" d="M1295 0h4v1h-4z"/><path class="l3" data-w="256" d="M1280 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="260" d="M1305 0h4v1h-4z"/><path class="l3" data-w="260" d="M1310 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="260" d="M1300 0h4v1h-4z"/><path class="l2" data-w="264" d="M1330 0h4v1h-4z"/><path class="l3" data-w="264" d="M1320 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="264" d="M1335 0h4v1h-4z"/><path class="l2" data-w="268" d="M1350 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="268" d="M1340 0h4v1h-4z"/><path class="l2" data-w="272" d="M1360 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="272" d="M1370 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="276" d="M1385 0h4v1h-4z"/><path class="l4" data-w="276" d="M1390 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="280" d="M1405 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="280" d="M1415 0h4v1h-4z"/><path class="l2" data-w="284" d="M1430 0h4v1h-4z"/><path class="l3" data-w="284" d="M1425 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="284" d="M1420 0h4v1h-4z"/><path class="l2" data-w="288" d="M1445 0h4v1h-4z"/><path class="l3" data-w="288" d="M1440 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="288" d="M1455 0h4v1h-4z"/><path class="l3" data-w="292" d="M1465 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="292" d="M1460 0h4v1h-4z"/><path class="l3" data-w="296" d="M1490 0h4v1h-4z"/><path class="l4" data-w="296" d="M1480 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="300" d="M1500 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="300" d="M1505 0h4v1h-4z"/><path class="l3" data-w="304" d="M1520 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="308" d="M1540 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="312" d="M1560 0h4v1h-4zm10 0h4v1h-4z"/><path class="l2" data-w="312" d="M1565 0h4v1h-4z"/><path class="l3" data-w="312" d="M1575 0h4v1h-4z"/><path class="l2" data-w="316" d="M1590 0h4v1h-4z"/><path class="l3" data-w="316" d="M1580 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l3" data-w="320" d="M1600 0h4v1h-4z"/></svg></div>
+<div class="dp-row"><span class="dp-label"><em>Strategy</em> · MSTR</span><svg viewBox="0 0 1604 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="c0" d="M0 .5H1604" stroke-dasharray="4 1"/><path class="l4" data-w="0" d="M0 0h4v1h-4z"/><path class="l4" data-w="4" d="M25 0h4v1h-4z"/><path class="l3" data-w="16" d="M80 0h4v1h-4z"/><path class="l2" data-w="20" d="M115 0h4v1h-4z"/><path class="l2" data-w="24" d="M125 0h4v1h-4z"/><path class="l2" data-w="28" d="M145 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="32" d="M170 0h4v1h-4z"/><path class="l2" data-w="36" d="M195 0h4v1h-4z"/><path class="l2" data-w="40" d="M200 0h4v1h-4z"/><path class="l3" data-w="52" d="M270 0h4v1h-4z"/><path class="l3" data-w="56" d="M285 0h4v1h-4z"/><path class="l3" data-w="68" d="M340 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="72" d="M360 0h4v1h-4z"/><path class="l2" data-w="76" d="M385 0h4v1h-4z"/><path class="l3" data-w="84" d="M430 0h4v1h-4z"/><path class="l2" data-w="96" d="M490 0h4v1h-4z"/><path class="l2" data-w="108" d="M550 0h4v1h-4z"/><path class="l3" data-w="124" d="M620 0h4v1h-4z"/><path class="l3" data-w="136" d="M685 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="148" d="M750 0h4v1h-4z"/><path class="l3" data-w="160" d="M815 0h4v1h-4z"/><path class="l4" data-w="172" d="M860 0h4v1h-4z"/><path class="l4" data-w="176" d="M880 0h4v1h-4z"/><path class="l3" data-w="184" d="M925 0h4v1h-4z"/><path class="l4" data-w="184" d="M935 0h4v1h-4z"/><path class="l3" data-w="188" d="M940 0h4v1h-4z"/><path class="l4" data-w="200" d="M1005 0h4v1h-4z"/><path class="l3" data-w="212" d="M1070 0h4v1h-4z"/><path class="l4" data-w="212" d="M1065 0h4v1h-4z"/><path class="l4" data-w="220" d="M1110 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="224" d="M1120 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="228" d="M1140 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="232" d="M1175 0h4v1h-4z"/><path class="l4" data-w="232" d="M1160 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="236" d="M1185 0h4v1h-4z"/><path class="l2" data-w="240" d="M1200 0h4v1h-4z"/><path class="l3" data-w="240" d="M1205 0h4v1h-4z"/><path class="l4" data-w="240" d="M1210 0h4v1h-4z"/><path class="l3" data-w="244" d="M1220 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="244" d="M1230 0h4v1h-4z"/><path class="l2" data-w="248" d="M1255 0h4v1h-4z"/><path class="l3" data-w="248" d="M1245 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="248" d="M1240 0h4v1h-4z"/><path class="l2" data-w="252" d="M1270 0h4v1h-4z"/><path class="l3" data-w="252" d="M1260 0h4v1h-4zm15 0h4v1h-4z"/><path class="l4" data-w="252" d="M1265 0h4v1h-4z"/><path class="l3" data-w="256" d="M1285 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="260" d="M1305 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="260" d="M1315 0h4v1h-4z"/><path class="l4" data-w="260" d="M1300 0h4v1h-4z"/><path class="l2" data-w="264" d="M1330 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="264" d="M1320 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="268" d="M1340 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="272" d="M1360 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="272" d="M1375 0h4v1h-4z"/><path class="l2" data-w="276" d="M1385 0h4v1h-4z"/><path class="l4" data-w="276" d="M1390 0h4v1h-4zm5 0h4v1h-4z"/><path class="l3" data-w="280" d="M1405 0h4v1h-4zm5 0h4v1h-4z"/><path class="l4" data-w="280" d="M1415 0h4v1h-4z"/><path class="l2" data-w="284" d="M1430 0h4v1h-4z"/><path class="l3" data-w="284" d="M1425 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="284" d="M1420 0h4v1h-4z"/><path class="l2" data-w="288" d="M1445 0h4v1h-4z"/><path class="l3" data-w="288" d="M1440 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="288" d="M1455 0h4v1h-4z"/><path class="l3" data-w="292" d="M1465 0h4v1h-4zm10 0h4v1h-4z"/><path class="l4" data-w="292" d="M1460 0h4v1h-4z"/><path class="l3" data-w="296" d="M1490 0h4v1h-4z"/><path class="l4" data-w="296" d="M1480 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="300" d="M1500 0h4v1h-4z"/><path class="l4" data-w="300" d="M1505 0h4v1h-4z"/><path class="l2" data-w="304" d="M1530 0h4v1h-4z"/><path class="l3" data-w="304" d="M1520 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="316" d="M1595 0h4v1h-4z"/><path class="l3" data-w="316" d="M1580 0h4v1h-4z"/><path class="l3" data-w="320" d="M1600 0h4v1h-4z"/></svg></div>
+<div class="dp-row"><span class="dp-label"><em>Strive</em> · ASST</span><svg viewBox="0 0 1604 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="c0" d="M0 .5H1604" stroke-dasharray="4 1"/><path class="l1" data-w="264" d="M1325 0h4v1h-4z"/><path class="l3" data-w="264" d="M1335 0h4v1h-4z"/><path class="l1" data-w="272" d="M1360 0h4v1h-4z"/><path class="l3" data-w="272" d="M1370 0h4v1h-4z"/><path class="l2" data-w="280" d="M1415 0h4v1h-4z"/><path class="l3" data-w="280" d="M1410 0h4v1h-4z"/><path class="l2" data-w="284" d="M1425 0h4v1h-4z"/><path class="l2" data-w="300" d="M1505 0h4v1h-4z"/><path class="l3" data-w="300" d="M1500 0h4v1h-4zm10 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="304" d="M1520 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="304" d="M1530 0h4v1h-4z"/><path class="l1" data-w="308" d="M1540 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="312" d="M1560 0h4v1h-4zm10 0h4v1h-4z"/><path class="l2" data-w="312" d="M1565 0h4v1h-4z"/><path class="l3" data-w="312" d="M1575 0h4v1h-4z"/><path class="l2" data-w="316" d="M1590 0h4v1h-4z"/><path class="l3" data-w="316" d="M1580 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l3" data-w="320" d="M1600 0h4v1h-4z"/></svg></div>
+<div class="dp-row"><span class="dp-label"><em>Metaplanet</em> · 3350</span><svg viewBox="0 0 1604 1" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="c0" d="M0 .5H1604" stroke-dasharray="4 1"/><path class="l1" data-w="192" d="M965 0h4v1h-4zm10 0h4v1h-4z"/><path class="l1" data-w="200" d="M1000 0h4v1h-4zm15 0h4v1h-4z"/><path class="l1" data-w="204" d="M1020 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="208" d="M1045 0h4v1h-4zm5 0h4v1h-4z"/><path class="l1" data-w="212" d="M1065 0h4v1h-4z"/><path class="l2" data-w="216" d="M1080 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="220" d="M1100 0h4v1h-4zm15 0h4v1h-4z"/><path class="l2" data-w="228" d="M1140 0h4v1h-4z"/><path class="l2" data-w="236" d="M1180 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="240" d="M1200 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="244" d="M1220 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l3" data-w="248" d="M1240 0h4v1h-4zm5 0h4v1h-4zm10 0h4v1h-4z"/><path class="l3" data-w="252" d="M1265 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="256" d="M1285 0h4v1h-4zm10 0h4v1h-4z"/><path class="l3" data-w="256" d="M1280 0h4v1h-4z"/><path class="l2" data-w="260" d="M1300 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4zm5 0h4v1h-4z"/><path class="l2" data-w="264" d="M1325 0h4v1h-4z"/><path class="l3" data-w="264" d="M1320 0h4v1h-4zm15 0h4v1h-4z"/><path class="l3" data-w="268" d="M1340 0h4v1h-4z"/><path class="l3" data-w="280" d="M1405 0h4v1h-4z"/><path class="l3" data-w="292" d="M1470 0h4v1h-4z"/><path class="l3" data-w="304" d="M1535 0h4v1h-4z"/></svg></div>
+<span class="dp-head" aria-hidden="true"></span>
+</div>
+<div class="dp-legend" aria-hidden="true"><span>1 bar = 1 week</span><span class="dp-key">less <i class="k1"></i><i class="k2"></i><i class="k3"></i><i class="k4"></i> more</span></div>
+</div>
+<script type="application/json" id="dpData">{"s":"2020-08-10","r":[[[0,21454],[5,16796],[16,2574],[23,314],[25,295],[29,533],[30,262],[34,253],[39,271],[40,229],[54,3907],[57,8957],[68,7002],[69,1434],[72,1914],[77,660],[86,4167],[98,480],[110,301],[124,3205],[137,6455],[138,1045],[150,12333],[163,5445],[172,16130],[176,14620],[185,3000],[187,12000],[188,9245],[201,11931],[213,18300],[214,7420],[222,27200],[223,51780],[224,55500],[225,15400],[226,21550],[227,15350],[228,5262],[229,2138],[230,1070],[231,2530],[232,11000],[233,10107],[235,7633],[237,20356],[240,130],[241,6911],[242,22048],[244,3459],[245,6556],[246,15355],[247,1895],[248,13390],[249,7390],[250,4020],[251,705],[252,1045],[253,10100],[254,245],[255,4980],[257,4225],[258,6220],[260,21021],[261,155],[262,430],[263,3081],[264,4048],[265,1955],[266,525],[267,850],[268,196],[270,220],[271,168],[272,390],[273,397],[274,487],[275,8178],[277,130],[278,10624],[279,10645],[281,1229],[282,1286],[283,13627],[284,22305],[285,2932],[286,855],[287,1142],[288,2486],[289,592],[290,3015],[291,17994],[292,22337],[293,1031],[295,4871],[296,13927],[297,34164],[298,3273],[300,535],[301,24869],[304,1550],[305,1587],[306,520],[316,4603],[319,950],[320,1665]],[[265,69],[267,5816],[272,72.3],[274,3134.2],[282,1741.2],[283,123],[285,333.89],[300,1381],[301,381.61],[302,1109],[303,2500],[304,32],[305,73],[306,759],[308,17.76],[309,18],[310,21],[311,79],[312,20],[313,147],[314,79],[315,1110],[316,1800],[317,1375],[318,469],[319,1355],[320,1107]],[[193,97.8519],[195,19.8698],[200,23.351],[203,20.195],[204,42.466],[205,21.877],[206,20.381],[209,57.103],[210,57.273],[213,38.464],[216,107.913],[217,217.785],[218,106.976],[220,156.783],[223,124.117],[228,619.7],[236,338.02],[237,135],[238,653],[239,162],[240,150],[241,150],[242,856],[244,319],[245,475],[247,555],[248,1241],[249,1004],[251,1088],[253,1112],[254,2345],[255,1005],[256,2205],[257,797],[259,780],[260,463],[261,518],[262,775],[263,103],[264,1009],[265,136],[267,5419],[268,5268],[281,4279],[294,5075],[307,2823]]]}</script>
+</div>
+<!-- datproof:grid:end -->
+</figure>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- ── rls-guard ── -->
-    <div class="proj-card glass fade-up">
-      <div class="pcard-grid">
-        <div class="pcard-copy">
-          <div class="proj-header">
+  <section class="work" id="modelproof" aria-labelledby="mp-h">
+    <div class="wrap row">
+      <div class="cap">
+        <h2 id="mp-h">Modelproof</h2>
+        <p class="line">Which AI model should you actually use? An independent, sourced decision tool.</p>
+        <div class="acts">
+          <a class="btn btn-ink visit" href="https://lucascashwell3-ai.github.io/modelproof/board.html">Visit<span class="sr"> Modelproof</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a>
+          <button class="btn btn-line how-btn" type="button" aria-expanded="false" aria-controls="mp-how">How it’s built<span class="sr">: Modelproof</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z"/></svg></button>
+        </div>
+        <div class="how" id="mp-how">
+          <div class="how-in">
+            <dl class="how-body">
+              <div class="stack"><dt>Stack</dt><dd>Plain HTML, CSS and JS over one models.json file, on GitHub Pages. Node scripts in GitHub Actions collect and check the data, and a Node MCP server shares the same facts.</dd></div>
+              <div class="hard"><dt>Hard problem</dt><dd>An automated research pass writes quotes with source links. A quote can look right yet not appear on the page it cites; a format check can’t tell. <b>Fix:</b> a script opens every cited page and looks for the quote word for word. A miss is refused, not softened; later page changes get flagged.</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+<div class="mat mat-mp">
+  <div class="fit">
+    <figure class="win">
+      <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="wtitle">lucascashwell3-ai.github.io/modelproof/board</span></div>
+      <div class="wbody mpx">
+        <picture>
+          <source media="(max-width: 760px)" srcset="assets/img/modelproof-board-phone.webp 716w, assets/img/modelproof-board-phone-3x.webp 1074w" sizes="(max-width: 640px) calc(100vw - 32px), 84vw" width="716" height="932">
+          <img src="assets/img/modelproof-board.webp" srcset="assets/img/modelproof-board-1x.webp 840w, assets/img/modelproof-board.webp 1680w" sizes="840px" width="840" height="604" loading="lazy" decoding="async"
+            alt="Modelproof's example board for Northwind Labs: $2,842 a month across 8 blocks and 4 divisions. Engineering, 11 people at $300 a month, holds a backend team of six on Sonnet 5 for $120, a platform lead on Opus 5 for $100 and a frontend team of four on GPT-5.6 Sol for $80. Marketing, at $800 a month, holds a content team of two on Sonnet 5 for $34 and a support bot on Gemini 3.6 Flash for $766. The Data and Leadership divisions continue past the window's edge.">
+        </picture>
+      </div>
+    </figure>
+  </div>
+</div>
+    </div>
+  </section>
+
+  <section class="also" id="also" aria-labelledby="also-h">
+    <div class="wrap">
+      <div class="also-in">
+        <h2 id="also-h">Also shipped</h2>
+        <div class="also-row">
+          <div class="also-txt">
             <h3>rls-guard</h3>
-            <span class="badge badge-pub">📦 Published on npm</span>
+            <p>Audits your Supabase row-level security and hands you the fix SQL.</p>
           </div>
-          <p class="proj-desc">
-            An MCP server you point at your own Supabase project. It tells you, in plain English, which tables the public key can read — then hands you the exact SQL to lock each one down. No dashboard, no sign-up; your AI assistant just runs it.
-          </p>
-          <ul class="proj-points">
-            <li><strong>It ships where agents find it.</strong> Agents discover it in MCP registries and suggest installing it — the new app store for dev tools.</li>
-            <li><strong>Built from real work.</strong> It knows an accidentally-public table from a deliberately-public one — straight out of the Supabase RLS I wrote by hand for Prompt Emporium.</li>
-          </ul>
-          <div class="chips">
-            <span class="chip">TypeScript</span><span class="chip">MCP SDK</span><span class="chip">npm</span><span class="chip">PostgREST</span><span class="chip">Node.js</span>
-          </div>
-          <div class="proj-links">
-            <a class="proj-link" href="https://github.com/lucascashwell3-ai" target="_blank" rel="noopener">GitHub ↗</a>
-            <a class="proj-link" href="https://npmjs.com/package/rls-guard-mcp" target="_blank" rel="noopener">npm ↗</a>
+          <div class="acts">
+            <a class="btn btn-ink visit" href="https://www.npmjs.com/package/rls-guard-mcp">Visit<span class="sr"> rls-guard on npm</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a>
+            <button class="btn btn-line how-btn" type="button" aria-expanded="false" aria-controls="rg-how">How it’s built<span class="sr">: rls-guard</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z"/></svg></button>
           </div>
         </div>
-        <div class="pviz">
-          <div class="scan">
-            <div class="lab"><span>Supabase RLS scan</span><b>2 exposed</b></div>
-            <div class="row"><span class="t">profiles</span><span class="st safe">🔒 protected</span></div>
-            <div class="row"><span class="t">orders</span><span class="st open">⚠ public read</span></div>
-            <div class="row"><span class="t">api_keys</span><span class="st open">⚠ public read</span></div>
-            <div class="row"><span class="t">audit_log</span><span class="st safe">🔒 protected</span></div>
-            <div class="fix"><span class="c">-- fix, ready to paste</span><br>alter table orders enable row level security;</div>
+        <div class="how" id="rg-how">
+          <div class="how-in">
+            <dl class="how-body">
+              <div class="stack"><dt>Stack</dt><dd>An MCP server you run with npx. It checks your Supabase REST API (PostgREST) using the public anon key, and renders reports to HTML and PDF with Puppeteer.</dd></div>
+              <div class="hard"><dt>Hard problem</dt><dd>To learn whether strangers can add rows to a table, you’d normally have to add one. rls-guard sends an empty insert the database is told to undo, then reads the reply: a permission error means blocked, while reaching the data checks means strangers can write. No row is ever written.</dd></div>
+            </dl>
           </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- ── Prompt Emporium ── -->
-    <div class="proj-card glass fade-up">
-      <div class="pcard-grid">
-        <div class="pcard-copy">
-          <div class="proj-header">
-            <h3>Prompt Emporium</h3>
-            <span class="badge badge-proto">📦 Archived</span>
-          </div>
-          <p class="proj-desc">
-            The project I built to teach myself full-stack. A web app for storing, versioning, and AI-improving prompts and Claude skills — auth, payments, a community library, the whole thing. Tabled now — but it's where most of my hard-won lessons came from.
-          </p>
-          <ul class="proj-points">
-            <li><strong>My first full-stack build.</strong> Next.js, Supabase (auth + Postgres + RLS), Stripe, Vercel — all wired up from scratch.</li>
-            <li><strong>Where I learned to direct AI agents.</strong> Built over a lot of Claude Code sessions; this is where I figured out how to get consistent, production-quality output.</li>
-            <li><strong>And where deployment finally clicked.</strong> Vercel config, Supabase environments, OAuth, webhooks — most of the hard config lessons came from here.</li>
-          </ul>
-          <div class="chips">
-            <span class="chip">Next.js 15</span><span class="chip">TypeScript</span><span class="chip">Supabase</span><span class="chip">Anthropic API</span><span class="chip">Stripe</span><span class="chip">Vercel</span>
-          </div>
-        </div>
-        <div class="pviz">
-          <div class="lab"><span>Prompt versions</span><b>v1 → vN</b></div>
-          <div class="dcols" aria-hidden="true">
-            <i style="--h:30%"></i><i style="--h:46%"></i><i style="--h:40%"></i><i style="--h:60%"></i><i style="--h:54%"></i><i style="--h:76%"></i><i style="--h:68%"></i><i style="--h:94%"></i>
-          </div>
-          <div class="foot">Each prompt versioned + AI-improved over time</div>
-        </div>
-      </div>
-    </div>
+</main>
 
-    <!-- ── BTC Intelligence Suite ── -->
-    <div class="proj-card glass fade-up">
-      <div class="pcard-grid">
-        <div class="pcard-copy">
-          <div class="proj-header">
-            <h3>BTC Intelligence Suite</h3>
-            <span class="badge badge-proto">◆ Prototypes</span>
-          </div>
-          <p class="proj-desc">
-            Three Streamlit apps I built to dig into bitcoin-treasury intelligence — MSTR's capital structure, corporate treasury modeling, and adoption tracking. Real public 8-K data where it counts.
-          </p>
-          <ul class="proj-points">
-            <li><strong>MSTR Bond Decoder.</strong> Decomposes MicroStrategy's convertible-note stack from real 8-K filings — NAV, BTC yield, conversion premiums.</li>
-            <li><strong>Treasury Optimizer.</strong> Models optimal BTC acquisition for any corporate treasury; stress-tests against historical drawdowns.</li>
-            <li><strong>Adoption Tracker.</strong> Scores S&amp;P 500 companies on treasury-adoption readiness and drafts Strive-style activist letters.</li>
-          </ul>
-          <div class="chips">
-            <span class="chip">Python</span><span class="chip">Streamlit</span><span class="chip">Pandas</span><span class="chip">Plotly</span><span class="chip">Public 8-K data</span>
-          </div>
-        </div>
-        <div class="pviz">
-          <div class="mdash">
-            <div class="lab"><span>MSTR bond decoder</span><b>prototype</b></div>
-            <div class="kpis">
-              <div class="kpi"><div class="k">BTC held</div><div class="v">576,230</div></div>
-              <div class="kpi"><div class="k">BTC NAV</div><div class="v">$55.9B</div></div>
-              <div class="kpi"><div class="k">Convert tranches</div><div class="v">23</div></div>
-              <div class="kpi"><div class="k">NAV premium</div><div class="v gold">+187%</div></div>
-            </div>
-            <svg class="spark" viewBox="0 0 260 60" width="100%" preserveAspectRatio="none" aria-hidden="true">
-              <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0a860" stop-opacity=".35"/><stop offset="1" stop-color="#e0a860" stop-opacity="0"/></linearGradient></defs>
-              <path d="M4,52 C40,50 70,44 100,36 S170,20 210,12 250,6 256,5 L256,60 L4,60 Z" fill="url(#sg)"/>
-              <path d="M4,52 C40,50 70,44 100,36 S170,20 210,12 250,6 256,5" fill="none" stroke="#f2c67d" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <div class="foot">Parsed from real MSTR 8-K filings · illustrative</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════ BACKGROUND -->
-<section id="background" class="layer">
-  <div class="wrap">
-    <span class="eyebrow fade-up">About</span>
-    <h2 class="fade-up">A little about me</h2>
-
-    <div class="bio glass fade-up">
-      I work in professional services, specializing in finance and SOX.
-      I got tired of watching the gap between what AI could do and what people were actually doing with it.
-      So I started building on nights and weekends to see what I could actually ship.
-      <br><br>
-      These projects are how I learn. Some are polished, some are rough — all of them taught me something real.
-      That's what this site is: <em>the actual work.</em>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════ CONTACT -->
-<section id="contact" class="layer">
-  <div class="wrap">
-    <div class="contact-center fade-up">
-      <span class="eyebrow">Contact</span>
-      <h2>Say hello</h2>
-      <p class="sub">Always up for talking AI, building, or whatever you're working on.</p>
-      <div class="contact-links">
-        <a class="btn-primary gold-metal" href="mailto:lucascashwell3@gmail.com" id="email-btn">
-          Email me
-        </a>
-        <a class="btn-ghost" href="https://www.linkedin.com/in/lucas-cashwell/" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="opacity:.8"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          LinkedIn
-        </a>
-        <a class="gh-card" href="https://github.com/lucascashwell3-ai" target="_blank" rel="noopener">
-          <div class="gh-avatar">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="#CAB77D"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          </div>
-          <div class="gh-info">
-            <span class="gh-name">lucascashwell3-ai</span>
-            <span class="gh-sub">github.com</span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="layer">
-  <div class="wrap">
-    <div>© <span id="yr"></span> Lucas Cashwell</div>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p>Hand-built, no framework.<span id="measure"></span> · <a href="who/">Who am I</a></p>
   </div>
 </footer>
-
-<!-- ══════════════════════════════════════════════ SCRIPTS -->
-<script>
-/* Year */
-document.getElementById('yr').textContent = new Date().getFullYear();
-
-/* Atmosphere — the whole-page dusk→night journey: stars + fireflies that fade in as you scroll.
-   Behind the full-bleed hero painting nothing shows, so this only animates once you leave the hero. */
-(function(){
-  const c = document.getElementById('stars'); if(!c) return;
-  const ctx = c.getContext('2d');
-  const hero = document.querySelector('.coast-hero');
-  const rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const clamp=(v,a,b)=>v<a?a:v>b?b:v;
-  const smooth=(a,b,x)=>{ x=clamp((x-a)/(b-a),0,1); return x*x*(3-2*x); };
-  let W,H,stars=[],flies=[],rafId=null;
-  function init(){
-    W=c.width=innerWidth; H=c.height=innerHeight;
-    stars=Array.from({length: rm?60:150},()=>({
-      x:Math.random()*W, y:Math.random()*H*0.94, r:Math.random()*1.05+.2,
-      base:Math.random()*.5+.22, amp:Math.random()*.42, sp:Math.random()*.0022+.0006, ph:Math.random()*6.28 }));
-    flies=Array.from({length: rm?0:22},()=>({
-      x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.4+.9, ph:Math.random()*6.28, sp:.6+Math.random()*1.1,
-      vx:(Math.random()-.5)*.16, vy:-(0.05+Math.random()*.12), base:.4+Math.random()*.5 }));
-  }
-  function pageProg(){
-    const d=Math.max(1, document.documentElement.scrollHeight-innerHeight);
-    return clamp((scrollY||pageYOffset)/d,0,1);
-  }
-  function draw(t){
-    ctx.clearRect(0,0,W,H);
-    const pp = rm?0.55:pageProg();
-    const starA = rm?0.62:smooth(0.05,0.42,pp);          // stars appear once past the hero, deepen downward
-    if(starA>0.01) for(const s of stars){
-      const tw = rm?0.7:(0.55+0.45*Math.sin(t*s.sp+s.ph));
-      const a=(s.base+s.amp*tw)*starA; if(a<=0.01) continue;
-      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.28);
-      ctx.fillStyle=`rgba(255,231,190,${a.toFixed(3)})`; ctx.fill();
-    }
-    if(rm) return;
-    const flyA=smooth(0.34,0.7,pp);                       // fireflies wake later, deep into the night
-    if(flyA>0.01){
-      ctx.save(); ctx.globalCompositeOperation='lighter';
-      for(const f of flies){
-        f.x+=f.vx; f.y+=f.vy;
-        if(f.y<-12){f.y=H+12;f.x=Math.random()*W;} if(f.x<-12)f.x=W+12; if(f.x>W+12)f.x=-12;
-        const tw=0.35+0.65*Math.abs(Math.sin(t*0.0016*f.sp+f.ph)), a=f.base*tw*flyA;
-        const gr=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,f.r*3);
-        gr.addColorStop(0,`rgba(255,224,140,${a.toFixed(3)})`); gr.addColorStop(1,'rgba(255,210,120,0)');
-        ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(f.x,f.y,f.r*3,0,6.28); ctx.fill();
-      }
-      ctx.restore();
-    }
-  }
-  function loop(t){ draw(t); rafId=requestAnimationFrame(loop); }
-  function start(){ if(rm||rafId!==null) return; rafId=requestAnimationFrame(loop); }
-  function stop(){ if(rafId!==null){ cancelAnimationFrame(rafId); rafId=null; } }
-  addEventListener('resize',()=>{ init(); if(rm) draw(0); });
-  init();
-  if(rm){ draw(0); return; }
-  let ticking=false;
-  function frame(){ ticking=false;
-    const past = hero ? hero.getBoundingClientRect().bottom < innerHeight*0.96 : true;
-    if(past && !document.hidden) start(); else stop();
-  }
-  function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(frame); } }
-  addEventListener('scroll',onScroll,{passive:true});
-  addEventListener('resize',onScroll,{passive:true});
-  document.addEventListener('visibilitychange',frame);
-  frame();
-})();
-
-/* Hero — painterly coastline: overlays the painting with birds, sun-on-water twinkle and
-   dusk fireflies, and drives the sunset→night grade veil (--hp) as you scroll through it.
-   Nothing is redrawn from the painting — these are transparent overlays aligned to it. */
-(function(){
-  const hero = document.querySelector('.coast-hero');
-  const cv   = document.querySelector('.hero-fx');
-  const img  = document.querySelector('.hero-img');
-  const nav  = document.querySelector('.coast-nav');
-  if(!hero || !cv) return;
-  const ctx = cv.getContext('2d');
-  const rm  = matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const IMG_W = 2880, IMG_H = 1607;          // natural size of coast-web.jpg
-  const SUN = {x:0.265, y:0.312};            // sun / waterline focal (fraction of the painting)
-  const clamp=(v,a,b)=>v<a?a:v>b?b:v;
-  const smooth=(a,b,x)=>{ x=clamp((x-a)/(b-a),0,1); return x*x*(3-2*x); };
-  let W,H,DPR, glints=[], birds=[], flies=[], rafId=null;
-
-  // object-fit:cover mapping — where a painting-fraction lands on the canvas (matches the <img>)
-  const cover = {dw:0,dh:0,ox:0,oy:0};
-  function computeCover(){
-    let px=0.5, py=0.46;
-    if(img){ const op=getComputedStyle(img).objectPosition.split(' ');
-      if(op[0]) px=parseFloat(op[0])/100; if(op[1]!==undefined&&op[1]!=='') py=parseFloat(op[1])/100; }
-    const s=Math.max(W/IMG_W, H/IMG_H);
-    cover.dw=IMG_W*s; cover.dh=IMG_H*s; cover.ox=(W-cover.dw)*px; cover.oy=(H-cover.dh)*py;
-  }
-  const mapX=fx=>cover.ox+fx*cover.dw;
-  const mapY=fy=>cover.oy+fy*cover.dh;
-
-  function resize(){
-    DPR=Math.min(devicePixelRatio||1,2);
-    const w=cv.clientWidth||innerWidth, h=cv.clientHeight||innerHeight;
-    W=cv.width=Math.round(w*DPR); H=cv.height=Math.round(h*DPR);
-    if(W<4||H<4) return;
-    computeCover(); build();
-    if(rm) draw(0);
-  }
-  function build(){
-    const sx=mapX(SUN.x), sy=mapY(SUN.y), rad=cover.dh*0.045;
-    glints=[];
-    for(let i=0;i<58;i++){
-      const p=Math.pow(Math.random(),0.72);          // denser near the horizon, spreads downward
-      const y=sy+p*cover.dh*0.155;
-      const spread=rad*(0.4+p*2.6);
-      glints.push({ x:sx+(Math.random()-0.5)*spread, y,
-        len:rad*(0.1+Math.random()*0.42)*(0.55+p), ph:Math.random()*6.28,
-        sp:0.5+Math.random()*1.7, base:0.16+Math.random()*0.48 });
-    }
-    birds=[];
-    for(let i=0;i<4;i++){
-      birds.push({ x:mapX(0.44+Math.random()*0.38), y:mapY(0.07+Math.random()*0.12),
-        s:cover.dh*0.012, spd:(0.14+Math.random()*0.16)*DPR, ph:Math.random()*6.28,
-        dir:Math.random()<0.5?1:-1 });
-    }
-    flies=[];
-    for(let i=0;i<15;i++){
-      flies.push({ x:Math.random()*W, y:mapY(0.72+Math.random()*0.24),
-        r:DPR*(0.9+Math.random()*1.3), ph:Math.random()*6.28, sp:0.6+Math.random()*1.1,
-        vx:(Math.random()-0.5)*0.12*DPR, vy:-(0.04+Math.random()*0.09)*DPR, base:0.4+Math.random()*0.5 });
-    }
-  }
-  function heroProg(){
-    const h=hero.offsetHeight||innerHeight;
-    return clamp((scrollY||pageYOffset)/(h*0.82),0,1);   // fully graded a touch before the hero leaves
-  }
-  function draw(t){
-    ctx.clearRect(0,0,W,H);
-    const hp = rm?0:heroProg();
-    if(!rm) hero.style.setProperty('--hp', hp.toFixed(3));
-
-    // sun-on-water twinkle — fades out as the sun "sets" into the grade
-    const glintA = rm?0.5:(1-smooth(0,0.7,hp));
-    if(glintA>0.01){
-      ctx.save(); ctx.globalCompositeOperation='lighter';
-      for(const g of glints){
-        const tw=rm?0.6:(0.35+0.65*Math.abs(Math.sin(t*0.001*g.sp+g.ph)));
-        ctx.fillStyle=`rgba(255,224,150,${(g.base*tw*glintA).toFixed(3)})`;
-        ctx.fillRect(g.x-g.len/2, g.y, g.len, DPR*1.5);
-      }
-      ctx.restore();
-    }
-    // birds drifting across the sky
-    ctx.save(); ctx.strokeStyle='rgba(24,18,32,0.5)'; ctx.lineWidth=DPR; ctx.lineCap='round';
-    for(const b of birds){
-      if(!rm){ b.x+=b.spd*b.dir;
-        if(b.dir>0 && b.x>W*1.06) b.x=-W*0.06; if(b.dir<0 && b.x<-W*0.06) b.x=W*1.06; }
-      const flap=rm?0:Math.sin(t*0.005+b.ph)*b.s*0.4;
-      ctx.beginPath(); ctx.moveTo(b.x-b.s,b.y);
-      ctx.quadraticCurveTo(b.x-b.s*0.4,b.y-b.s*0.6+flap,b.x,b.y);
-      ctx.quadraticCurveTo(b.x+b.s*0.4,b.y-b.s*0.6+flap,b.x+b.s,b.y); ctx.stroke();
-    }
-    ctx.restore();
-    // dusk fireflies over the wildflowers — wink on as the hero darkens
-    const flyA=rm?0:smooth(0.14,0.62,hp);
-    if(flyA>0.01){
-      ctx.save(); ctx.globalCompositeOperation='lighter';
-      for(const f of flies){
-        f.x+=f.vx; f.y+=f.vy;
-        if(f.y<mapY(0.66)){ f.y=mapY(0.96); f.x=Math.random()*W; }
-        if(f.x<0)f.x=W; if(f.x>W)f.x=0;
-        const tw=0.35+0.65*Math.abs(Math.sin(t*0.0016*f.sp+f.ph)), a=f.base*tw*flyA;
-        const gr=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,f.r*3.2);
-        gr.addColorStop(0,`rgba(255,226,140,${a.toFixed(3)})`); gr.addColorStop(1,'rgba(255,210,120,0)');
-        ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(f.x,f.y,f.r*3.2,0,6.28); ctx.fill();
-      }
-      ctx.restore();
-    }
-  }
-  function loop(t){ draw(t); rafId=requestAnimationFrame(loop); }
-  function start(){ if(rm||rafId!==null||W<4) return; rafId=requestAnimationFrame(loop); }
-  function stop(){ if(rafId!==null){ cancelAnimationFrame(rafId); rafId=null; } }
-
-  addEventListener('resize', resize);
-  resize();
-  if(rm){ hero.style.setProperty('--hp','0.1'); draw(0); }   // gentle static grade, no scroll linkage
-  else start();
-
-  /* Nav frost + perf guard: pause overlays once the hero is scrolled past / tab hidden */
-  let ticking=false;
-  function frame(){
-    ticking=false;
-    const bottom=hero.getBoundingClientRect().bottom;
-    if(nav) nav.classList.toggle('scrolled', bottom < 72);
-    if(rm) return;
-    if(bottom<=0) stop(); else if(!document.hidden) start();
-  }
-  function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(frame); } }
-  addEventListener('scroll', onScroll, {passive:true});
-  addEventListener('resize', onScroll, {passive:true});
-  document.addEventListener('visibilitychange', ()=>{ if(rm) return;
-    if(document.hidden) stop(); else if(hero.getBoundingClientRect().bottom>0) start(); });
-  frame();
-})();
-
-/* Scroll fade-up */
-(function(){
-  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const obs=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
-  }),{threshold:.1});
-  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
-})();
-
-
-</script>
-
-<script>
-(function(){
-  var btn=document.getElementById('email-btn'); if(!btn) return;
-  var toast=document.createElement('div'); toast.className='toast';
-  toast.innerHTML='Copied — <b>lucascashwell3@gmail.com</b>';
-  document.body.appendChild(toast); var t;
-  btn.addEventListener('click',function(){
-    try{ navigator.clipboard && navigator.clipboard.writeText('lucascashwell3@gmail.com'); }catch(e){}
-    toast.classList.add('show'); clearTimeout(t);
-    t=setTimeout(function(){ toast.classList.remove('show'); },2600);
-  });
-})();
-</script>
 </body>
 </html>

@@ -1,0 +1,415 @@
+/* ================= the site: fonts, tokens and base, one copy for every page =================
+   The home page's inline hero CSS reads these tokens too; this file blocks render, so they are in place for first paint. */
+@font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400 900;font-display:swap;src:url(fonts/schibsted-grotesk.woff2) format("woff2")}
+@font-face{font-family:"Fragment Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/fragment-mono.woff2) format("woff2")}
+/* Arial resized to Schibsted's metrics, so the swap doesn't move the layout */
+@font-face{font-family:"Schibsted Fallback";src:local("Arial"),local("ArialMT"),local("Liberation Sans");
+  size-adjust:105.8%;ascent-override:92.3%;descent-override:24.4%;line-gap-override:0%}
+:root{
+  --bg:oklch(0.978 0.002 255);--mat:oklch(0.948 0.004 255);--mat-line:oklch(0.905 0.005 255);
+  --line:oklch(0.9 0.004 250);--line-strong:oklch(0.84 0.005 250);--chrome:oklch(0.995 0.001 255);
+  --ink:oklch(0.2 0.01 255);--ink-2:oklch(0.41 0.01 255);--ink-3:oklch(0.49 0.01 255);
+  --font:"Schibsted Grotesk","Schibsted Fallback",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease-out:cubic-bezier(0.25,1,0.5,1);--ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --spring:cubic-bezier(0.2,0.9,0.25,1);--spring-firm:cubic-bezier(0.2,0.85,0.3,1);
+  /* row spacing follows the screen's height too, so a product and its caption fit one laptop screen */
+  --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(16px,4svh,48px);
+  --mat-pad:clamp(16px,min(4vw,4.5svh),56px);--col-gap:clamp(24px,3vw,48px);
+  --z-win:1;--z-main:1;--z-nav:10;--z-tip:20;--z-toast:25;--z-skip:30;
+  /* inside every product window: one black, one hairline, two inks */
+  --win-bk:#0b0d11;--win-line:#1e232b;--win-ink:#e8eaed;--win-dim:#9aa3b1;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@supports (transition-timing-function:linear(0,1)){
+  :root{
+    /* damped spring, zeta 0.7 (about 4% overshoot) */
+    --spring:linear(0, .033, .1154, .2265, .3501, .4746, .592, .6973, .7878, .8626, .9221, .9675, 1.0004, 1.0228, 1.0367, 1.0438, 1.046, 1.0446, 1.0409, 1.0358, 1.0302, 1.0244, 1.019, 1.0141, 1.0099, 1.0065, 1.0037, 1.0016, 1, .999, .9983, .998, .9979, .9979, .9981, .9983, 1);
+    /* firmer spring, zeta 0.8 (about 1.5% overshoot) */
+    --spring-firm:linear(0, .0253, .0889, .1755, .2737, .3752, .474, .5664, .6499, .7235, .7867, .84, .8838, .9193, .9472, .9688, .985, .9967, 1.0049, 1.0102, 1.0133, 1.0148, 1.0152, 1.0147, 1.0136, 1.0123, 1.0108, 1.0092, 1.0077, 1.0064, 1.0051, 1.004, 1.0031, 1.0023, 1.0017, 1.0011, 1);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:var(--nav-h);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--font);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+
+/* ================= product windows: shared chrome, fields, the three product bodies ================= */
+
+/* ---------- the gallery wall: each product on its own tinted, grained field ---------- */
+.mat{position:relative;isolation:isolate;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;
+  padding:var(--mat-pad,clamp(16px,4vw,56px));border-radius:20px;background:var(--field)}
+.mat::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+  background:var(--grain);opacity:.42;mix-blend-mode:overlay}
+/* Skillproof: hue of the site's own accent (#3D6DA6, h 254) */
+.mat-sp{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.36 0.075 260) 0%,oklch(0.26 0.045 257) 42%,transparent 100%),oklch(0.18 0.022 254)}
+/* Modelproof: hue of the board's own accent (#b5502e, h 39) */
+.mat-mp{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.37 0.08 43) 0%,oklch(0.265 0.05 41) 42%,transparent 100%),oklch(0.18 0.024 39)}
+.fit{position:relative;width:100%;min-width:0;max-width:940px}
+
+/* ---------- shared window chrome ---------- */
+.win{position:relative;z-index:var(--z-win);margin:0;border-radius:10px;
+  box-shadow:0 0 0 1px rgb(0 0 0 / .5),0 2px 4px rgb(0 0 0 / .25),0 28px 56px -24px rgb(0 0 0 / .7);
+  transition:transform 650ms var(--spring)}
+.win::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  box-shadow:0 32px 56px -20px rgb(0 0 0 / .45);transition:opacity 260ms var(--ease-out)}
+.chrome{position:relative;display:flex;align-items:center;height:34px;padding:0 12px;background:var(--chrome);
+  border-radius:10px 10px 0 0;box-shadow:inset 0 -1px 0 var(--line)}
+.dots{display:flex;gap:7px}
+.dots i{position:relative;width:11px;height:11px;border-radius:50%;background:oklch(0.86 0.004 255)}
+.dots i::after{content:"";position:absolute;inset:0;border-radius:50%;opacity:0;transition:opacity 180ms var(--ease-out)}
+.dots i:nth-child(1)::after{background:#ff5f57}
+.dots i:nth-child(2)::after{background:#febc2e;transition-delay:30ms}
+.dots i:nth-child(3)::after{background:#28c840;transition-delay:60ms}
+.wtitle{position:absolute;left:84px;right:84px;text-align:center;font-size:12.5px;color:var(--ink-3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wbody{border-radius:0 0 10px 10px;overflow:hidden;position:relative}
+@media (hover:hover) and (pointer:fine){
+  .win:hover{transform:translateY(-3px)}
+  .win:hover::after{opacity:1}
+  .win:hover .dots i::after{opacity:1}
+}
+@media (max-width:640px){
+  .chrome{height:30px}.dots i{width:9px;height:9px}.dots{gap:6px}
+  .wtitle{left:64px;right:16px;font-size:11.5px}
+}
+@media (prefers-reduced-motion:reduce){.win:hover{transform:none}}
+
+/* ---------- Skillproof: the live site, still. One window: the finished terminal session, then the short list ----------
+   The terminal's colours are the live demo's own; the list is the site's, set on the shared window black. */
+@font-face{font-family:"Fragment Fallback";src:local("Menlo"),local("Menlo-Regular"),local("DejaVu Sans Mono"),local("Liberation Mono");size-adjust:102.7%}
+.sp{container-type:inline-size;background:var(--win-bk);color:#d4d4d4;font-family:var(--font)}
+.sp :where(p){margin:0}
+/* type scales with the window, about 100 characters a line, so the lines break alike at any desktop width */
+.sp-term{padding:16px 20px 18px;font-family:"Fragment Mono","Fragment Fallback",ui-monospace,monospace;
+  font-size:12.5px;font-size:clamp(12px,calc((100cqw - 40px) / 60),13.5px);line-height:1.7}
+.sp-term>div{min-height:1.7em}
+/* hanging indents: a wrapped line starts under the text, not under the marker */
+.sp-term .you,.sp-term .tool,.sp-term .sub{padding-left:2ch;text-indent:-2ch}
+.sp-term .you::before,.sp-term .tool::before,.sp-term .sub::before{display:inline-block;width:2ch;text-indent:0}
+.sp-term .you{margin-bottom:8px}.sp-term .you::before{content:">";color:#8ab4ff}
+.sp-term .tool::before{content:"\23FA\FE0E";color:#7ee787}
+/* a reply hangs under the command it answers: its bracket under the command's text, its words two spaces on */
+.sp-term .sub{padding-left:5ch;text-indent:-3ch;color:#9aa1a9}.sp-term .sub::before{width:3ch;content:"\23BF";color:#6e6e6e}
+.sp-term .ask{margin:8px 0;padding:8px 12px;border:1px solid #333a44;border-radius:6px;background:#161a20}
+.sp-term .opt,.sp-term .ok{color:#7ee787}
+.sp-term .banner{display:inline-block;margin-bottom:10px;padding:6px 12px;border:1px solid #6b5bd6;border-radius:6px;color:#c9c2ff}
+.sp-term .banner b{color:#e0876a;font-weight:400}
+.sp-term .warn{color:#ff7b72}.sp-term .y{color:#e3b341}.sp-term .dim{color:#949494}
+/* the short list: flat rows under a hairline, each whole */
+.sp-list{padding:0 20px 6px;box-shadow:inset 0 1px 0 var(--win-line)}
+.sp-lh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:13px 0 11px;
+  font-size:14px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:var(--win-ink)}
+.sp-lh b{margin-left:4px;font:400 12px/1 var(--mono);letter-spacing:0;color:var(--win-dim)}
+.sp-lh .sp-src{font:400 11.5px/1.3 var(--mono);letter-spacing:-0.01em;color:var(--win-dim);white-space:nowrap}
+.sp-row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:20px;align-items:center;padding:10px 0 11px;
+  box-shadow:inset 0 1px 0 var(--win-line)}
+.sp-rt{display:flex;align-items:baseline;gap:10px;min-width:0;line-height:1.4}
+.sp-rt b{font-size:14.5px;font-weight:600;letter-spacing:-0.01em;color:var(--win-ink)}
+.sp-rt em{font:normal 11.5px/1.4 var(--mono);color:var(--win-dim);white-space:nowrap}
+.sp-rd{grid-column:1;margin-top:2px;font-size:13px;line-height:1.5;color:var(--win-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-add{grid-column:2;grid-row:1 / span 2;display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;
+  font-size:12.5px;font-weight:600;line-height:1;color:var(--win-ink);box-shadow:inset 0 0 0 1px #2c333d;white-space:nowrap}
+/* narrow window (phone): the live site's phone terminal. As there, the welcome banner has scrolled away */
+@container (max-width:600px){
+  .sp-term{padding:10px 12px 12px;font-size:10.2px;line-height:1.6}
+  .sp-term>div{min-height:1.6em}
+  .sp-term .banner{display:none}
+  .sp-term .sub{padding-left:4ch;text-indent:-2.5ch}.sp-term .sub::before{width:2.5ch}
+  .sp-term .you{margin-bottom:6px}
+  .sp-term .ask{margin:6px 0;padding:6px 9px}
+  .sp-list{padding:0 12px 2px}
+  .sp-lh{padding:10px 0 8px;font-size:13px}
+  .sp-lh b{font-size:11px}
+  .sp-lh .sp-src{font-size:10.5px}
+  /* a phone row is its name, its installs and Add; a description cut mid-word says less than none */
+  .sp-row{column-gap:12px;padding:9px 0 10px}
+  .sp-rt b{font-size:13.5px}
+  .sp-rt em{font-size:10.5px}
+  .sp-rd{display:none}
+  .sp-add{grid-row:1;height:24px;padding:0 9px;font-size:11.5px}
+}
+/* a short screen: as on the phone, the welcome banner has scrolled away, so the product fits one screen */
+@media (max-height:840px){.sp-term .banner{display:none}}
+/* with the banner hidden, the opening question leads the session instead of hanging off nothing as a reply */
+@media (max-height:840px){.sp-term .banner+.sub{padding-left:0;text-indent:0;color:#d4d4d4}.sp-term .banner+.sub::before{content:none}}
+@container (max-width:600px){.sp-term .banner+.sub{padding-left:0;text-indent:0;color:#d4d4d4}.sp-term .banner+.sub::before{content:none}}
+
+/* ---------- Modelproof: a capture of the live board ----------
+   Desktop: captured 840px wide at the board's own 100% zoom and shown 1:1, so the window crops the board instead of
+   shrinking it. Phone: captured at the phone window's width and scaled with it. */
+.mpx{background:#f7f7f4}
+.mpx img{display:block;width:100%;height:auto}
+@media (min-width:761px){
+  .mpx img{width:840px;max-width:none}
+  /* on a short screen the window ends sooner, so the whole row still fits under the nav */
+  .mpx{max-height:max(440px,calc(100svh - var(--nav-h) - var(--gap-y) - 2 * var(--mat-pad) - 50px))}
+  #modelproof .fit{max-width:840px}
+}
+
+/* ---------- DATproof: its field on the wall, and the product's own look inside the shared window ---------- */
+.mat-datproof{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.36 0.07 152) 0%,oklch(0.26 0.045 156) 42%,transparent 100%),oklch(0.175 0.024 162)}
+
+/* sized by its own width (container), not the viewport, so it holds up wherever the window sits */
+.dp{--dp-panel:#101318;--dp-line:var(--win-line);--dp-ink:var(--win-ink);--dp-dim:var(--win-dim);--dp-green:#56d77a;
+  /* intensity ramp: c0 = no buy that week, c1..c4 = the four levels in scripts/build-datproof.mjs */
+  --c0:#1a1f27;--c1:#1c4a2b;--c2:#23793d;--c3:#35b057;--c4:#5ee183;
+  container-type:inline-size;background:var(--win-bk);color:var(--dp-ink);font-family:var(--font)}
+.dp :where(p){margin:0}
+
+.dp-top{display:flex;align-items:center;gap:18px;height:36px;padding:0 20px;border-bottom:1px solid var(--dp-line);
+  font:12px/1 var(--mono);color:var(--dp-dim);white-space:nowrap;overflow:hidden}
+.dp-logo{font:14px/1 var(--mono);color:var(--dp-ink);letter-spacing:-0.01em}
+.dp-logo b{font-weight:400;color:#f7931a}
+.dp-top em{font-style:normal;color:var(--dp-ink)}
+
+.dp-hero{padding:32px 24px 26px;text-align:center}
+.dp-num{font:650 clamp(2.5rem,1.2rem + 7cqi,4.75rem)/1 var(--font);letter-spacing:-0.03em;color:var(--dp-green);
+  font-variant-numeric:tabular-nums}
+.dp-num .cm{margin-inline:-0.14em}
+.dp-sub{margin-top:12px;font-size:15px;line-height:1.5;color:var(--dp-dim)}
+.dp-sub b{color:var(--dp-ink);font-weight:600}
+.dp-sub .thru{white-space:nowrap}
+
+.dp-act{position:relative;margin:0 20px 20px;padding:18px 20px 16px;background:var(--dp-panel);border:1px solid var(--dp-line);border-radius:10px}
+.dp-act-h{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;flex-wrap:wrap}
+.dp-h{font-size:16px;font-weight:600;letter-spacing:-0.01em}
+.dp-wk{font:12px/1.4 var(--mono);color:var(--dp-dim);font-variant-numeric:tabular-nums}
+
+/* the grid: year axis, then a label + one stretched SVG per row */
+.dp-rows{--row-h:10px;position:relative;margin-top:14px}
+.dp-axis{position:relative;height:16px;font:10.5px/16px var(--mono);color:var(--dp-dim)}
+.dp-axis span{position:absolute;top:0}
+.dp-row{margin-top:8px}
+.dp-axis+.dp-row{margin-top:4px}
+.dp-label{display:block;margin-bottom:4px;font:11px/15px var(--mono);color:var(--dp-dim);white-space:nowrap}
+.dp-label em{font-style:normal;color:var(--dp-ink)}
+.dp-row svg{display:block;width:100%;height:var(--row-h)}
+.dp-row .c0{fill:none;stroke:var(--c0);stroke-width:1}
+.l1{fill:var(--c1)}.l2{fill:var(--c2)}.l3{fill:var(--c3)}.l4{fill:var(--c4)}
+/* playhead for the one-time fill; invisible unless assets/datproof.js animates it */
+.dp-head{position:absolute;left:0;top:18px;bottom:-2px;width:1px;background:var(--dp-green);opacity:0;pointer-events:none}
+
+.dp-legend{display:flex;align-items:center;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;margin-top:14px;
+  font:11px/1.4 var(--mono);color:var(--dp-dim)}
+.dp-key{display:flex;align-items:center;gap:4px}
+.dp-key i{width:10px;height:10px;border-radius:2px}
+.dp-key .k1{background:var(--c1)}.dp-key .k2{background:var(--c2)}.dp-key .k3{background:var(--c3)}.dp-key .k4{background:var(--c4)}
+
+/* hover readout (fine pointers only; built by assets/datproof.js) */
+.dp-tip{position:absolute;left:0;top:0;z-index:var(--z-tip,20);padding:6px 9px;border-radius:6px;background:#1f252e;
+  box-shadow:0 0 0 1px #2c333d,0 8px 20px -6px rgb(0 0 0 / .6);font:11.5px/1.35 var(--mono);color:var(--dp-ink);
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 120ms var(--ease-out)}
+.dp-tip.on{opacity:1}
+.dp-tip span{color:var(--dp-dim)}
+.dp-mark{position:absolute;z-index:var(--z-tip,20);min-width:2px;border-radius:1px;box-shadow:0 0 0 1px var(--dp-ink);pointer-events:none;opacity:0}
+.dp-mark.on{opacity:1}
+
+@container (min-width:760px){
+  .dp-hero{padding:46px 24px 36px}
+  .dp-act{margin:0 24px 24px;padding:20px 22px 18px}
+  .dp-rows{--row-h:12px}
+  .dp-row{margin-top:10px}
+}
+@container (max-width:520px){
+  .dp-top{height:32px;padding:0 12px;gap:12px;font-size:11px}
+  .dp-top .wide{display:none}
+  .dp-hero{padding:20px 12px 16px}
+  .dp-sub{font-size:13px}
+  .dp-sub .thru{display:block}
+  .dp-act{margin:0 10px 10px;padding:12px 12px 12px}
+  .dp-h{font-size:14px}
+  .dp-rows{--row-h:9px}
+  .dp-label{font-size:10.5px;line-height:14px;margin-bottom:3px}
+  .dp-legend{flex-direction:column;align-items:flex-start;gap:6px}
+}
+
+/* ================= the page: nav, alternating rows, captions, How it's built, footer ================= */
+
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.wrap{max-width:1360px;margin:0 auto;padding-inline:var(--gut)}
+a{color:inherit}
+dl,dd{margin:0}
+:focus{outline:none}
+:focus-visible{outline:2px solid transparent;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink);border-radius:6px}
+
+.skip{position:fixed;left:var(--gut);top:10px;z-index:var(--z-skip);padding:9px 16px;border-radius:999px;background:var(--ink);color:#fff;
+  font-size:14px;font-weight:500;text-decoration:none;transform:translateY(-180%);transition:transform 420ms var(--spring-firm)}
+.skip:focus-visible{transform:none;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+
+/* ---------- nav: appears after the hero, sticks, and a 2px ink bar marks the chapter in view ---------- */
+.nav{position:sticky;top:0;z-index:var(--z-nav);height:var(--nav-h);background:var(--bg)}
+/* the page side of the hero's handoff. With the WebGL sky, the page starts inside the stage's empty lower band, so the
+   nav and first row rise into the last of the daylight instead of after a blank beat. Until it sticks the nav is clear,
+   so no bar sits on the sky. No script, the CSS-only sky and reduced motion keep the plain order: their sky flips at a
+   threshold, so nothing may sit on it early. */
+:root{--handoff:max(0px,calc(100lvh - 68svh - 55px))}
+html.js .nav{margin-top:calc(var(--handoff) * -1)}
+html.js:not(.sx) .nav:not(.lined){background:transparent}
+html.nogl .nav,html.gllost .nav{margin-top:0}
+/* where the page overlaps the stage it fades in from clear: seamless while the sky clears, and after a jump (the skip
+   link) the caption still sits on the page colour while the sky catches up */
+main{position:relative;z-index:var(--z-main);background:linear-gradient(transparent,var(--bg) max(1px,calc(var(--handoff) - var(--nav-h))))}
+@media (max-width:640px){:root{--handoff:max(0px,calc(100lvh - 73svh - 55px))}}
+@media (prefers-reduced-motion:reduce){html.js .nav{margin-top:0}}
+.nav-in{position:relative;height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.nav-in::after{content:"";position:absolute;left:var(--gut);right:var(--gut);bottom:0;height:1px;background:var(--line);
+  opacity:0;transition:opacity 240ms var(--ease-out)}
+.nav.lined .nav-in::after{opacity:1}
+.brand{position:relative;display:inline-block;padding:6px 0;font-size:17px;font-weight:650;letter-spacing:-0.02em;text-decoration:none;white-space:nowrap}
+.nav-links{position:relative;display:flex;align-self:stretch}
+.chapters{display:flex;align-items:stretch;gap:2px;margin:0;padding:0;list-style:none}
+.chapters li{display:flex;align-items:center}
+.chapters a{position:relative;display:flex;align-items:center;height:34px;padding:0 12px;border-radius:999px;white-space:nowrap;
+  font-size:14.5px;color:var(--ink-2);text-decoration:none;transition:color 160ms var(--ease-out)}
+.chapters a[aria-current="true"]{color:var(--ink)}
+/* the one page link sits apart from the three chapters */
+.chapters .who{position:relative;margin-left:8px;padding-left:9px}
+.chapters .who::before{content:"";position:absolute;left:0;top:50%;width:1px;height:14px;margin-top:-7px;background:var(--line-strong)}
+@media (hover:hover) and (pointer:fine){.chapters a:hover{color:var(--ink)}}
+.ind{position:absolute;left:0;bottom:0;width:1px;height:2px;background:var(--ink);transform-origin:0 0;pointer-events:none;opacity:0;
+  transition:transform 650ms var(--spring),opacity 200ms var(--ease-out),background-color 200ms var(--ease-out)}
+.ind.on{opacity:1}
+.ind.preview{background:var(--line-strong)}
+.ind.jump{transition:opacity 200ms var(--ease-out)}
+
+/* ---------- buttons: one family. filled ink = Visit, outline = How it's built ---------- */
+.btn{position:relative;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px 0 16px;border:0;border-radius:999px;
+  font:500 15px/1 var(--font);text-decoration:none;white-space:nowrap;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;
+  transition:transform 500ms var(--spring),background-color 160ms var(--ease-out),color 160ms var(--ease-out),box-shadow 160ms var(--ease-out)}
+.btn svg{display:block;width:16px;height:16px;flex:none;transition:transform 500ms var(--spring-firm)}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-line{background:var(--bg);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-strong)}
+/* one designed focus ring: a 2px ink ring that springs in, offset from the control */
+.btn::after,.chapters a::after,.brand::after{content:"";position:absolute;inset:-4px;border-radius:999px;box-shadow:0 0 0 2px var(--ink);
+  opacity:0;transform:scale(.92);pointer-events:none;transition:opacity 120ms var(--ease-out),transform 420ms var(--spring)}
+.brand::after{inset:0 -6px;border-radius:10px}
+.btn:focus-visible,.chapters a:focus-visible,.brand:focus-visible{box-shadow:none}
+.btn-line:focus-visible{box-shadow:inset 0 0 0 1px var(--line-strong)}
+.btn:focus-visible::after,.chapters a:focus-visible::after,.brand:focus-visible::after{opacity:1;transform:none}
+.how-btn{padding:0 13px 0 16px}
+.how-btn svg{width:14px;height:14px}
+.how-btn[aria-expanded="true"]{box-shadow:inset 0 0 0 1px var(--ink)}
+.how-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+@media (hover:hover) and (pointer:fine){
+  .visit:hover svg{transform:translate(3px,-3px)}
+  .btn-ink:hover{transform:translateY(-2px);background:oklch(0.3 0.012 255)}
+  .btn-line:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px var(--ink)}
+  .how-btn:hover svg{transform:translateY(2px)}
+  .how-btn[aria-expanded="true"]:hover svg{transform:rotate(180deg) translateY(2px)}
+}
+.btn:active{transform:scale(.96);transition:transform 90ms var(--ease-out),background-color 160ms var(--ease-out),color 160ms var(--ease-out),box-shadow 160ms var(--ease-out)}
+/* no script: the panels are simply open, so the toggle has nothing to do */
+html:not(.js) .how-btn,html.sx .how-btn{display:none}
+
+/* ---------- a project: caption column beside its window, sides alternating ---------- */
+.work{padding-block:var(--gap-y)}
+.row{display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:start}
+.flip .row{grid-template-columns:minmax(0,1fr) var(--cap-w)}
+.flip .cap{order:2}
+/* the title's cap height lines up with the top edge of the window, not the mat */
+.cap{--h2:clamp(1.6rem,1.2rem + 1vw,2.1rem);min-width:0;padding-top:calc(var(--mat-pad) - var(--h2) * .18)}
+.cap h2{font-size:var(--h2);line-height:1.1;letter-spacing:-0.025em}
+.line{margin-top:14px;font-size:17px;line-height:1.5;color:var(--ink-2);text-wrap:pretty}
+/* at 330px this caption breaks short-long-short; a slightly shorter measure gives it an even rag */
+@media (min-width:1024px){#skillproof .line{max-width:17em}}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+
+/* How it's built: opens inside the caption column, under the buttons */
+.how{display:grid;grid-template-rows:1fr;transition:grid-template-rows 520ms var(--ease-expo)}
+.how-in{min-height:0;overflow:hidden}
+.how-body{display:grid;gap:20px;margin-top:28px;padding-top:22px;box-shadow:inset 0 1px 0 var(--line);
+  transition:opacity 360ms var(--ease-out) 60ms,transform 640ms var(--spring),visibility 0s}
+.how-body dt{font-size:14px;font-weight:600;line-height:1.4;letter-spacing:-0.005em;color:var(--ink)}
+.how-body dd{margin-top:6px;font-size:15.5px;line-height:1.55;color:var(--ink-2)}
+.hard b{font-weight:600;color:var(--ink)}
+html.js:not(.sx) .how:not(.open){grid-template-rows:0fr;transition-duration:300ms}
+html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px);visibility:hidden;
+  transition:opacity 160ms var(--ease-out),transform 260ms var(--ease-out),visibility 0s linear 300ms}
+
+/* the window's long shadow stays on its field */
+.mat{overflow:clip}
+
+/* ---------- also shipped: one slim ruled row, no window. The label sits in the caption column ---------- */
+.also{padding-block:calc(var(--gap-y) * 1.5) 0}
+.also-in{display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:baseline;
+  border-block:1px solid var(--line)}
+.also h2{grid-column:1;grid-row:1;font-size:17px;line-height:1.5;font-weight:500;letter-spacing:-0.005em;color:var(--ink-2)}
+.also-row{grid-column:2;grid-row:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:12px 32px;padding-block:35px}
+.also-txt{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 16px;min-width:0}
+.also-txt h3{font-size:1.375rem;line-height:1.2;letter-spacing:-0.02em}
+.also-txt p{font-size:16px;line-height:1.5;color:var(--ink-2)}
+.also .acts{flex:none;margin-top:0}
+.also .how{grid-column:2;grid-row:2}
+/* opened, the two notes sit side by side under the row, so it stays a band rather than a column */
+.also .how-body{margin-top:0;padding-block:24px 36px;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px var(--col-gap)}
+
+/* ---------- footer: one quiet line, measured in your browser ---------- */
+.foot{padding-block:clamp(72px,9vw,128px) 44px}
+.foot p{font-size:14px;line-height:1.6;color:var(--ink-3)}
+.foot .num{font:13px/1 var(--mono);color:var(--ink-2);letter-spacing:-0.01em}
+.foot a{color:var(--ink-2);text-underline-offset:3px;text-decoration-color:var(--line-strong);transition:text-decoration-color 160ms var(--ease-out),color 160ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.foot a:hover{color:var(--ink);text-decoration-color:currentColor}}
+
+/* ---------- 1024 to 1199: Modelproof alone stacks. Its board is shown at real size, so the window keeps its width ---------- */
+@media (min-width:1024px) and (max-width:1199px){
+  #modelproof .row{grid-template-columns:minmax(0,1fr);row-gap:22px}
+  #modelproof .cap{padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
+  #modelproof .cap>*,#modelproof .how-btn{grid-column:1 / -1}
+  #modelproof .cap h2{grid-column:1;grid-row:1}
+  #modelproof .acts{display:contents}
+  #modelproof .visit{grid-column:2;grid-row:1}
+  #modelproof .line{margin-top:8px;max-width:56ch;font-size:16px}
+  #modelproof .how-btn{justify-self:start;margin-top:16px}
+  #modelproof .how-body{margin-top:20px;max-width:62ch}
+}
+
+/* ---------- below 1024: the caption stacks above its window ---------- */
+@media (max-width:1023px){
+  .row,.flip .row{grid-template-columns:minmax(0,1fr);row-gap:22px}
+  .flip .cap{order:0}
+  .cap{padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
+  .cap>*,.cap .how-btn{grid-column:1 / -1}
+  .cap h2{grid-column:1;grid-row:1}
+  .cap .acts{display:contents}
+  .cap .visit{grid-column:2;grid-row:1}
+  .cap .line{margin-top:8px;max-width:56ch;font-size:16px}
+  .cap .how-btn{justify-self:start;margin-top:16px}
+  .cap .how-body{margin-top:20px;max-width:62ch}
+  .also-in{grid-template-columns:minmax(0,1fr);padding-top:20px}
+  .also h2{font-size:15px;color:var(--ink-3)}
+  .also-row{grid-column:1;grid-row:2;flex-direction:column;align-items:flex-start;gap:16px;padding-block:6px 24px}
+  .also-txt{display:block}
+  .also-txt p{margin-top:6px;max-width:56ch}
+  .also .how{grid-column:1;grid-row:3}
+  .also .how-body{grid-template-columns:minmax(0,1fr);max-width:62ch;padding-block:20px 28px}
+}
+@media (max-width:640px){
+  :root{--nav-h:52px;--gap-y:24px}
+  .nav-in{gap:8px}
+  .chapters{gap:0}
+  .chapters a{padding:0 6px;font-size:13.5px}
+  .chapters .who{margin-left:2px;padding-left:3px}
+  .brand{font-size:15.5px}
+  /* on a phone the field runs edge to edge, so the window gets the whole width */
+  .mat{margin-inline:calc(var(--gut) * -1);border-radius:0}
+}
+@media (max-width:374px){
+  .chapters a{padding:0 4px;font-size:13px}
+}
+
+/* ---------- reduced motion: no travel, fades stay ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:120ms!important;transition-timing-function:ease!important}
+  .how,html.js:not(.sx) .how:not(.open){transition:none!important}
+  .how-body,html.js:not(.sx) .how:not(.open) .how-body{transform:none!important}
+  .ind{transition:opacity 120ms ease!important}
+  .btn:hover,.btn:active,.visit:hover svg,.how-btn:hover svg{transform:none!important}
+  .how-btn[aria-expanded="true"] svg,.how-btn[aria-expanded="true"]:hover svg{transform:rotate(180deg)!important}
+  .skip{transition:none!important}
+}
+
+/* a phone-width window title stays at a legible 12px */
+@media (max-width:640px){.wtitle{font-size:12px}}
