@@ -27,9 +27,10 @@
   --mono:"Fragment Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --ease-out:cubic-bezier(0.25,1,0.5,1);--ease-expo:cubic-bezier(0.16,1,0.3,1);
   --spring:cubic-bezier(0.2,0.9,0.25,1);--spring-firm:cubic-bezier(0.2,0.85,0.3,1);
-  --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(24px,5.5vh,48px);
-  --mat-pad:clamp(16px,4vw,56px);--col-gap:clamp(24px,3vw,48px);
-  --z-win:1;--z-nav:10;--z-tip:20;--z-skip:30;
+  /* row spacing follows the screen's height too, so a product and its caption fit one laptop screen */
+  --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(16px,4svh,48px);
+  --mat-pad:clamp(16px,min(4vw,4.5svh),56px);--col-gap:clamp(24px,3vw,48px);
+  --z-win:1;--z-main:1;--z-nav:10;--z-tip:20;--z-skip:30;
   --win-bk:#0b0d11;
   --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -298,9 +299,9 @@ html.gllost .sky-gl{transition:none}
       <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="wtitle">lucascashwell3-ai.github.io/modelproof/board</span></div>
       <div class="wbody mpx">
         <picture>
-          <source media="(max-width: 760px)" srcset="assets/img/modelproof-board-phone.webp 780w, assets/img/modelproof-board-phone-3x.webp 1170w" sizes="100vw" width="780" height="988">
-          <img src="assets/img/modelproof-board.webp" width="1880" height="1172" loading="lazy" decoding="async"
-            alt="Modelproof's example board for Northwind Labs. Divisions for Engineering, Data, Marketing and Leadership hold people and automated routines, and each block shows the AI model it runs on and what it costs a month: Backend team of six on Sonnet 5 for $120, an ETL pipeline on DeepSeek V4-Flash for $1,282. The whole board comes to $2,842 a month.">
+          <source media="(max-width: 760px)" srcset="assets/img/modelproof-board-phone.webp 716w, assets/img/modelproof-board-phone-3x.webp 1074w" sizes="(max-width: 640px) calc(100vw - 32px), 84vw" width="716" height="932">
+          <img src="assets/img/modelproof-board.webp" srcset="assets/img/modelproof-board-1x.webp 840w, assets/img/modelproof-board.webp 1680w" sizes="840px" width="840" height="604" loading="lazy" decoding="async"
+            alt="Modelproof's example board for Northwind Labs: $2,842 a month across 8 blocks and 4 divisions. Engineering, 11 people at $300 a month, holds a backend team of six on Sonnet 5 for $120, a platform lead on Opus 5 for $100 and a frontend team of four on GPT-5.6 Sol for $80. Marketing, at $800 a month, holds a content team of two on Sonnet 5 for $34 and a support bot on Gemini 3.6 Flash for $766. The Data and Leadership divisions continue past the window's edge.">
         </picture>
       </div>
     </figure>
@@ -313,20 +314,22 @@ html.gllost .sky-gl{transition:none}
     <div class="wrap">
       <div class="also-in">
         <h2 id="also-h">Also shipped</h2>
-        <div class="cap cap-sm">
-          <h3>rls-guard</h3>
-          <p class="line">Audits your Supabase row-level security and hands you the fix SQL.</p>
+        <div class="also-row">
+          <div class="also-txt">
+            <h3>rls-guard</h3>
+            <p>Audits your Supabase row-level security and hands you the fix SQL.</p>
+          </div>
           <div class="acts">
             <a class="btn btn-ink visit" href="https://www.npmjs.com/package/rls-guard-mcp">Visit<span class="sr"> rls-guard on npm</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a>
             <button class="btn btn-line how-btn" type="button" aria-expanded="false" aria-controls="rg-how">How it’s built<span class="sr">: rls-guard</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z"/></svg></button>
           </div>
-          <div class="how" id="rg-how">
-            <div class="how-in">
-              <dl class="how-body">
-                <div class="stack"><dt>Stack</dt><dd>An MCP server you run with npx. It checks your Supabase REST API (PostgREST) using the public anon key, and renders reports to HTML and PDF with Puppeteer.</dd></div>
-                <div class="hard"><dt>Hard problem</dt><dd>To learn whether strangers can add rows to a table, you’d normally have to add one. rls-guard sends an empty insert the database is told to undo, then reads the reply: a permission error means blocked, while reaching the data checks means strangers can write. No row is ever written.</dd></div>
-              </dl>
-            </div>
+        </div>
+        <div class="how" id="rg-how">
+          <div class="how-in">
+            <dl class="how-body">
+              <div class="stack"><dt>Stack</dt><dd>An MCP server you run with npx. It checks your Supabase REST API (PostgREST) using the public anon key, and renders reports to HTML and PDF with Puppeteer.</dd></div>
+              <div class="hard"><dt>Hard problem</dt><dd>To learn whether strangers can add rows to a table, you’d normally have to add one. rls-guard sends an empty insert the database is told to undo, then reads the reply: a permission error means blocked, while reaching the data checks means strangers can write. No row is ever written.</dd></div>
+            </dl>
           </div>
         </div>
       </div>
