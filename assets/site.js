@@ -1,6 +1,7 @@
 /* Proof: the small script both pages share. How it's built toggles, the nav's chapter indicator and hairline, the
-   footer measurement, and the browser bar colour. Each part does nothing on a page without its elements.
-   The page is complete without it: panels open, no indicator, no numbers. */
+   footer measurement, the browser bar colour, and the Skillproof demo's player. Each part does nothing on a page
+   without its elements. The page is complete without it: panels open, no indicator, no numbers, and the demo's
+   first frame, still. */
 (function () {
   "use strict";
   var D = document, W = window;
@@ -128,4 +129,87 @@
     };
     if (D.readyState === "complete") loaded(); else W.addEventListener("load", loaded);
   }
+  /* ---------- Skillproof: the demo video ----------
+     Muted, it plays once the page has loaded and the window is in view, and stops when it leaves; the corner button
+     pauses it until pressed again. Reduced motion: no autoplay, a "Play the demo" button in the middle instead. The
+     video only downloads when it first plays. The line under it follows the step on screen (cues from the
+     Skillproof site's own player), fading out where the screen speaks for itself. */
+  /* its own scope: the names below (shown, frame…) are already taken by the nav above */
+  (function () {
+  var vbox = D.querySelector(".spv .wbody[data-video]"), vcap = D.querySelector(".spv-cap");
+  if (vbox && vcap && W.IntersectionObserver) {
+    /* added here, not in the page: with scripting off a browser would show its own controls on a black box */
+    var vid = D.createElement("video");
+    vid.muted = vid.defaultMuted = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    vid.preload = "none";
+    vid.width = 1280; vid.height = 720;
+    vid.setAttribute("muted", ""); vid.setAttribute("playsinline", "");
+    vid.setAttribute("aria-describedby", "spv-desc");
+    vid.src = vbox.getAttribute("data-video");
+    vbox.appendChild(vid);
+    var PLAY = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg>';
+    var PAUSE = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></svg>';
+    var CUES = [[0, 2.57, "Copy the prompt"], [2.73, 5.83, "Open your favorite AI"], [6, 9.97, "Paste the prompt"],
+      [10.13, 16.7, "Say what’s off"], [16.87, 21.73, "Approve the plan"],
+      [29.23, 32.03, "Same AI. Made easier by Skillproof."], [32.03, 1e9, "Copy the prompt"]];
+    var calm = W.matchMedia("(prefers-reduced-motion: reduce)");
+    var held = false, seen = false, ready = D.readyState === "complete", shown = null, swap = 0;
+    var vbtn = D.createElement("button");
+    vbtn.type = "button";
+    vbtn.className = "spv-btn" + (calm.matches ? " big" : "");
+    vbox.appendChild(vbtn);
+
+    var paint = function () {
+      var on = !vid.paused;
+      if (on) vbtn.classList.remove("big");
+      vbtn.innerHTML = (on ? PAUSE : PLAY) + (vbtn.classList.contains("big") ? "Play the demo" : "");
+      if (vbtn.classList.contains("big")) vbtn.removeAttribute("aria-label");
+      else vbtn.setAttribute("aria-label", on ? "Pause the demo" : "Play the demo");
+    };
+    var cue = function (t) {
+      var s = "";
+      for (var i = 0; i < CUES.length; i++) if (t >= CUES[i][0] && t < CUES[i][1]) { s = CUES[i][2]; break; }
+      if (s === shown) return;
+      shown = s;
+      vcap.classList.add("off");
+      clearTimeout(swap);
+      if (s) swap = setTimeout(function () { vcap.textContent = s; vcap.classList.remove("off"); }, 180);
+    };
+    var go = function () {
+      if (held || calm.matches || !seen || !ready) return;
+      vid.preload = "auto";
+      var p = vid.play();
+      if (p && p.catch) p.catch(paint);
+    };
+
+    paint();
+    vid.addEventListener("play", paint);
+    vid.addEventListener("pause", paint);
+    vbtn.addEventListener("click", function () {
+      if (vid.paused) {
+        held = false;
+        vid.preload = "auto";
+        var p = vid.play();
+        if (p && p.catch) p.catch(paint);
+      } else { held = true; vid.pause(); }
+    });
+    new W.IntersectionObserver(function (es) {
+      seen = es[es.length - 1].isIntersecting;
+      if (seen) go(); else if (!vid.paused) vid.pause();
+    }, { threshold: 0.35 }).observe(vid);
+    /* the first frame: fetched only once the page has loaded */
+    var still = D.querySelector(".spv-still");
+    var frame0 = function () { if (still && !still.getAttribute("src")) still.src = still.getAttribute("data-src"); };
+    if (ready) frame0();
+    else W.addEventListener("load", function () { ready = true; frame0(); go(); });
+    /* the caption follows the picture frame by frame where the browser says which frame is showing */
+    if (vid.requestVideoFrameCallback) {
+      var frame = function (now, meta) { cue(meta ? meta.mediaTime : vid.currentTime); vid.requestVideoFrameCallback(frame); };
+      vid.requestVideoFrameCallback(frame);
+    } else vid.addEventListener("timeupdate", function () { cue(vid.currentTime); });
+    vid.addEventListener("play", function () { cue(vid.currentTime); });
+  }
+  })();
 })();
