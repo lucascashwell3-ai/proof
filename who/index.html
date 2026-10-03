@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Who am I · Lucas Cashwell</title>
-<meta name="description" content="Lucas Cashwell teaches himself to build with AI on nights and weekends, and ships what he builds. Also into Bitcoin, DeFi and digital asset treasuries.">
+<meta name="description" content="Lucas Cashwell taught himself to build with AI on nights and weekends. He follows digital assets and all things AI, and builds the Proof family of tools.">
 <meta name="theme-color" content="#f7f8f9">
 <meta property="og:title" content="Who am I · Lucas Cashwell">
-<meta property="og:description" content="Lucas Cashwell teaches himself to build with AI on nights and weekends, and ships what he builds. Also into Bitcoin, DeFi and digital asset treasuries.">
+<meta property="og:description" content="Lucas Cashwell taught himself to build with AI on nights and weekends. He follows digital assets and all things AI, and builds the Proof family of tools.">
 <meta property="og:type" content="profile">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b1f26'/%3E%3Cpath d='M7 21a9 9 0 0 1 18 0z' fill='%23ffd7a6'/%3E%3Crect x='5' y='21' width='22' height='2' rx='1' fill='%23f7f8f9'/%3E%3C/svg%3E">
 <link rel="preload" href="../assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/site.css">
+<!-- with script the portrait is drawn in text, so the plain photo never shows (a class of its own: "js" also moves the home page nav) -->
+<script>document.documentElement.classList.add("pf-js")</script>
 <style>
 /* ================= Who am I: the name column beside the words, the links under the name ================= */
 /* this page's nav: no chapter in view, so the bar sits still under the page you are on */
@@ -20,8 +22,9 @@
 
 /* a short page: it fills the screen, the words sit a little above its middle, the footer rests on the bottom edge */
 body{display:flex;flex-direction:column;min-height:100vh;min-height:100svh}
-main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
-.about{padding-block:clamp(44px,7.5vw,112px) clamp(64px,10vw,160px)}
+main{flex:1 0 auto;display:flex;flex-direction:column}
+/* auto margins centre the words without pushing a page taller than the screen off its top */
+.about{margin-block:auto;padding-block:clamp(44px,7.5vw,112px) clamp(64px,10vw,160px)}
 .about-in{--h1:clamp(2.5rem,1.9rem + 1.6vw,3.375rem);--lede:clamp(1.25rem,1.1rem + .45vw,1.5rem);display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:start;
   grid-template-areas:"name words" "reach words";grid-template-rows:auto 1fr}
 .about h1{grid-area:name;font-size:var(--h1);line-height:1;letter-spacing:-0.035em}
@@ -63,11 +66,78 @@ main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
 .toast svg{display:block;flex:none;width:16px;height:16px}
 .toast span{color:oklch(0.82 0.008 255);overflow:hidden;text-overflow:ellipsis}
 
+
+/* the portrait: a third column from 1200px; under the name from 1024px; under the heading on smaller screens */
+@media (min-width:1200px){
+  .about-in{grid-template-columns:var(--cap-w) minmax(0,1fr) clamp(260px,24vw,340px);grid-template-areas:"name words pf" "reach words pf"}
+  .pf{margin-top:6px}
+}
+@media (min-width:1024px) and (max-width:1199px){
+  .about-in{grid-template-areas:"name words" "pf words" "reach words";grid-template-rows:auto auto 1fr}
+  .pf{margin-top:32px;max-width:300px}
+}
+
+/* the photo, drawn in text by portrait.js; the pointer warms the glyphs to the hero's sunrise. Without script, the photo */
+.pf{grid-area:pf;position:relative;margin:0;aspect-ratio:1;--pf-ink:oklch(0.2 0.01 255);--pf-hot:oklch(0.66 0.15 52);
+  touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.pf canvas{position:absolute;left:0;top:0;display:block;width:100%;cursor:crosshair}
+.pf img{display:block;width:100%;height:auto;filter:grayscale(1) contrast(1.05)}
+.pf-js .pf img,html:not(.pf-js) .pf canvas{display:none}
+
+/* the two documents under the words: a page on a mat and a badge on a mat; each opens at reading size */
+.docs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:34rem;margin-top:40px;padding-top:28px;box-shadow:inset 0 1px 0 var(--line)}
+.doc{position:relative;display:grid;align-content:start;gap:12px;color:var(--ink);text-decoration:none;
+  -webkit-tap-highlight-color:transparent;transition:transform 500ms var(--spring)}
+.dmat{display:grid;place-items:center;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--mat);box-shadow:inset 0 0 0 1px var(--mat-line)}
+.dmat img{display:block;height:auto;transition:transform 520ms var(--spring)}
+.dmat-page{place-items:start center}
+.dmat-page img{width:78%;margin-top:14%;border-radius:2px;box-shadow:0 1px 2px rgb(20 24 31 / .1),0 6px 18px -6px rgb(20 24 31 / .18)}
+.dmat-badge img{width:58%;filter:drop-shadow(0 6px 12px rgb(120 60 30 / .18))}
+.dt{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.dt > span{display:flex;flex-direction:column}
+.dk{font-size:15.5px;font-weight:500;line-height:1.35;letter-spacing:-0.005em}
+.dv{font-size:13.5px;line-height:1.4;color:var(--ink-3)}
+.dt svg{flex:none;width:16px;height:16px;margin-top:3px;color:var(--ink-2);transition:transform 500ms var(--spring-firm)}
+.doc:focus-visible{box-shadow:none}
+.doc::after{content:"";position:absolute;inset:-6px;border-radius:14px;box-shadow:0 0 0 2px var(--ink);opacity:0;transform:scale(.98);pointer-events:none;
+  transition:opacity 120ms var(--ease-out),transform 420ms var(--spring)}
+.doc:focus-visible::after{opacity:1;transform:none}
+@media (hover:hover) and (pointer:fine){
+  .doc:hover .dmat-page img{transform:translateY(-6%)}
+  .doc:hover .dmat-badge img{transform:rotate(-5deg) scale(1.04)}
+  .doc:hover .dt svg{transform:scale(1.12)}
+}
+.doc:active{transform:scale(.985);transition:transform 90ms var(--ease-out)}
+
+/* the sheet who.js opens: the document at reading size, over a dimmed page */
+.sheet{border:0;padding:0;margin:auto;background:transparent;max-width:none;max-height:none;overflow:visible;
+  opacity:0;transform:translateY(8px) scale(.97);
+  transition:opacity 160ms var(--ease-out),transform 160ms var(--ease-out),display 160ms allow-discrete,overlay 160ms allow-discrete}
+.sheet[open]{opacity:1;transform:none;transition-duration:260ms;transition-timing-function:var(--ease-expo)}
+@starting-style{.sheet[open]{opacity:0;transform:translateY(12px) scale(.96)}}
+.sheet::backdrop{background:oklch(0.2 0.01 255 / 0);transition:background 200ms var(--ease-out),display 200ms allow-discrete,overlay 200ms allow-discrete}
+.sheet[open]::backdrop{background:oklch(0.2 0.01 255 / .55)}
+@starting-style{.sheet[open]::backdrop{background:oklch(0.2 0.01 255 / 0)}}
+.sheet-in{position:relative;width:min(620px,calc(100vw - 32px));max-height:calc(100svh - 48px);overflow:auto;border-radius:12px;background:#faf9f6;
+  box-shadow:0 30px 80px -20px rgb(10 12 16 / .5)}
+.sheet-in > img{display:block;width:100%;height:auto}
+.sheet-badge .sheet-in{width:min(440px,calc(100vw - 32px));background:var(--chrome);padding:36px 32px 28px;text-align:center}
+.sheet-badge .sheet-in > img{width:min(260px,70%);margin:0 auto 22px}
+.sheet-badge h2{font-size:22px;font-weight:500;letter-spacing:-0.015em;line-height:1.25}
+.sheet-badge p{margin-top:6px;font-size:15px;color:var(--ink-3)}
+.x{position:absolute;top:10px;right:10px;width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:999px;cursor:pointer;
+  background:oklch(0.2 0.01 255 / .78);color:#fff;transition:transform 300ms var(--spring),background 160ms var(--ease-out)}
+.x svg{width:16px;height:16px}
+@media (hover:hover) and (pointer:fine){.x:hover{background:var(--ink)}}
+.x:active{transform:scale(.94)}
+.x:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+
 .foot{padding-top:0}
 .foot a{white-space:nowrap}
 
 @media (max-width:1023px){
-  .about-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"name" "words" "reach";grid-template-rows:none}
+  .about-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"name" "pf" "words" "reach";grid-template-rows:none}
+  .pf{margin-top:28px;width:min(340px,100%)}
   .words{margin-top:22px}
   .reach{margin-top:36px;max-width:34rem}
 }
@@ -77,10 +147,14 @@ main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){
   .rl:hover .ra,.rl:active{transform:none!important}
+  .doc:hover .dmat img,.doc:active,.doc:hover .dt svg{transform:none!important}
+  .sheet,.sheet[open]{transform:none}
+  @starting-style{.sheet[open]{transform:none}}
 }
 </style>
 <script defer src="../assets/site.js"></script>
 <script defer src="../assets/who.js"></script>
+<script defer src="../assets/portrait.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -104,10 +178,26 @@ main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
     <div class="wrap about-in">
       <h1 id="who-h">Who am I</h1>
 
+      <figure class="pf" data-src="../assets/who/portrait.webp" role="img" aria-label="Portrait of Lucas, drawn in text characters">
+        <canvas aria-hidden="true"></canvas>
+        <img src="../assets/who/portrait.webp" alt="" width="232" height="232">
+      </figure>
+
       <div class="words">
-        <p class="lede">I’m Lucas. I taught myself to build with AI on nights and weekends, and I ship what I build.</p>
-        <p>My rule is simple: pick a real problem, build the tool, put it live, and show where every number comes from. I care less about talking about AI than about making something that works when you click it.</p>
-        <p>I’m just as into Bitcoin. I follow DeFi and digital asset treasuries, the companies that hold bitcoin on their balance sheets. Lately I’m learning how AI agents will pay each other, mostly with stablecoins on chains like Ethereum and Solana.</p>
+        <p class="lede">I’m Lucas. I taught myself to build with AI on nights and weekends, and became the person people bring their AI questions to at work.</p>
+        <p>Like many others, I got exhausted by the hollow AI speak and AI strategy buzzwords, so I started building and publishing with it myself.</p>
+        <p>Outside work, I follow digital assets and all things AI. I’ve been using AI to dig deeper into those interests and build tools I’ve found helpful. The Proof family all started that way.</p>
+
+        <div class="docs">
+          <a class="doc" href="../assets/who/slop-agreement.webp" data-sheet="sheet-slop" aria-haspopup="dialog">
+            <span class="dmat dmat-page"><img src="../assets/who/slop-agreement-sm.webp" alt="" width="520" height="674" loading="lazy" decoding="async"></span>
+            <span class="dt"><span><span class="dk">AI Slop Agreement</span><span class="dv">A personal standard, in writing</span></span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,48V96a8,8,0,0,1-13.66,5.66L184,83.31l-34.34,34.35a8,8,0,0,1-11.32-11.32L172.69,72,154.34,53.66A8,8,0,0,1,160,40h48A8,8,0,0,1,216,48ZM106.34,138.34,72,172.69,53.66,154.34A8,8,0,0,0,40,160v48a8,8,0,0,0,8,8H96a8,8,0,0,0,5.66-13.66L83.31,184l34.35-34.34a8,8,0,0,0-11.32-11.32Z"/></svg></span>
+          </a>
+          <a class="doc" href="../assets/who/claude-certified.webp" data-sheet="sheet-cert" aria-haspopup="dialog">
+            <span class="dmat dmat-badge"><img src="../assets/who/claude-certified-sm.webp" alt="" width="380" height="380" loading="lazy" decoding="async"></span>
+            <span class="dt"><span><span class="dk">Claude Certified Architect</span><span class="dv">Foundations · Anthropic</span></span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,48V96a8,8,0,0,1-13.66,5.66L184,83.31l-34.34,34.35a8,8,0,0,1-11.32-11.32L172.69,72,154.34,53.66A8,8,0,0,1,160,40h48A8,8,0,0,1,216,48ZM106.34,138.34,72,172.69,53.66,154.34A8,8,0,0,0,40,160v48a8,8,0,0,0,8,8H96a8,8,0,0,0,5.66-13.66L83.31,184l34.35-34.34a8,8,0,0,0-11.32-11.32Z"/></svg></span>
+          </a>
+        </div>
       </div>
 
       <ul class="reach" aria-label="Links">
@@ -121,9 +211,25 @@ main{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
   </article>
 </main>
 
+<!-- what each document opens to; who.js puts it in a dialog. Without script the links open the images themselves -->
+<template id="sheet-slop">
+  <div class="sheet-in">
+    <img src="../assets/who/slop-agreement.webp" width="1100" height="1424" alt="AI Slop Agreement. A personal standard, in writing. I will never publish, post, or present anything made by AI that I didn't direct and approve. AI slop is generated content made without a good-faith effort or an earnest review, then published and marketed with no transparency about how it was actually made. What this means in practice: 1. Everything I release is my own doing, AI-assisted or not. I own the ideation, I own the review process, and I take full responsibility for anything with my name on it. 2. I don't misrepresent how my content and projects were made. 3. I don't feign authority with AI buzzwords or deliberately overstate what I actually know. Lucas Cashwell, September 2026.">
+    <form method="dialog"><button class="x" aria-label="Close"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></button></form>
+  </div>
+</template>
+<template id="sheet-cert">
+  <div class="sheet-in">
+    <img src="../assets/who/claude-certified.webp" width="604" height="604" alt="Badge: Foundations, Claude Certified Architect">
+    <h2>Claude Certified Architect</h2>
+    <p>Foundations · certified by Anthropic, September 2026</p>
+    <form method="dialog"><button class="x" aria-label="Close"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></button></form>
+  </div>
+</template>
+
 <footer class="foot">
   <div class="wrap foot-in">
-    <p>Hand-built, no framework.<span id="measure"></span> · <a href="../">Proof</a></p>
+    <p><span id="measure"></span><a href="../">Proof</a></p>
   </div>
 </footer>
 

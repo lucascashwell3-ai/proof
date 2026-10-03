@@ -324,7 +324,6 @@ html:not(.js) .how-btn,html.sx .how-btn{display:none}
   transition:opacity 360ms var(--ease-out) 60ms,transform 640ms var(--spring),visibility 0s}
 .how-body dt{font-size:14px;font-weight:600;line-height:1.4;letter-spacing:-0.005em;color:var(--ink)}
 .how-body dd{margin-top:6px;font-size:15.5px;line-height:1.55;color:var(--ink-2)}
-.hard b{font-weight:600;color:var(--ink)}
 html.js:not(.sx) .how:not(.open){grid-template-rows:0fr;transition-duration:300ms}
 html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px);visibility:hidden;
   transition:opacity 160ms var(--ease-out),transform 260ms var(--ease-out),visibility 0s linear 300ms}
@@ -350,6 +349,8 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
 .foot{padding-block:clamp(72px,9vw,128px) 44px}
 .foot p{font-size:14px;line-height:1.6;color:var(--ink-3)}
 .foot .num{font:13px/1 var(--mono);color:var(--ink-2);letter-spacing:-0.01em}
+/* the dot before the link only shows once the measurement has been written */
+#measure:not(:empty)::after{content:"\00a0· "}
 .foot a{color:var(--ink-2);text-underline-offset:3px;text-decoration-color:var(--line-strong);transition:text-decoration-color 160ms var(--ease-out),color 160ms var(--ease-out)}
 @media (hover:hover) and (pointer:fine){.foot a:hover{color:var(--ink);text-decoration-color:currentColor}}
 

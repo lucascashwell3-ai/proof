@@ -1,5 +1,6 @@
-/* Proof, Who am I: copy the email address, with a note that says so. The nav and the footer measurement come from
-   site.js, as on the home page. The page is complete without it: the email row is a plain mailto link. */
+/* Proof, Who am I: copy the email address, with a note that says so, and open the two documents at reading size.
+   The nav and the footer measurement come from site.js, as on the home page; the portrait is portrait.js. The page
+   is complete without it: the email row is a plain mailto link and each document link opens its image. */
 (function () {
   "use strict";
   var D = document, W = window, ADDR = "lucascashwell3@gmail.com";
@@ -53,5 +54,25 @@
         say(legacy());
       }
     });
+  }
+  /* ---------- the documents: each link opens its template in a dialog; the dialog is removed once it closes ---------- */
+  var docs = D.querySelectorAll("a.doc[data-sheet]");
+  if (docs.length && typeof W.HTMLDialogElement === "function") {
+    var open = function (e) {
+      if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;   /* new tab, new window: leave it */
+      var a = e.currentTarget, tpl = D.getElementById(a.getAttribute("data-sheet"));
+      if (!tpl) return;
+      e.preventDefault();
+      var dlg = D.createElement("dialog");
+      dlg.className = "sheet" + (a.getAttribute("data-sheet") === "sheet-cert" ? " sheet-badge" : "");
+      dlg.setAttribute("aria-label", a.querySelector(".dk").textContent);
+      dlg.appendChild(tpl.content.cloneNode(true));
+      /* a click on the dimmed page (the dialog's own box, outside the sheet) closes it */
+      dlg.addEventListener("click", function (ev) { if (ev.target === dlg) dlg.close(); });
+      dlg.addEventListener("close", function () { setTimeout(function () { dlg.remove(); }, 300); });
+      D.body.appendChild(dlg);
+      dlg.showModal();
+    };
+    for (var i = 0; i < docs.length; i++) docs[i].addEventListener("click", open);
   }
 })();
