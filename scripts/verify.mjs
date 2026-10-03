@@ -537,9 +537,9 @@ async function mainPageChecks(browser, P, csv) {
 
       // 10. How it's built
       await guard(P.label, '10 how-it\'s-built toggles', async () => {
-        const btns = page.locator('button, [role="button"]').filter({ hasText: /how it.?s built/i });
+        const btns = page.locator('button.how-btn');   // the toggles that open How it's built (labelled "Learn more")
         const n = await btns.count();
-        if (!n) { line(false, P.label, '10 how-it\'s-built toggles', '0 "How it\'s built" buttons found'); return; }
+        if (!n) { line(false, P.label, '10 how-it\'s-built toggles', '0 How it\'s built toggles (button.how-btn) found'); return; }
         const errBefore = errors.length;
         const state = i => btns.nth(i).evaluate(b => {
           const ids = (b.getAttribute('aria-controls') || '').split(/\s+/).filter(Boolean);
