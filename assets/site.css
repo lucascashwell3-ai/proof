@@ -77,65 +77,33 @@ p{margin:0;text-wrap:pretty}
 }
 @media (prefers-reduced-motion:reduce){.win:hover{transform:none}}
 
-/* ---------- Skillproof: the live site, still. One window: the finished terminal session, then the short list ----------
-   The terminal's colours are the live demo's own; the list is the site's, set on the shared window black. */
+/* ---------- Skillproof: the site's own demo, playing. The video holds its own windows, so it sits on the field as a
+   screen with no browser bar of its own; the step it is on reads underneath ---------- */
 @font-face{font-family:"Fragment Fallback";src:local("Menlo"),local("Menlo-Regular"),local("DejaVu Sans Mono"),local("Liberation Mono");size-adjust:102.7%}
-.sp{container-type:inline-size;background:var(--win-bk);color:#d4d4d4;font-family:var(--font)}
-.sp :where(p){margin:0}
-/* type scales with the window, about 100 characters a line, so the lines break alike at any desktop width */
-.sp-term{padding:16px 20px 18px;font-family:"Fragment Mono","Fragment Fallback",ui-monospace,monospace;
-  font-size:12.5px;font-size:clamp(12px,calc((100cqw - 40px) / 60),13.5px);line-height:1.7}
-.sp-term>div{min-height:1.7em}
-/* hanging indents: a wrapped line starts under the text, not under the marker */
-.sp-term .you,.sp-term .tool,.sp-term .sub{padding-left:2ch;text-indent:-2ch}
-.sp-term .you::before,.sp-term .tool::before,.sp-term .sub::before{display:inline-block;width:2ch;text-indent:0}
-.sp-term .you{margin-bottom:8px}.sp-term .you::before{content:">";color:#8ab4ff}
-.sp-term .tool::before{content:"\23FA\FE0E";color:#7ee787}
-/* a reply hangs under the command it answers: its bracket under the command's text, its words two spaces on */
-.sp-term .sub{padding-left:5ch;text-indent:-3ch;color:#9aa1a9}.sp-term .sub::before{width:3ch;content:"\23BF";color:#6e6e6e}
-.sp-term .ask{margin:8px 0;padding:8px 12px;border:1px solid #333a44;border-radius:6px;background:#161a20}
-.sp-term .opt,.sp-term .ok{color:#7ee787}
-.sp-term .banner{display:inline-block;margin-bottom:10px;padding:6px 12px;border:1px solid #6b5bd6;border-radius:6px;color:#c9c2ff}
-.sp-term .banner b{color:#e0876a;font-weight:400}
-.sp-term .warn{color:#ff7b72}.sp-term .y{color:#e3b341}.sp-term .dim{color:#949494}
-/* the short list: flat rows under a hairline, each whole */
-.sp-list{padding:0 20px 6px;box-shadow:inset 0 1px 0 var(--win-line)}
-.sp-lh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:13px 0 11px;
-  font-size:14px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:var(--win-ink)}
-.sp-lh b{margin-left:4px;font:400 12px/1 var(--mono);letter-spacing:0;color:var(--win-dim)}
-.sp-lh .sp-src{font:400 11.5px/1.3 var(--mono);letter-spacing:-0.01em;color:var(--win-dim);white-space:nowrap}
-.sp-row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:20px;align-items:center;padding:10px 0 11px;
-  box-shadow:inset 0 1px 0 var(--win-line)}
-.sp-rt{display:flex;align-items:baseline;gap:10px;min-width:0;line-height:1.4}
-.sp-rt b{font-size:14.5px;font-weight:600;letter-spacing:-0.01em;color:var(--win-ink)}
-.sp-rt em{font:normal 11.5px/1.4 var(--mono);color:var(--win-dim);white-space:nowrap}
-.sp-rd{grid-column:1;margin-top:2px;font-size:13px;line-height:1.5;color:var(--win-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sp-add{grid-column:2;grid-row:1 / span 2;display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;
-  font-size:12.5px;font-weight:600;line-height:1;color:var(--win-ink);box-shadow:inset 0 0 0 1px #2c333d;white-space:nowrap}
-/* narrow window (phone): the live site's phone terminal. As there, the welcome banner has scrolled away */
-@container (max-width:600px){
-  .sp-term{padding:10px 12px 12px;font-size:10.2px;line-height:1.6}
-  .sp-term>div{min-height:1.6em}
-  .sp-term .banner{display:none}
-  .sp-term .sub{padding-left:4ch;text-indent:-2.5ch}.sp-term .sub::before{width:2.5ch}
-  .sp-term .you{margin-bottom:6px}
-  .sp-term .ask{margin:6px 0;padding:6px 9px}
-  .sp-list{padding:0 12px 2px}
-  .sp-lh{padding:10px 0 8px;font-size:13px}
-  .sp-lh b{font-size:11px}
-  .sp-lh .sp-src{font-size:10.5px}
-  /* a phone row is its name, its installs and Add; a description cut mid-word says less than none */
-  .sp-row{column-gap:12px;padding:9px 0 10px}
-  .sp-rt b{font-size:13.5px}
-  .sp-rt em{font-size:10.5px}
-  .sp-rd{display:none}
-  .sp-add{grid-row:1;height:24px;padding:0 9px;font-size:11.5px}
-}
-/* a short screen: as on the phone, the welcome banner has scrolled away, so the product fits one screen */
-@media (max-height:840px){.sp-term .banner{display:none}}
-/* with the banner hidden, the opening question leads the session instead of hanging off nothing as a reply */
-@media (max-height:840px){.sp-term .banner+.sub{padding-left:0;text-indent:0;color:#d4d4d4}.sp-term .banner+.sub::before{content:none}}
-@container (max-width:600px){.sp-term .banner+.sub{padding-left:0;text-indent:0;color:#d4d4d4}.sp-term .banner+.sub::before{content:none}}
+.spv .wbody{aspect-ratio:16/9;border-radius:10px;background:oklch(0.9 0.02 240)}
+/* site.js adds the video. The first frame sits under it (the video has no picture until it plays) and loads once the
+   page has (a poster attribute, even a lazy image, would load with the page and slow the hero). Without script there
+   is no video, and the frame comes from here */
+.spv-still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+html:not(.js) .spv .wbody{background:url(skillproof/demo-poster.webp) center / cover}
+.spv video{position:relative;display:block;width:100%;height:100%}
+/* pause and play: one small round button in the corner. Before a reduced-motion visitor's first play it sits in the
+   middle and says so */
+.spv-btn{position:absolute;right:10px;bottom:10px;z-index:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  width:34px;height:34px;padding:0;border:0;border-radius:999px;background:oklch(0.2 0.01 255 / .72);color:#fff;
+  font:500 15px/1 var(--font);cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform 300ms var(--spring),background 160ms var(--ease-out)}
+.spv-btn svg{flex:none;width:14px;height:14px}
+.spv-btn.big{right:auto;bottom:auto;left:50%;top:50%;translate:-50% -50%;width:auto;height:44px;padding:0 18px 0 15px;
+  background:#fff;color:var(--ink);box-shadow:0 0 0 1px rgb(0 0 0 / .08),0 10px 28px -10px rgb(0 0 0 / .45)}
+@media (hover:hover) and (pointer:fine){.spv-btn:hover{background:var(--ink)}.spv-btn.big:hover{background:oklch(0.95 0.004 255)}}
+.spv-btn:active{transform:scale(.94)}
+.spv-btn:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+/* two lines kept free, so a caption changing length never moves the page below */
+.spv-cap{min-height:3em;margin:18px auto 0;max-width:46ch;text-align:center;font-size:15px;line-height:1.5;letter-spacing:-0.005em;
+  color:oklch(0.93 0.01 255);text-wrap:balance;transition:opacity 180ms var(--ease-out)}
+.spv-cap.off{opacity:0}
+@media (max-width:640px){.spv-btn{right:8px;bottom:8px;width:30px;height:30px}.spv-cap{margin-top:14px;font-size:14px}}
 
 /* ---------- Modelproof: a capture of the live board ----------
    Desktop: captured 840px wide at the board's own 100% zoom and shown 1:1, so the window crops the board instead of
