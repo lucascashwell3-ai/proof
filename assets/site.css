@@ -103,6 +103,7 @@ html:not(.js) .spv .wbody{background:url(skillproof/demo-poster.webp) center / c
 .spv-cap{min-height:3em;margin:18px auto 0;max-width:46ch;text-align:center;font-size:15px;line-height:1.5;letter-spacing:-0.005em;
   color:oklch(0.93 0.01 255);text-wrap:balance;transition:opacity 180ms var(--ease-out)}
 .spv-cap.off{opacity:0}
+.spv-cap b{font-weight:600}
 @media (max-width:640px){.spv-btn{right:8px;bottom:8px;width:30px;height:30px}.spv-cap{margin-top:14px;font-size:14px}}
 
 /* ---------- Modelproof: a capture of the live board ----------

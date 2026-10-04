@@ -151,9 +151,8 @@
     vbox.appendChild(vid);
     var PLAY = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg>';
     var PAUSE = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></svg>';
-    var CUES = [[0, 2.57, "Copy the prompt"], [2.73, 5.83, "Open your favorite AI"], [6, 9.97, "Paste the prompt"],
-      [10.13, 16.7, "Say what’s off"], [16.87, 21.73, "Approve the plan"],
-      [29.23, 32.03, "Same AI. Made easier by Skillproof."], [32.03, 1e9, "Copy the prompt"]];
+    var CUES = [[0, 4.13, "Paste the prompt"], [4.3, 10.87, "Say what\u2019s off"], [11.03, 15.9, "Approve the plan"],
+      [23.4, 26.7, "Same AI. Made easier by <b>Skillproof</b>."], [26.7, 28.47, "Copy the prompt"], [28.63, 99, "Open your favorite AI"]];
     var calm = W.matchMedia("(prefers-reduced-motion: reduce)");
     var held = false, seen = false, ready = D.readyState === "complete", shown = null, swap = 0;
     var vbtn = D.createElement("button");
@@ -175,7 +174,8 @@
       shown = s;
       vcap.classList.add("off");
       clearTimeout(swap);
-      if (s) swap = setTimeout(function () { vcap.textContent = s; vcap.classList.remove("off"); }, 180);
+      /* the cues are this file's own strings (one bolds the name), so they go in as markup */
+      if (s) swap = setTimeout(function () { vcap.innerHTML = s; vcap.classList.remove("off"); }, 180);
     };
     var go = function () {
       if (held || calm.matches || !seen || !ready) return;
