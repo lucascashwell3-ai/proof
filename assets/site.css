@@ -15,7 +15,7 @@
   --spring:cubic-bezier(0.2,0.9,0.25,1);--spring-firm:cubic-bezier(0.2,0.85,0.3,1);
   /* row spacing follows the screen's height too, so a product and its caption fit one laptop screen */
   --nav-h:56px;--cap-w:330px;--gut:clamp(16px,4vw,48px);--gap-y:clamp(16px,4svh,48px);
-  --mat-pad:clamp(16px,min(4vw,4.5svh),56px);--col-gap:clamp(24px,3vw,48px);
+  --col-gap:clamp(24px,3vw,48px);
   --z-win:1;--z-main:1;--z-nav:10;--z-tip:20;--z-toast:25;--z-skip:30;
   /* inside every product window: one black, one hairline, two inks */
   --win-bk:#0b0d11;--win-line:#1e232b;--win-ink:#e8eaed;--win-dim:#9aa3b1;
@@ -36,25 +36,18 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--fon
 h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
 p{margin:0;text-wrap:pretty}
 
-/* ================= product windows: shared chrome, fields, the three product bodies ================= */
+/* ================= product windows: shared chrome and the three product bodies ================= */
 
-/* ---------- the gallery wall: each product on its own tinted, grained field ---------- */
-.mat{position:relative;isolation:isolate;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;
-  padding:var(--mat-pad,clamp(16px,4vw,56px));border-radius:20px;background:var(--field)}
-.mat::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
-  background:var(--grain);opacity:.42;mix-blend-mode:overlay}
-/* Skillproof: hue of the site's own accent (#3D6DA6, h 254) */
-.mat-sp{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.36 0.075 260) 0%,oklch(0.26 0.045 257) 42%,transparent 100%),oklch(0.18 0.022 254)}
-/* Modelproof: hue of the board's own accent (#b5502e, h 39) */
-.mat-mp{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.37 0.08 43) 0%,oklch(0.265 0.05 41) 42%,transparent 100%),oklch(0.18 0.024 39)}
+/* ---------- each product's window sits straight on the page: no field behind it ---------- */
+.mat{position:relative;isolation:isolate;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center}
 .fit{position:relative;width:100%;min-width:0;max-width:940px}
 
 /* ---------- shared window chrome ---------- */
 .win{position:relative;z-index:var(--z-win);margin:0;border-radius:10px;
-  box-shadow:0 0 0 1px rgb(0 0 0 / .5),0 2px 4px rgb(0 0 0 / .25),0 28px 56px -24px rgb(0 0 0 / .7);
+  box-shadow:0 0 0 1px oklch(0.2 0.01 255 / .12),0 1px 2px rgb(20 24 31 / .06),0 22px 44px -20px rgb(20 24 31 / .3);
   transition:transform 650ms var(--spring)}
 .win::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
-  box-shadow:0 32px 56px -20px rgb(0 0 0 / .45);transition:opacity 260ms var(--ease-out)}
+  box-shadow:0 30px 52px -20px rgb(20 24 31 / .28);transition:opacity 260ms var(--ease-out)}
 .chrome{position:relative;display:flex;align-items:center;height:34px;padding:0 12px;background:var(--chrome);
   border-radius:10px 10px 0 0;box-shadow:inset 0 -1px 0 var(--line)}
 .dots{display:flex;gap:7px}
@@ -77,7 +70,7 @@ p{margin:0;text-wrap:pretty}
 }
 @media (prefers-reduced-motion:reduce){.win:hover{transform:none}}
 
-/* ---------- Skillproof: the site's own demo, playing. The video holds its own windows, so it sits on the field as a
+/* ---------- Skillproof: the site's own demo, playing. The video holds its own windows, so it sits on the page as a
    screen with no browser bar of its own; the step it is on reads underneath ---------- */
 @font-face{font-family:"Fragment Fallback";src:local("Menlo"),local("Menlo-Regular"),local("DejaVu Sans Mono"),local("Liberation Mono");size-adjust:102.7%}
 .spv .wbody{aspect-ratio:16/9;border-radius:10px;background:oklch(0.9 0.02 240)}
@@ -101,7 +94,7 @@ html:not(.js) .spv .wbody{background:url(skillproof/demo-poster.webp) center / c
 .spv-btn:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
 /* two lines kept free, so a caption changing length never moves the page below */
 .spv-cap{min-height:3em;margin:18px auto 0;max-width:46ch;text-align:center;font-size:15px;line-height:1.5;letter-spacing:-0.005em;
-  color:oklch(0.93 0.01 255);text-wrap:balance;transition:opacity 180ms var(--ease-out)}
+  color:var(--ink-2);text-wrap:balance;transition:opacity 180ms var(--ease-out)}
 .spv-cap.off{opacity:0}
 .spv-cap b{font-weight:600}
 @media (max-width:640px){.spv-btn{right:8px;bottom:8px;width:30px;height:30px}.spv-cap{margin-top:14px;font-size:14px}}
@@ -114,12 +107,13 @@ html:not(.js) .spv .wbody{background:url(skillproof/demo-poster.webp) center / c
 @media (min-width:761px){
   .mpx img{width:840px;max-width:none}
   /* on a short screen the window ends sooner, so the whole row still fits under the nav */
-  .mpx{max-height:max(440px,calc(100svh - var(--nav-h) - var(--gap-y) - 2 * var(--mat-pad) - 50px))}
+  .mpx{max-height:max(440px,calc(100svh - var(--nav-h) - var(--gap-y) - 50px))}
   #modelproof .fit{max-width:840px}
+  /* narrower than its column, so it lines up with the page edge like the other windows */
+  #modelproof .mat{justify-items:end}
 }
 
-/* ---------- DATproof: its field on the wall, and the product's own look inside the shared window ---------- */
-.mat-datproof{--field:radial-gradient(72% 66% at 50% 50%,oklch(0.36 0.07 152) 0%,oklch(0.26 0.045 156) 42%,transparent 100%),oklch(0.175 0.024 162)}
+/* ---------- DATproof: the product's own look inside the shared window ---------- */
 
 /* sized by its own width (container), not the viewport, so it holds up wherever the window sits */
 .dp{--dp-panel:#101318;--dp-line:var(--win-line);--dp-ink:var(--win-ink);--dp-dim:var(--win-dim);--dp-green:#56d77a;
@@ -279,7 +273,7 @@ html:not(.js) .how-btn,html.sx .how-btn{display:none}
 .flip .row{grid-template-columns:minmax(0,1fr) var(--cap-w)}
 .flip .cap{order:2}
 /* the title's cap height lines up with the top edge of the window, not the mat */
-.cap{--h2:clamp(1.6rem,1.2rem + 1vw,2.1rem);min-width:0;padding-top:calc(var(--mat-pad) - var(--h2) * .18)}
+.cap{--h2:clamp(1.6rem,1.2rem + 1vw,2.1rem);min-width:0}
 .cap h2{font-size:var(--h2);line-height:1.1;letter-spacing:-0.025em}
 .line{margin-top:14px;font-size:17px;line-height:1.5;color:var(--ink-2);text-wrap:pretty}
 /* at 330px this caption breaks short-long-short; a slightly shorter measure gives it an even rag */
@@ -297,8 +291,6 @@ html.js:not(.sx) .how:not(.open){grid-template-rows:0fr;transition-duration:300m
 html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px);visibility:hidden;
   transition:opacity 160ms var(--ease-out),transform 260ms var(--ease-out),visibility 0s linear 300ms}
 
-/* the window's long shadow stays on its field */
-.mat{overflow:clip}
 
 /* ---------- also shipped: one slim ruled row, no window. The label sits in the caption column ---------- */
 .also{padding-block:calc(var(--gap-y) * 1.5) 0}
@@ -363,8 +355,6 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
   .chapters a{padding:0 6px;font-size:13.5px}
   .chapters .who{margin-left:2px;padding-left:3px}
   .brand{font-size:15.5px}
-  /* on a phone the field runs edge to edge, so the window gets the whole width */
-  .mat{margin-inline:calc(var(--gut) * -1);border-radius:0}
 }
 @media (max-width:374px){
   .chapters a{padding:0 4px;font-size:13px}
@@ -404,8 +394,7 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
 .sk:active{transform:scale(.99);transition:transform 90ms var(--ease-out)}
 /* ---------- who am I: the bio beside the text portrait, on a light mat; the mat is a second way in ---------- */
 .me{padding-top:calc(var(--gap-y) * 2)}
-.mat-me{--field:var(--mat);box-shadow:inset 0 0 0 1px var(--mat-line);text-decoration:none}
-.mat-me::before{opacity:.18}
+.mat-me{text-decoration:none}
 .mat-me img{display:block;width:min(340px,70%);height:auto;transition:transform 600ms var(--spring)}
 @media (hover:hover) and (pointer:fine){.mat-me:hover img{transform:scale(1.02)}}
 @media (max-width:1023px){.sklist{grid-column:1}}
