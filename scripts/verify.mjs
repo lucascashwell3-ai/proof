@@ -487,18 +487,18 @@ async function mainPageChecks(browser, P, csv) {
           h1: document.querySelectorAll('h1').length, hasNav: !!document.querySelector('nav,[role=navigation]'),
           nav: all.filter(a => a.inNav).map(a => ({ raw: a.raw, href: a.u && a.u.href, path: a.u && a.u.pathname, hash: a.u && a.u.hash, same: a.u && a.u.origin === location.origin })),
           any: all.map(a => a.u && a.u.href).filter(Boolean),
-          ids: ['skillproof', 'datproof', 'modelproof'].filter(id => document.getElementById(id)),
+          ids: ['skillproof', 'datproof', 'modelproof', 'who'].filter(id => document.getElementById(id)),
         };
       });
       line(s.h1 === 1, P.label, '11 exactly one h1', `${s.h1} h1`);
       if (P.role === 'home') {
-        const want = ['skillproof', 'datproof', 'modelproof'];
+        // Who am I is a section of the home page now: the nav scrolls to #who like the three products
+        const want = ['skillproof', 'datproof', 'modelproof', 'who'];
         const miss = want.filter(id => !s.nav.some(a => a.hash === '#' + id)).map(id => '#' + id);
-        if (!s.nav.some(a => a.same && /\/who\/(index\.html)?$/.test(a.path || '') && !a.hash)) miss.push('who/');
         const noTarget = want.filter(id => !s.ids.includes(id)).map(id => '#' + id);
         line(s.hasNav && !miss.length && !noTarget.length, P.label, '11 nav links',
           !s.hasNav ? 'no <nav> element' :
-            `${s.nav.length} nav links` + (miss.length ? `; missing ${miss.join(' ')}` : '; has #skillproof #datproof #modelproof who/') +
+            `${s.nav.length} nav links` + (miss.length ? `; missing ${miss.join(' ')}` : '; has #skillproof #datproof #modelproof #who') +
             (noTarget.length ? `; no element with id ${noTarget.join(' ')}` : ''));
       } else {
         const want = [
