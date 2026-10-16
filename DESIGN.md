@@ -40,8 +40,8 @@ spacing:
 ## Overview
 A quiet light page that works like a gallery wall. Each product hangs in one dark window on its own
 tinted, grained field, lit from behind. The page itself stays near-white and nearly silent so the
-products carry all the colour. The only spectacle is the hero, "First Light": a WebGL dawn above a
-sea of clouds that scrolls from night into day, and the day becomes the page.
+products carry all the colour. The only spectacle is the hero, "First Light": a WebGL dawn over a
+still sea that scrolls from night into day, and the day becomes the page.
 
 Light mode only. The dark windows need the light ground to read as objects.
 

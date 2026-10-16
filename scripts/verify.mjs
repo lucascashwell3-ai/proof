@@ -733,7 +733,7 @@ async function heroChecks(gpu, P) {
     const ok = s.ready && s.mode === 'gl' && s.frames > 0 && s.calls > 0 && !s.bad.length && !s.errors.length && dPx <= 1.5;
     line(ok, L, '8f font-metric fallback', `metric stubbed out: mode ${s.mode}, ${s.frames} frames, ${s.calls} float uniforms sent, ${s.bad.length} not finite` +
       (s.bad.length ? ` (${s.bad.slice(0, 3).join('; ')})` : '') + `, ${s.errors.length} errors` + (s.errors.length ? ': ' + s.errors.slice(0, 2).join(' | ') : '') +
-      `; horizon uBase ${s.uBase} vs ${real.uBase} with the real metric (${Number.isFinite(dPx) ? dPx.toFixed(2) : 'n/a'} css px apart, ≤ 1.5 allowed)`);
+      `; letters' baseline ${s.uBase} vs ${real.uBase} with the real metric (${Number.isFinite(dPx) ? dPx.toFixed(2) : 'n/a'} css px apart, ≤ 1.5 allowed)`);
   });
   await guard(L, '8e frames off-screen/handoff/RM', async () => {
     note(`frame counts ${L} (~40 s)`);
