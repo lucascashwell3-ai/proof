@@ -151,6 +151,46 @@ main{flex:1 0 auto;display:flex;flex-direction:column}
   .sheet,.sheet[open]{transform:none}
   @starting-style{.sheet[open]{transform:none}}
 }
+
+/* writing and notes: the same two columns as the words above; the heading in the name column, the list in the words column */
+.about{padding-bottom:clamp(40px,6vw,88px)}
+.shelf-in{display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:start;
+  padding-block:clamp(36px,5vw,64px);background:linear-gradient(var(--line),var(--line)) top center/calc(100% - 2 * var(--gut)) 1px no-repeat}
+.shelf:last-of-type .shelf-in{padding-bottom:clamp(64px,9vw,140px)}
+.shelf h2{font-size:clamp(1.5rem,1.25rem + .7vw,2rem);font-weight:500;letter-spacing:-0.025em;line-height:1.1;padding-top:10px}
+.wlist,.notes{margin:0;padding:0;list-style:none}
+.wlist{box-shadow:inset 0 1px 0 var(--line)}
+.wlist li{box-shadow:inset 0 -1px 0 var(--line)}
+.wl{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto 14px;align-items:baseline;column-gap:20px;padding:16px 2px;
+  color:var(--ink);text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform 500ms var(--spring)}
+.wt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.wk{font-size:17px;font-weight:500;line-height:1.35;letter-spacing:-0.01em;text-wrap:balance}
+.wd{font-size:15px;line-height:1.45;color:var(--ink-3);text-wrap:pretty}
+.wm{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.wl .ra{align-self:center;width:14px;height:14px;color:var(--ink-2);transition:transform 500ms var(--spring-firm)}
+.wl:focus-visible{box-shadow:none}
+.wl::after{content:"";position:absolute;inset:4px -8px;border-radius:10px;box-shadow:0 0 0 2px var(--ink);opacity:0;transform:scale(.98);pointer-events:none;
+  transition:opacity 120ms var(--ease-out),transform 420ms var(--spring)}
+.wl:focus-visible::after{opacity:1;transform:none}
+@media (hover:hover) and (pointer:fine){
+  .wl:hover .wd{color:var(--ink-2)}
+  .wl:hover .ra{transform:translate(3px,-3px)}
+}
+.wl:active{transform:scale(.99);transition:transform 90ms var(--ease-out)}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 40px;padding-top:12px}
+.notes h3{font-size:17px;font-weight:500;letter-spacing:-0.01em;line-height:1.35}
+.notes p{margin-top:5px;font-size:15.5px;line-height:1.55;color:var(--ink-2);text-wrap:pretty;max-width:36ch}
+@media (max-width:1023px){
+  .shelf-in{grid-template-columns:minmax(0,1fr)}
+  .shelf h2{padding:0 0 18px}
+}
+@media (max-width:640px){
+  .wl{grid-template-columns:minmax(0,1fr) 14px;row-gap:6px}
+  .wm{grid-column:1;grid-row:2}
+  .wl .ra{grid-column:2;grid-row:1}
+  .notes{grid-template-columns:minmax(0,1fr);gap:22px}
+}
+@media (prefers-reduced-motion:reduce){.wl:hover .ra,.wl:active{transform:none!important}}
 </style>
 <script defer src="../assets/site.js"></script>
 <script defer src="../assets/who.js"></script>
@@ -185,8 +225,7 @@ main{flex:1 0 auto;display:flex;flex-direction:column}
 
       <div class="words">
         <p class="lede">I’m Lucas. I taught myself to build with AI on nights and weekends, and became the person people bring their AI questions to at work.</p>
-        <p>Like many others, I got exhausted by the hollow AI speak and AI strategy buzzwords, so I started building and publishing with it myself.</p>
-        <p>Outside work, I follow digital assets and all things AI. I’ve been using AI to dig deeper into those interests and build tools I’ve found helpful. The Proof family all started that way.</p>
+        <p>I got tired of hollow AI talk, so I started building and publishing with it myself. Outside work, I follow digital assets and all things AI.</p>
 
         <div class="docs">
           <a class="doc" href="../assets/who/slop-agreement.webp" data-sheet="sheet-slop" aria-haspopup="dialog">
@@ -209,6 +248,32 @@ main{flex:1 0 auto;display:flex;flex-direction:column}
 
     </div>
   </article>
+
+  <section class="shelf" aria-labelledby="writing-h">
+    <div class="wrap shelf-in">
+      <h2 id="writing-h">Writing</h2>
+      <ul class="wlist">
+        <li><a class="wl" href="../writing/volatility/"><span class="wt"><span class="wk">Embrace the volatility, or sell it</span><span class="wd">How SkyBridge and MicroStrategy package Bitcoin for investors who hate price swings.</span></span><span class="wm">Article · Feb 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+        <li><a class="wl" href="../writing/volatility/#talk"><span class="wt"><span class="wk">Alternative assets: strategy meets crypto</span><span class="wd">The class talk the article grew out of.</span></span><span class="wm">Talk · Feb 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+        <li><a class="wl" href="../writing/fireeye/"><span class="wt"><span class="wk">FireEye: Human + AI cybersecurity</span><span class="wd">How a security firm split its work between analysts and machine detection.</span></span><span class="wm">Paper · Apr 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+        <li><a class="wl" href="../writing/colonial-pipeline/"><span class="wt"><span class="wk">The Colonial Pipeline ransomware attack</span><span class="wd">What let the attackers in, what the shutdown cost, and how to keep it from happening again.</span></span><span class="wm">Paper · Mar 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+        <li><a class="wl" href="https://github.com/lucascashwell3-ai/skills" rel="noopener"><span class="wt"><span class="wk">Skills I wrote for Claude</span><span class="wd">Six small instruction files that make an AI app do a better job. Free on GitHub.</span></span><span class="wm">Repo · 2026</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="shelf" aria-labelledby="notes-h">
+    <div class="wrap shelf-in">
+      <h2 id="notes-h">Notes</h2>
+      <ul class="notes">
+        <li><h3>Skills are recipes</h3><p>A skill tells your AI how to do a good job. The hard part is knowing which recipe you need.</p></li>
+        <li><h3>Own what you publish</h3><p>If AI helped make it and my name is on it, I directed it, I reviewed it, and I answer for it.</p></li>
+        <li><h3>Simple, minus the performance</h3><p>I like work that’s simple and skips the performative stuff. A short page that does its job beats a loud one.</p></li>
+        <li><h3>Too many models</h3><p>New AI models come out by the day, and the people choosing between them freeze up. Picking one should be quick and easy to see.</p></li>
+        <li><h3>Treasuries are early</h3><p>Companies that hold Bitcoin will only get more common as crypto gets adopted.</p></li>
+      </ul>
+    </div>
+  </section>
 </main>
 
 <!-- what each document opens to; who.js puts it in a dialog. Without script the links open the images themselves -->
