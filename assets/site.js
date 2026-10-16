@@ -29,7 +29,9 @@
   function place(i) {
     if (!ind) return;
     if (i < 0) { ind.classList.remove("on"); shown = -1; return; }
-    var a = links[i], tf = "translateX(" + a.offsetLeft + "px) scaleX(" + a.offsetWidth + ")";
+    /* measured against the bar itself: the Who am I link sits in its own positioned item, so offsetLeft would be 0 */
+    var a = links[i], x = a.getBoundingClientRect().left - ind.offsetParent.getBoundingClientRect().left;
+    var tf = "translateX(" + x + "px) scaleX(" + a.offsetWidth + ")";
     if (shown < 0) {
       /* arriving from nothing: appear in place, don't slide in from the left edge */
       ind.classList.add("jump");
