@@ -396,14 +396,9 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
 .sk:focus-visible::after{opacity:1;transform:none}
 @media (hover:hover) and (pointer:fine){.sk:hover .sk-d{color:var(--ink-2)}.sk:hover .ra{transform:translate(3px,-3px)}}
 .sk:active{transform:scale(.99);transition:transform 90ms var(--ease-out)}
-/* ---------- who am I: the bio beside the text portrait, on a light mat; the mat is a second way in ---------- */
-.me{padding-top:calc(var(--gap-y) * 2)}
-.mat-me{text-decoration:none}
-.mat-me img{display:block;width:min(340px,70%);height:auto;transition:transform 600ms var(--spring)}
-@media (hover:hover) and (pointer:fine){.mat-me:hover img{transform:scale(1.02)}}
 @media (max-width:1023px){.sklist{grid-column:1}}
-@media (max-width:640px){.sklist{grid-template-columns:minmax(0,1fr)}.mat-me img{width:min(260px,72%)}}
-@media (prefers-reduced-motion:reduce){.sk:hover .ra,.sk:active,.mat-me:hover img{transform:none!important}}
+@media (max-width:640px){.sklist{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.sk:hover .ra,.sk:active{transform:none!important}}
 
 /* ================= Who am I, on the home page: the same parts as the Who am I page, below the products ================= */
 .about-in{--h1:clamp(2.5rem,1.9rem + 1.6vw,3.375rem);--lede:clamp(1.25rem,1.1rem + .45vw,1.5rem);display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:start;
@@ -583,20 +578,18 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
 }
 @media (prefers-reduced-motion:reduce){.wl:hover .ra,.wl:active{transform:none!important}}
 
-/* home: the heading on its own row; then portrait, bio and links share one middle line, the documents under the bio */
+/* home: the heading on its own row; then links, bio and portrait share one middle line, the documents under the bio */
 #who .about{padding-block:calc(var(--row-pad, 72px) * 1.5) clamp(40px,6vw,88px)}
 #who .about-in{grid-template-areas:"name" "pf" "words" "reach" "docs";grid-template-columns:minmax(0,1fr)}
 #who .bio + .bio{margin-top:.75em}
 @media (min-width:1024px){
-  #who .about-in{grid-template-columns:var(--cap-w) minmax(0,1fr);grid-template-areas:"name ." "pf words" "pf reach" ". docs";grid-template-rows:auto auto auto auto}
+  #who .about-in{grid-template-columns:var(--cap-w) minmax(0,1fr);grid-template-areas:"name ." "reach words" "pf docs";grid-template-rows:auto auto auto}
   #who .about :is(h1,h2){margin-bottom:28px}
-  #who .pf{margin-top:0;align-self:center;max-width:300px}
-  #who .words{align-self:end;margin-top:0}
-  #who .reach{margin-top:32px;max-width:none}
+  #who .pf{margin-top:clamp(48px,6vw,80px);max-width:300px}
+  #who .words,#who .reach{align-self:center;margin-top:0}
 }
 @media (min-width:1200px){
-  #who .about-in{grid-template-columns:var(--cap-w) minmax(0,1fr) var(--cap-w);grid-template-areas:"name . ." "pf words reach" ". docs docs"}
+  #who .about-in{grid-template-columns:var(--cap-w) minmax(0,1fr) clamp(240px,20vw,300px);grid-template-areas:"name . ." "reach words pf" ". docs docs"}
   #who .pf,#who .words,#who .reach{align-self:center}
-  #who .pf{width:min(300px,100%)}
-  #who .reach{margin-top:0}
+  #who .pf{margin-top:0}
 }

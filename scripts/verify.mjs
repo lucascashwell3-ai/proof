@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // The one command that says whether the site is done.
 //
-//   node scripts/verify.mjs [--base <url>] [--pages "/,/who/"] [--lh-runs 5] [--quick] [--sheet <file.jpg>]
+//   node scripts/verify.mjs [--base <url>] [--pages "/"] [--lh-runs 5] [--quick] [--sheet <file.jpg>]
 //
 //   --base     site root to test. Default: start scripts/serve.mjs on a free port over the repo root.
 //   --pages    comma list of paths under --base. A path ending in who/ is tested as the Who page,
@@ -34,7 +34,7 @@ const opt = (k, d) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] 
 const QUICK = flag('--quick');
 const LH_RUNS = Math.max(1, parseInt(opt('--lh-runs', '5'), 10) || 5);
 const SHEET = opt('--sheet', null);
-const PAGE_PATHS = opt('--pages', '/,/who/').split(',').map(s => s.trim()).filter(Boolean);
+const PAGE_PATHS = opt('--pages', '/').split(',').map(s => s.trim()).filter(Boolean);
 const PLANT_CSS = opt('--plant-css', null);
 
 // ---------- budgets ----------
