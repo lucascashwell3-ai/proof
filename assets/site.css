@@ -383,3 +383,31 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
 
 /* a phone-width window title stays at a legible 12px */
 @media (max-width:640px){.wtitle{font-size:12px}}
+
+/* ---------- skills: the six files, two columns of rows under the repo line ---------- */
+.skills{padding-top:0}
+.skills .also-in{border-block:0}
+.skills .also-row{padding-bottom:28px}
+.sklist{grid-column:2;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--col-gap);
+  box-shadow:inset 0 1px 0 var(--line)}
+.sklist li{box-shadow:inset 0 -1px 0 var(--line)}
+.sk{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 14px;column-gap:16px;row-gap:4px;padding:16px 2px;color:var(--ink);text-decoration:none;
+  -webkit-tap-highlight-color:transparent;transition:transform 500ms var(--spring)}
+.sk-n{font-family:var(--mono);font-size:14px;letter-spacing:-0.01em}
+.sk-d{grid-column:1;font-size:15px;line-height:1.5;color:var(--ink-3);text-wrap:pretty}
+.sk .ra{grid-column:2;grid-row:1;align-self:center;width:14px;height:14px;color:var(--ink-2);transition:transform 500ms var(--spring-firm)}
+.sk:focus-visible{box-shadow:none}
+.sk::after{content:"";position:absolute;inset:4px -8px;border-radius:10px;box-shadow:0 0 0 2px var(--ink);opacity:0;transform:scale(.98);pointer-events:none;
+  transition:opacity 120ms var(--ease-out),transform 420ms var(--spring)}
+.sk:focus-visible::after{opacity:1;transform:none}
+@media (hover:hover) and (pointer:fine){.sk:hover .sk-d{color:var(--ink-2)}.sk:hover .ra{transform:translate(3px,-3px)}}
+.sk:active{transform:scale(.99);transition:transform 90ms var(--ease-out)}
+/* ---------- who am I: the bio beside the text portrait, on a light mat; the mat is a second way in ---------- */
+.me{padding-top:calc(var(--gap-y) * 2)}
+.mat-me{--field:var(--mat);box-shadow:inset 0 0 0 1px var(--mat-line);text-decoration:none}
+.mat-me::before{opacity:.18}
+.mat-me img{display:block;width:min(340px,70%);height:auto;transition:transform 600ms var(--spring)}
+@media (hover:hover) and (pointer:fine){.mat-me:hover img{transform:scale(1.02)}}
+@media (max-width:1023px){.sklist{grid-column:1}}
+@media (max-width:640px){.sklist{grid-template-columns:minmax(0,1fr)}.mat-me img{width:min(260px,72%)}}
+@media (prefers-reduced-motion:reduce){.sk:hover .ra,.sk:active,.mat-me:hover img{transform:none!important}}
