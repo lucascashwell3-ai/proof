@@ -99,10 +99,10 @@ html:not(.js) .spv .wbody{background:url(skillproof/demo-poster.webp) center / c
 .spv-cap b{font-weight:600}
 @media (max-width:640px){.spv-btn{right:8px;bottom:8px;width:30px;height:30px}.spv-cap{margin-top:14px;font-size:14px}}
 
-/* ---------- Modelproof: a capture of the live board ----------
-   Desktop: captured 840px wide at the board's own 100% zoom and shown 1:1, so the window crops the board instead of
-   shrinking it. Phone: captured at the phone window's width and scaled with it. */
-.mpx{background:#f7f7f4}
+/* ---------- Modelproof: a capture of the live home (scripts/capture-modelproof.mjs renews it) ----------
+   Desktop: captured 1120px wide, where the board lays out as a graph, and drawn 840px wide, so the window holds the
+   three taps and the whole board. Phone: a 390px phone's first screen, scaled with the window. */
+.mpx{background:oklch(0.158 0.007 255)}
 .mpx img{display:block;width:100%;height:auto}
 @media (min-width:761px){
   .mpx img{width:840px;max-width:none}
@@ -319,7 +319,7 @@ html.js:not(.sx) .how:not(.open) .how-body{opacity:0;transform:translateY(-10px)
 .foot a{color:var(--ink-2);text-underline-offset:3px;text-decoration-color:var(--line-strong);transition:text-decoration-color 160ms var(--ease-out),color 160ms var(--ease-out)}
 @media (hover:hover) and (pointer:fine){.foot a:hover{color:var(--ink);text-decoration-color:currentColor}}
 
-/* ---------- 1024 to 1199: Modelproof alone stacks. Its board is shown at real size, so the window keeps its width ---------- */
+/* ---------- 1024 to 1199: Modelproof alone stacks. Its capture is drawn at a fixed 840px, so the window keeps its width ---------- */
 @media (min-width:1024px) and (max-width:1199px){
   #modelproof .row{grid-template-columns:minmax(0,1fr);row-gap:22px}
   #modelproof .cap{padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
