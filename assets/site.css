@@ -268,7 +268,11 @@ main{position:relative;z-index:var(--z-main);background:linear-gradient(transpar
 html:not(.js) .how-btn,html.sx .how-btn{display:none}
 
 /* ---------- a project: caption column beside its window, sides alternating ---------- */
-.work{padding-block:var(--gap-y)}
+/* the space above and below each product row; the gap between two rows is twice this */
+.work{--row-pad:clamp(40px,8svh,72px);padding-block:var(--row-pad)}
+/* the caption under the demo keeps a second line free so it never jumps; take that empty line back so every gap reads the same */
+#skillproof{padding-bottom:calc(var(--row-pad) - 1.5 * 15px)}
+@media (max-width:640px){.work{--row-pad:48px}#skillproof{padding-bottom:calc(var(--row-pad) - 1.5 * 14px)}}
 .row{display:grid;grid-template-columns:var(--cap-w) minmax(0,1fr);column-gap:var(--col-gap);align-items:start}
 .flip .row{grid-template-columns:minmax(0,1fr) var(--cap-w)}
 .flip .cap{order:2}
