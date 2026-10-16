@@ -517,7 +517,7 @@ async function mainPageChecks(browser, P, csv) {
       // 8a. the word
       await guard(P.label, '8a hero h1 text', async () => {
         const t = await page.evaluate(() => { const h = document.querySelector('h1'); return h ? h.textContent.trim() : null; });
-        line(t === 'Welcome', P.label, '8a hero h1 text', t === null ? 'no h1' : JSON.stringify(t));
+        line(t === 'Proof', P.label, '8a hero h1 text', t === null ? 'no h1' : JSON.stringify(t));
       });
 
       // 9. DATproof numbers
@@ -968,13 +968,13 @@ async function main() {
     for (const P of live.filter(p => p.role === 'home')) {
       const e = lcpEls[P.label];
       if (!e) { line(false, P.label, '8a hero is LCP element', 'no Lighthouse result'); continue; }
-      const hits = e.nodes.filter(n => n && /^<h1\b/i.test(n.snippet) && n.label.trim() === 'Welcome').length;
+      const hits = e.nodes.filter(n => n && /^<h1\b/i.test(n.snippet) && n.label.trim() === 'Proof').length;
       line(hits === e.n, P.label, '8a hero is LCP element', `lighthouse: ` + Object.entries(e.counts).map(([k, c]) => `${k} ${c}/${e.n}`).join('; '));
     }
   } else if (QUICK) {
     for (const P of live.filter(p => p.role === 'home')) {
       const l = quickLcp[P.label];
-      const ok = !!l && l.tag === 'h1' && l.text === 'Welcome';
+      const ok = !!l && l.tag === 'h1' && l.text === 'Proof';
       line(ok, P.label, '8a hero is LCP element', l ? `in-page (quick, 390x844, no throttling): ${l.tag}${l.id ? '#' + l.id : ''} "${l.text}" at ${l.ms} ms` : 'no LCP entry');
     }
   }

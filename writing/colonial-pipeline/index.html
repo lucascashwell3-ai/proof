@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Colonial Pipeline ransomware attack · Lucas Cashwell</title>
+<meta name="description" content="What let the attackers in, what the shutdown cost, and how to keep it from happening again.">
+<meta name="theme-color" content="#f7f8f9">
+<meta property="og:title" content="The Colonial Pipeline ransomware attack">
+<meta property="og:description" content="What let the attackers in, what the shutdown cost, and how to keep it from happening again.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b1f26'/%3E%3Cpath d='M7 21a9 9 0 0 1 18 0z' fill='%23ffd7a6'/%3E%3Crect x='5' y='21' width='22' height='2' rx='1' fill='%23f7f8f9'/%3E%3C/svg%3E">
+<link rel="preload" href="../../assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/site.css">
+<link rel="stylesheet" href="../../assets/writing.css">
+<script defer src="../../assets/site.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav" id="nav" aria-label="Site">
+  <div class="wrap nav-in">
+    <a class="brand" href="../../">Proof</a>
+    <div class="nav-links">
+      <ul class="chapters" id="chapters">
+        <li><a href="../../#skillproof">Skillproof</a></li>
+        <li><a href="../../#datproof">DATproof</a></li>
+        <li><a href="../../#modelproof">Modelproof</a></li>
+        <li class="who"><a href="../../who/">Who am I</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <article class="read">
+    <div class="wrap"><div class="read-in">
+      <a class="back" href="../../who/#writing-h"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg>Who am I</a>
+      <h1>The Colonial Pipeline ransomware attack</h1>
+      <p class="meta">Paper · March 2025 · Fundamentals of Cybersecurity, TCU · 3 min read</p>
+      <div class="prose">
+        <h2>Executive Summary</h2>
+        <p>This case studies the ransomware attack on Colonial Pipeline, a critical infrastructure company that provides about half of the East Coast’s refined oil products. After summarizing the case, we will present findings concerning problem identification, attack and impact analyses, as well as response and mitigation plans. This report has the goal of preparing for future cyberattacks by applying those concepts to Colonial Pipeline’s specific scenario.</p>
+        <h2>Case Summary</h2>
+        <p>On May 7th of 2021, the DarkSide hacking group hit Colonial with a ransomware attack. The attack targeted Colonial’s billing and accounting systems, effectively shutting down its whole network of oil pipelines—which is the largest in the United States. The hackers left a note demanding 75 bitcoins ($6.5 million today, $4.4 million back then) or else their data would be leaked. Hoping a quick payout would resolve the attack, the CEO of Colonial Pipeline paid the ransom on May 8th. Though the hackers provided a decryption tool to recover data, Colonial’s assets were mostly compromised, and backups were the main source of recovery. After 9 days, pipelines became fully operational again, but the incident exposed vulnerabilities in one of the US’s biggest oil suppliers, which caused widespread fuel shortages and a national conversation on cybersecurity.</p>
+        <h2>Problem Identification</h2>
+        <p>The attack revealed gaps in Colonial’s security efforts. The key issues below revolve around a lack of dedicated leadership, inadequate preventive measures, and a critical timing of the attack.</p>
+        <ul>
+          <li>Despite recommendations from consultants three years prior, no Chief Information Security Officer was appointed at Colonial during the time of attack. This role fell under the CIO without a specialized focus.</li>
+          <li>Hackers breached through a legacy VPN system that had not been deactivated despite being nonoperational. Without security updates, the system had no multifactor authentication (MFA).</li>
+          <li>Colonial’s cybersecurity framework had no incident response plan for ransom payment scenarios.</li>
+          <li>A couple of delayed security audits left Colonial’s security posture uncertain.</li>
+          <li>The hackers timed the attack right at the most operationally busy moment when demand for fuel was strong, amplifying its impact.</li>
+        </ul>
+        <h2>Attack and Business Impact Analysis</h2>
+        <p>DarkSide hackers obtained access to Colonial’s systems at the end of April—most likely from a dark web leak, but inconclusive. By the next week they stole 100GBs of personal and company information before locking up the whole IT network under encryption on May 6th. When accountants noticed all billing systems were down the next day, the company shut down all operation technology to prevent further spread.</p>
+        <ul>
+          <li>6-day shutdown halted 6.5 million barrels per day of fuel, disrupting 13 eastern states and Washington, D.C.</li>
+          <li>Recovery efforts and ransom payments cost tens of millions of dollars. FBI later recovered 63.7 BTC ($2.3 million then, $5.5 million today).</li>
+          <li>Shutdowns led to panic buying and fuel shortages, gas prices were the highest in 6 years, airlines adjusted their schedules, and states declared emergencies.</li>
+          <li>Colonial’s weakness brought on scrutiny from regulators, customers, and Congress.</li>
+        </ul>
+        <h2>Response Strategies and Risk Mitigation</h2>
+        <p>Colonial had several immediate, short-term strategies to contain and recover from the attack:</p>
+        <ul>
+          <li>Colonial contained the attack within 15 minutes of discovering the ransomware by shutting down pipelines and advising employees not to log on.</li>
+          <li>Professional assistance was brought on immediately with the goal of containing the threat and restoring as much of operations as possible.</li>
+          <li>When the attack was discovered, Colonial alerted authorities such as the FBI, CISA, DOE, and others to create awareness and action.</li>
+          <li>Joseph Blount, the CEO, paid the ransom to expedite recovery. Decryption was mostly ineffective, though, and backups were primarily used.</li>
+          <li>Colonial established alternative communications and enacted manual patrols to ensure integrity.</li>
+        </ul>
+        <p><strong>Recovery measures followed</strong></p>
+        <ul>
+          <li>Consultants and internal IT restored operations with backups.</li>
+        </ul>
+        <p>For long-term risk mitigation, we would consider adopting robust cybersecurity strategies such as:</p>
+        <ul>
+          <li>Appointing leadership dedicated to overseeing cybersecurity, who report directly to the CEO and board and establish incident response plans to be cross-functional.</li>
+          <li>Improve infrastructure security by updating legacy systems and enforcing multifactor authentication at all access points. Implement patch management and endpoint detection systems. Start segmented, offsite backups with regular testing.</li>
+          <li>Develop and test a comprehensive framework of security controls.</li>
+          <li>Align with emerging regulatory standards and perform proactive audits.</li>
+          <li>Maintain documented cybersecurity policies, procedures, and plans so as to give all IT members clear guidance and direction with cybersecurity mission.</li>
+        </ul>
+      </div>
+
+    </div></div>
+  </article>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p><span id="measure"></span><a href="../../">Proof</a></p>
+  </div>
+</footer>
+</body>
+</html>
