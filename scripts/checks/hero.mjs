@@ -318,7 +318,7 @@ export async function noWebGL(page, url, opts = {}) {
 // ---------- fontMetricFallback ----------
 // Loads the page twice: once as is, once with canvas text metrics that lack fontBoundingBoxAscent (as in engines
 // without font metrics). Every float uniform the hero sends is watched; a value that isn't a finite number is recorded
-// with its uniform's name. Returns the horizon (uBase) each load drew with, so the fallback can be compared to the real
+// with its uniform's name. Returns the letters' baseline each load drew the mask at, so the fallback can be compared to the real
 // metric, plus mode, frames drawn and errors.
 export async function fontMetricFallback(page, url, { stub = true, settleMs = 1500 } = {}) {
   const { errors, off } = collectErrors(page);
@@ -352,7 +352,7 @@ export async function fontMetricFallback(page, url, { stub = true, settleMs = 15
   try { st = await heroReady(page); } catch (e) { errors.push('check: hero never drew: ' + e.message.split('\n')[0]); }
   await sleep(settleMs);
   const r = await page.evaluate(() => ({
-    bad: window.__badUniforms, calls: window.__uniformCalls(), uBase: (window.__lastUniforms.uBase || [])[0], uHz: (window.__lastUniforms.uHz || [])[0],
+    bad: window.__badUniforms, calls: window.__uniformCalls(), uBase: window.__hero.state().baseline, uHz: (window.__lastUniforms.uHz || [])[0],
     canvasH: document.querySelector('canvas.sky-gl').getBoundingClientRect().height, frames: window.__hero.frameCount(), mode: window.__hero.state().mode,
   }));
   off();
