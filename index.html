@@ -84,6 +84,9 @@ html.gllost .sky-gl{transition:none}
 <link rel="stylesheet" href="assets/site.css">
 <script type="module" src="assets/hero.js"></script>
 <script defer src="assets/datproof.js"></script>
+<script>document.documentElement.classList.add("pf-js")</script>
+<script defer src="assets/who.js"></script>
+<script defer src="assets/portrait.js"></script>
 <script defer src="assets/site.js" onerror="document.documentElement.classList.add('sx')"></script>
 </head>
 <body>
@@ -111,7 +114,7 @@ html.gllost .sky-gl{transition:none}
         <li><a href="#skillproof">Skillproof</a></li>
         <li><a href="#datproof">DATproof</a></li>
         <li><a href="#modelproof">Modelproof</a></li>
-        <li class="who"><a href="who/">Who am I</a></li>
+        <li class="who"><a href="#who">Who am I</a></li>
       </ul>
       <span class="ind" id="ind" aria-hidden="true"></span>
     </div>
@@ -288,26 +291,93 @@ html.gllost .sky-gl{transition:none}
     </div>
   </section>
 
-  <section class="work me" id="who" aria-labelledby="me-h">
-    <div class="wrap row">
-      <div class="cap">
-        <h2 id="me-h">Who am I</h2>
-        <p class="line">I’m Lucas. I teach myself to build software with AI, mostly on nights and weekends. What I make usually starts with something I already follow: Bitcoin, digital assets, or AI itself.</p>
-        <div class="acts">
-          <a class="btn btn-ink visit" href="who/">Read more<span class="sr"> about Lucas: writing, notes and links</span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a>
+  <section class="whois" id="who" aria-labelledby="who-h">
+  <article class="about" aria-labelledby="who-h">
+      <div class="wrap about-in">
+        <h2 id="who-h">Who am I</h2>
+  
+        <figure class="pf" data-src="assets/who/portrait.webp" role="img" aria-label="Portrait of Lucas, drawn in text characters">
+          <canvas aria-hidden="true"></canvas>
+          <img src="assets/who/portrait.webp" alt="" width="232" height="232">
+        </figure>
+  
+        <div class="words">
+          <p class="bio">I’m Lucas. I work in technology audit in Dallas, and I build tools with AI on nights and weekends.</p>
+          <p class="bio">I’m into Bitcoin, digital assets and AI, and I spend most of my free time learning from the people building them.</p>
+  
         </div>
+  
+        <ul class="reach" aria-label="Links">
+          <li><a class="rl" href="https://github.com/lucascashwell3-ai" rel="me"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,104v8a56.06,56.06,0,0,1-48.44,55.47A39.8,39.8,0,0,1,176,192v40a8,8,0,0,1-8,8H104a8,8,0,0,1-8-8V216H72a40,40,0,0,1-40-40A24,24,0,0,0,8,152a8,8,0,0,1,0-16,40,40,0,0,1,40,40,24,24,0,0,0,24,24H96v-8a39.8,39.8,0,0,1,8.44-24.53A56.06,56.06,0,0,1,56,112v-8a58.14,58.14,0,0,1,7.69-28.32A59.78,59.78,0,0,1,69.07,28,8,8,0,0,1,76,24a59.75,59.75,0,0,1,48,24h24a59.75,59.75,0,0,1,48-24,8,8,0,0,1,6.93,4,59.74,59.74,0,0,1,5.37,47.68A58,58,0,0,1,216,104Z"/></svg><span class="rt"><span class="rk">GitHub</span><span class="rv">lucascashwell3-ai</span></span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+          <li><a class="rl" href="https://www.linkedin.com/in/lucas-cashwell" rel="me"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24ZM96,176a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0ZM88,96a12,12,0,1,1,12-12A12,12,0,0,1,88,96Zm96,80a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140Z"/></svg><span class="rt"><span class="rk">LinkedIn</span><span class="rv">lucas-cashwell</span></span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+          <li><a class="rl" href="https://x.com/cashwell21" rel="me"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M215,219.85a8,8,0,0,1-7,4.15H160a8,8,0,0,1-6.75-3.71l-40.49-63.63L53.92,221.38a8,8,0,0,1-11.84-10.76l61.77-68L41.25,44.3A8,8,0,0,1,48,32H96a8,8,0,0,1,6.75,3.71l40.49,63.63,58.84-64.72a8,8,0,0,1,11.84,10.76l-61.77,67.95,62.6,98.38A8,8,0,0,1,215,219.85Z"/></svg><span class="rt"><span class="rk">X</span><span class="rv">@cashwell21</span></span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+          <li id="mail"><a class="rl" href="mailto:lucascashwell3@gmail.com"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-8,144H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></svg><span class="rt"><span class="rk">Email</span><span class="rv">lucascashwell3@gmail.com</span></span></a></li>
+        </ul>
+  
+        <div class="docs">
+          <a class="doc" href="assets/who/slop-agreement.webp" data-sheet="sheet-slop" aria-haspopup="dialog">
+            <span class="dmat dmat-page"><img src="assets/who/slop-agreement-sm.webp" alt="" width="520" height="674" loading="lazy" decoding="async"></span>
+            <span class="dt"><span><span class="dk">AI Slop Agreement</span><span class="dv">A personal standard, in writing</span></span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,48V96a8,8,0,0,1-13.66,5.66L184,83.31l-34.34,34.35a8,8,0,0,1-11.32-11.32L172.69,72,154.34,53.66A8,8,0,0,1,160,40h48A8,8,0,0,1,216,48ZM106.34,138.34,72,172.69,53.66,154.34A8,8,0,0,0,40,160v48a8,8,0,0,0,8,8H96a8,8,0,0,0,5.66-13.66L83.31,184l34.35-34.34a8,8,0,0,0-11.32-11.32Z"/></svg></span>
+          </a>
+          <a class="doc" href="assets/who/claude-certified.webp" data-sheet="sheet-cert" aria-haspopup="dialog">
+            <span class="dmat dmat-badge"><img src="assets/who/claude-certified-sm.webp" alt="" width="380" height="380" loading="lazy" decoding="async"></span>
+            <span class="dt"><span><span class="dk">Claude Certified Architect</span><span class="dv">Foundations · Anthropic</span></span><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M216,48V96a8,8,0,0,1-13.66,5.66L184,83.31l-34.34,34.35a8,8,0,0,1-11.32-11.32L172.69,72,154.34,53.66A8,8,0,0,1,160,40h48A8,8,0,0,1,216,48ZM106.34,138.34,72,172.69,53.66,154.34A8,8,0,0,0,40,160v48a8,8,0,0,0,8,8H96a8,8,0,0,0,5.66-13.66L83.31,184l34.35-34.34a8,8,0,0,0-11.32-11.32Z"/></svg></span>
+          </a>
+        </div>
+  
       </div>
-      <a class="mat mat-me" href="who/" tabindex="-1" aria-hidden="true">
-        <img src="assets/who/portrait-ascii.webp" width="576" height="571" alt="" loading="lazy" decoding="async">
-      </a>
+    </article>
+  <section class="shelf" aria-labelledby="writing-h">
+    <div class="wrap shelf-in">
+      <h2 id="writing-h">Writing</h2>
+      <ul class="wlist">
+        <li><a class="wl" href="writing/alternative-assets/"><span class="wt"><span class="wk">Alternative assets: connecting strategy to crypto</span><span class="wd">Four slides on how SkyBridge and MicroStrategy sell Bitcoin to investors who fear its swings.</span></span><span class="wm">Talk · Feb 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+        <li><a class="wl" href="writing/volatility/"><span class="wt"><span class="wk">Embrace the volatility, or sell it</span><span class="wd">The article version of the talk: two firms, two ways to package Bitcoin.</span></span><span class="wm">Article · Feb 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+      </ul>
+      <p class="wsub" id="papers-h">Class papers</p>
+      <ul class="wlist wlist-minor" aria-labelledby="papers-h">
+        <li><a class="wl" href="writing/fireeye/"><span class="wt"><span class="wk">FireEye: Human + AI cybersecurity</span><span class="wd">How a security firm split its work between analysts and machine detection.</span></span><span class="wm">Paper · Apr 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+        <li><a class="wl" href="writing/colonial-pipeline/"><span class="wt"><span class="wk">The Colonial Pipeline ransomware attack</span><span class="wd">What let the attackers in, what the shutdown cost, and how to keep it from happening again.</span></span><span class="wm">Paper · Mar 2025</span><svg class="ra" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M200,64V168a8,8,0,0,1-13.66,5.66L140,127.31,69.66,197.66a8,8,0,0,1-11.32-11.32L128.69,116,82.34,69.66A8,8,0,0,1,88,56H192A8,8,0,0,1,200,64Z"/></svg></a></li>
+      </ul>
     </div>
+  </section>
+
+  <section class="shelf" aria-labelledby="notes-h">
+    <div class="wrap shelf-in">
+      <h2 id="notes-h">Notes</h2>
+      <ul class="notes">
+        <li><h3>Skills are recipes</h3><p>A skill tells your AI how to do a good job. The hard part is knowing which recipe you need.</p></li>
+        <li><h3>Own what you publish</h3><p>If AI helped make it and my name is on it, I directed it, I reviewed it, and I answer for it.</p></li>
+        <li><h3>Simple, minus the performance</h3><p>I like work that’s simple and skips the performative stuff. A short page that does its job beats a loud one.</p></li>
+        <li><h3>Too many models</h3><p>New AI models come out by the day, and the people choosing between them freeze up. Picking one should be quick and easy to see.</p></li>
+        <li><h3>Treasuries are early</h3><p>Companies that hold Bitcoin will only get more common as crypto gets adopted.</p></li>
+      </ul>
+    </div>
+  </section>
   </section>
 
 </main>
 
+<!-- what each document opens to; who.js puts it in a dialog. Without script the links open the images themselves -->
+<template id="sheet-slop">
+  <div class="sheet-in">
+    <img src="assets/who/slop-agreement.webp" width="1100" height="1424" alt="AI Slop Agreement. A personal standard, in writing. I will never publish, post, or present anything made by AI that I didn't direct and approve. AI slop is generated content made without a good-faith effort or an earnest review, then published and marketed with no transparency about how it was actually made. What this means in practice: 1. Everything I release is my own doing, AI-assisted or not. I own the ideation, I own the review process, and I take full responsibility for anything with my name on it. 2. I don't misrepresent how my content and projects were made. 3. I don't feign authority with AI buzzwords or deliberately overstate what I actually know. Lucas Cashwell, September 2026.">
+    <form method="dialog"><button class="x" aria-label="Close"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></button></form>
+  </div>
+</template>
+<template id="sheet-cert">
+  <div class="sheet-in">
+    <img src="assets/who/claude-certified.webp" width="604" height="604" alt="Badge: Foundations, Claude Certified Architect">
+    <h2>Claude Certified Architect</h2>
+    <p>Foundations · certified by Anthropic, September 2026</p>
+    <form method="dialog"><button class="x" aria-label="Close"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></button></form>
+  </div>
+</template>
+
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <footer class="foot">
   <div class="wrap foot-in">
-    <p><span id="measure"></span><a href="who/">Who am I</a></p>
+    <p><span id="measure"></span><a href="#who">Who am I</a></p>
   </div>
 </footer>
 </body>

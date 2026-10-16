@@ -25,7 +25,6 @@
 
   const img = new Image();
   img.decoding = 'async';
-  img.src = fig.dataset.src;
 
   /* tone grid: average the photo over each cell (drawn at 4x, then box-averaged), stretch the figure's own range,
      sharpen against the neighbours, then pick a glyph. Transparent (cut-out) cells stay blank. */
@@ -193,8 +192,16 @@
   }).observe(fig);
   RM.addEventListener('change', () => { if (ready) draw(Infinity); });
 
-  Promise.all([img.decode().catch(() => {}), document.fonts.load('16px "Fragment Mono"').catch(() => {})]).then(() => {
-    rw = fig.clientWidth;
-    start();
-  });
+  /* the photo loads and the arrival plays only when the portrait comes near the screen (on the home page it sits far below) */
+  function load() {
+    img.src = fig.dataset.src;
+    Promise.all([img.decode().catch(() => {}), document.fonts.load('16px "Fragment Mono"').catch(() => {})]).then(() => {
+      rw = fig.clientWidth;
+      start();
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); load(); } }, { rootMargin: '200px 0px' });
+    io.observe(fig);
+  } else load();
 })();
