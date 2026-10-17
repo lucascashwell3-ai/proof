@@ -84,7 +84,7 @@ jobs:
           name: modelproof-capture-dry-run
           path: /tmp/mp-capture-*/*.webp
           retention-days: 7
-          if-no-files-found: ignore
+          if-no-files-found: warn
 
       # a push that loses a race rebases and retries; a rebase conflict stops the run, and the commit must be on main
       - name: Publish

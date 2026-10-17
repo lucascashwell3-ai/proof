@@ -38,6 +38,8 @@ the first file is written, and if the deploy never shows up, the site keeps serv
   the pictures it keeps as an artifact (kept even when a check fails).
 - *the page showed a different board* or *request failed*: the page was mid-deploy or partly down. The next day's run
   tries again; run it by hand sooner if needed.
+- *the phone's floating Install bar was not found*: Modelproof changed its Install button. Update the bar lookup in the
+  script.
 - *not live*: the commit is on `main` but Pages has not served it in 15 minutes. Check the Pages build.
 
 After a Modelproof restyle with the same models, run it by hand with `force`.

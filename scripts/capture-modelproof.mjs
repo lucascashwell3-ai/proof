@@ -95,12 +95,15 @@ async function encodeWebp(enc, png) {
   }, png.toString('base64')), 'base64');
 }
 
-async function openHome(b, shot) {
+// strict: every request must succeed (a missing font makes a wrong picture). otherwise only the site's own requests
+// count, so a blip at a font or script host can't turn a day with nothing to do red
+async function openHome(b, shot, strict = true) {
   const ctx = await b.newContext({ viewport: { width: shot.w, height: shot.h }, deviceScaleFactor: shot.dpr, reducedMotion: 'reduce' });
-  const p = await ctx.newPage(), errors = [];
+  const p = await ctx.newPage(), errors = [], own = new URL(SOURCE).origin;
+  const counts = u => strict || u.startsWith(own);
   p.on('pageerror', e => errors.push(e.message));
-  p.on('requestfailed', r => errors.push(`request failed: ${r.url()}`));
-  p.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
+  p.on('requestfailed', r => { if (counts(r.url())) errors.push(`request failed: ${r.url()}`); });
+  p.on('response', r => { if (r.status() >= 400 && counts(r.url())) errors.push(`${r.status()} ${r.url()}`); });
   const res = await p.goto(SOURCE, { waitUntil: 'networkidle', timeout: 60000 });
   if (!res || res.status() !== 200) throw new Error(`${SOURCE} answered ${res ? res.status() : 'nothing'}`);
   await p.evaluate(() => document.fonts.ready);
@@ -115,7 +118,7 @@ async function run() {
   const b = await chromium.launch();
   try {
     /* the board first, from the desktop layout: if it is the same, nothing else runs */
-    const first = await openHome(b, SHOTS[0]);
+    const first = await openHome(b, SHOTS[0], false);
     const board = await first.p.evaluate(READ_BOARD);
     await first.ctx.close();
     const bad = boardProblems(board);
@@ -131,11 +134,12 @@ async function run() {
       const seen = await p.evaluate(READ_BOARD);
       if (!sameBoard(board, seen)) throw new Error(`${s.file}: the page showed a different board than the first read (${summary(seen)})`);
       /* phone: the floating Install bar is the Install button's nearest fixed or sticky holder, and only that */
-      if (s.phone) await p.evaluate(() => {
+      if (s.phone && !(await p.evaluate(() => {
         let e = [...document.querySelectorAll('button, a')].find(x => x.textContent.trim() === 'Install');
         while (e && e !== document.body && !['fixed', 'sticky'].includes(getComputedStyle(e).position)) e = e.parentElement;
-        if (e && e !== document.body && !e.querySelector('.tap-opts, .nodes')) e.style.visibility = 'hidden';
-      });
+        if (!e || e === document.body || e.querySelector('.tap-opts, .nodes')) return false;
+        e.style.visibility = 'hidden'; return true;
+      }))) throw new Error(`${s.file}: the phone's floating Install bar was not found, so it would cover the board`);
       const webp = await encodeWebp(enc, await p.screenshot({ type: 'png' }));
       await ctx.close();
       if (dry) await writeFile(join(out, s.file), webp);
