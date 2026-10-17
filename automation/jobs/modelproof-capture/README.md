@@ -5,7 +5,8 @@ Keeps the picture in the home page's Modelproof window true to the live Modelpro
 those models change as Modelproof's data updates, and a still goes out of date with them.
 
 - **Runs:** GitHub Actions, `.github/workflows/modelproof-capture.yml`, daily 08:20 UTC (after Modelproof's morning
-  data jobs). Also by hand (`dry_run`, `force`), and once as a dry run on any pull request that changes the job.
+  data jobs). Also by hand (`dry_run`, `force`), and once as a dry run on any pull request that changes the job or
+  its packages. That dry run reads the live page too, so it checks only the same rules as a real run, never exact models.
 - **Code:** `scripts/capture-modelproof.mjs`. Self-test on frozen inputs: `node scripts/capture-modelproof.mjs --self-test`.
 
 ## What one run does
@@ -15,11 +16,13 @@ those models change as Modelproof's data updates, and a still goes out of date w
 2. **Read the board** from the live home: the tap picked in each of the three groups, and the model on each role.
    It must read as 3 picked taps and at least 3 roles, a lead among them, each with a model; anything else fails the run.
 3. **Same board as `data/modelproof-capture.json`:** stop. Nothing is written or committed (a re-run is harmless).
-4. **Changed board:** capture four pictures (desktop 840 and 1680 px wide, phone 716 and 1074 px), and check each one:
-   exact size, 8 to 600 KB, not blank, and dark (the window's backing is the page's own dark). Only when every check
-   passes are the pictures and the record written.
-5. **Publish:** commit the four pictures and the record straight to `main`, ask Pages to build, then wait until the
-   live site serves the new picture (up to 15 minutes).
+4. **Changed board:** capture four pictures (desktop 840 and 1680 px wide, phone 716 and 1074 px). Each capture load
+   must show the same board as the first read and load with no failed request; each picture must be the exact size,
+   8 to 600 KB, not blank, and dark (the window's backing is the page's own dark). Only when every check passes are the
+   pictures and the record written.
+5. **Publish:** starting from the newest `main`, commit the four pictures and the record straight to `main` (a lost
+   push race rebases and retries; a conflict stops the run), confirm the commit is on `main`, ask Pages to build, then
+   wait until the live site serves the new picture (up to 15 minutes).
 
 ## What it writes
 Only data: `assets/img/modelproof-board.webp`, `-1x`, `-phone`, `-phone-3x`, and `data/modelproof-capture.json`
@@ -32,7 +35,9 @@ the first file is written, and if the deploy never shows up, the site keeps serv
 - *the Modelproof home no longer reads as expected*: Modelproof's page changed shape. Look at it, update the reader
   and the fixture together.
 - *a picture failed its checks*: the capture came out wrong (blank, light, wrong size). Run with `dry_run` and look at
-  the pictures it keeps as an artifact.
+  the pictures it keeps as an artifact (kept even when a check fails).
+- *the page showed a different board* or *request failed*: the page was mid-deploy or partly down. The next day's run
+  tries again; run it by hand sooner if needed.
 - *not live*: the commit is on `main` but Pages has not served it in 15 minutes. Check the Pages build.
 
 After a Modelproof restyle with the same models, run it by hand with `force`.

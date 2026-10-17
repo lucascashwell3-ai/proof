@@ -22,13 +22,16 @@ on:
       - scripts/capture-modelproof.mjs
       - scripts/checks/fixtures/modelproof-home.html
       - .github/workflows/modelproof-capture.yml
+      - package.json
+      - package-lock.json
 
 permissions:
   contents: write
   pages: write
 
+# pull-request dry runs queue apart, so they can never push the daily run out of the queue
 concurrency:
-  group: modelproof-capture
+  group: modelproof-capture-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'main' }}
   cancel-in-progress: false
 
 env:
@@ -38,16 +41,22 @@ jobs:
   capture:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash   # adds -o pipefail: a failure inside a pipe fails the step
     steps:
       - uses: actions/checkout@v4
 
-      # only a scheduled run on main, or a dispatch on main without dry_run, may publish
+      # only a scheduled run on main, or a dispatch on main without dry_run, may publish. a publishing run starts from
+      # the newest main, so a re-run of an old run compares against the newest record
       - name: Mode
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ] || [ "${{ github.ref }}" != "refs/heads/main" ]; then
             echo "DRY_RUN=true" >> "$GITHUB_ENV"
           else
             echo "DRY_RUN=false" >> "$GITHUB_ENV"
+            git fetch --quiet origin main
+            git reset --hard origin/main
           fi
 
       - uses: actions/setup-node@v4
@@ -68,15 +77,16 @@ jobs:
           if [ "${{ inputs.force }}" = "true" ]; then args="$args --force"; fi
           node scripts/capture-modelproof.mjs $args | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - name: Keep the dry-run pictures for a look
-        if: env.DRY_RUN == 'true'
+      - name: Keep the dry-run pictures for a look (also when a check failed)
+        if: always() && env.DRY_RUN == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: modelproof-capture-dry-run
           path: /tmp/mp-capture-*/*.webp
           retention-days: 7
+          if-no-files-found: ignore
 
-      # an overlapping run would lose the push race; rebase and retry makes that harmless
+      # a push that loses a race rebases and retries; a rebase conflict stops the run, and the commit must be on main
       - name: Publish
         id: publish
         if: env.DRY_RUN != 'true' && steps.capture.outputs.changed == 'true'
@@ -91,10 +101,16 @@ jobs:
           for i in 1 2 3; do
             if git push origin HEAD:main; then ok=1; break; fi
             echo "push attempt $i rejected, rebasing on main"
-            git pull --rebase origin main || true
+            git fetch --quiet origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "::error title=Modelproof capture not published::rebase on main conflicted"; exit 1
+            fi
             sleep 5
           done
           if [ "$ok" != "1" ]; then echo "::error title=Modelproof capture not published::push failed 3 times"; exit 1; fi
+          git fetch --quiet origin main
+          if ! git merge-base --is-ancestor HEAD origin/main; then echo "::error title=Modelproof capture not published::the commit is not on main"; exit 1; fi
           echo "published=true" >> "$GITHUB_OUTPUT"
 
       # a push made with this token may not start a Pages build on its own, so ask for one
@@ -104,13 +120,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${{ github.repository }}/pages/builds" > /dev/null || echo "::warning::Pages build request refused; the push may still start one"
 
-      # the query string skips the CDN's copy, so this sees what the site itself serves
+      # a new query string each try skips the CDN's copy (it keeps one per address for 10 minutes)
       - name: Verify the live site serves the new picture
         if: steps.publish.outputs.published == 'true'
         run: |
           want=$(sha256sum assets/img/modelproof-board.webp | cut -d' ' -f1)
           for i in $(seq 1 30); do
-            got=$(curl -fsS "${SITE}assets/img/modelproof-board.webp?v=${want}" | sha256sum | cut -d' ' -f1) || true
+            got=$(curl -fsS "${SITE}assets/img/modelproof-board.webp?v=${want}-${i}" | sha256sum | cut -d' ' -f1) || true
             if [ "$got" = "$want" ]; then echo "live: the new picture is served (try $i)" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
             sleep 30
           done

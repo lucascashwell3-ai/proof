@@ -13,8 +13,10 @@
 // scale so the window shows it 840 px wide and sharp at 1x and 2x. Phone: a 390 css px phone's first screen down to
 // the end of the three taps, drawn 716 and 1074 px wide for the phone window (358 css px) at 2x and 3x; its floating
 // Install bar is left out, since in a still it reads as covering the board.
-// Every picture is checked before anything is written: exact size, a sane file size, not blank, and dark (the window's
-// backing is the page's own dark). Any failed check exits 1 and leaves the repo as it was.
+// Each capture load must show the same board as the first read, with no failed request, and every picture is checked
+// before anything is written: exact size, a sane file size, not blank, and dark (the window's backing is the page's own
+// dark). Any failed check exits 1 and leaves the repo as it was. A dry run writes its pictures first, checks after, so a
+// failed one can still be looked at.
 // Exit 0 with a one-line summary; in GitHub Actions, also writes changed=true|false to $GITHUB_OUTPUT.
 
 import { chromium } from 'playwright';
@@ -97,6 +99,8 @@ async function openHome(b, shot) {
   const ctx = await b.newContext({ viewport: { width: shot.w, height: shot.h }, deviceScaleFactor: shot.dpr, reducedMotion: 'reduce' });
   const p = await ctx.newPage(), errors = [];
   p.on('pageerror', e => errors.push(e.message));
+  p.on('requestfailed', r => errors.push(`request failed: ${r.url()}`));
+  p.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
   const res = await p.goto(SOURCE, { waitUntil: 'networkidle', timeout: 60000 });
   if (!res || res.status() !== 200) throw new Error(`${SOURCE} answered ${res ? res.status() : 'nothing'}`);
   await p.evaluate(() => document.fonts.ready);
@@ -123,23 +127,27 @@ async function run() {
     const pics = [], problems = [];
     for (const s of SHOTS) {
       const { ctx, p } = await openHome(b, s);
+      /* the page must show the board that was read: a half-loaded or mid-deploy page is never captured */
+      const seen = await p.evaluate(READ_BOARD);
+      if (!sameBoard(board, seen)) throw new Error(`${s.file}: the page showed a different board than the first read (${summary(seen)})`);
+      /* phone: the floating Install bar is the Install button's nearest fixed or sticky holder, and only that */
       if (s.phone) await p.evaluate(() => {
-        for (const el of document.querySelectorAll('body *')) {
-          const pos = getComputedStyle(el).position;
-          if ((pos === 'fixed' || pos === 'sticky') && /install/i.test(el.textContent)) el.style.visibility = 'hidden';
-        }
+        let e = [...document.querySelectorAll('button, a')].find(x => x.textContent.trim() === 'Install');
+        while (e && e !== document.body && !['fixed', 'sticky'].includes(getComputedStyle(e).position)) e = e.parentElement;
+        if (e && e !== document.body && !e.querySelector('.tap-opts, .nodes')) e.style.visibility = 'hidden';
       });
       const webp = await encodeWebp(enc, await p.screenshot({ type: 'png' }));
       await ctx.close();
+      if (dry) await writeFile(join(out, s.file), webp);
       problems.push(...pictureProblems(s, webp.length, await enc.evaluate(MEASURE, webp.toString('base64'))));
       pics.push({ s, webp });
     }
-    if (problems.length) throw new Error('a picture failed its checks, nothing written: ' + problems.join('; '));
+    if (problems.length) throw new Error(`a picture failed its checks, ${dry ? 'pictures kept in ' + out : 'nothing written'}: ` + problems.join('; '));
 
     /* every check passed: only now is anything written */
     const images = {};
     for (const { s, webp } of pics) {
-      await writeFile(join(out, s.file), webp);
+      if (!dry) await writeFile(join(out, s.file), webp);
       images[s.file] = createHash('sha256').update(webp).digest('hex');
     }
     const state = { source: SOURCE, captured_at: new Date().toISOString(), taps: board.taps, roles: board.roles, images };
