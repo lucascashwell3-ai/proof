@@ -1,0 +1,41 @@
+{
+  "source": "https://lucascashwell3-ai.github.io/modelproof/",
+  "captured_at": "2026-10-17T04:45:21.259Z",
+  "taps": [
+    "Claude Code",
+    "Max 5x",
+    "Several jobs"
+  ],
+  "roles": [
+    {
+      "role": "lead",
+      "model": "Claude Opus 5.5"
+    },
+    {
+      "role": "scout",
+      "model": "Claude Opus 5.5"
+    },
+    {
+      "role": "builder",
+      "model": "Claude Opus 5.5"
+    },
+    {
+      "role": "reviewer",
+      "model": "Claude Opus 5.5"
+    },
+    {
+      "role": "checker",
+      "model": "Claude Opus 5.5"
+    },
+    {
+      "role": "bulk",
+      "model": "Claude Haiku 5.5"
+    }
+  ],
+  "images": {
+    "modelproof-board-1x.webp": "0a11d9fef5465a53cc04df25689dbf95c025b8b921b8d827018143673f76a1eb",
+    "modelproof-board.webp": "2515f256ce078124907fc466bd0ab37e89afcf109e71d6f86b604027d8a6f1ab",
+    "modelproof-board-phone.webp": "eeab47422e6680e9c9c46b5ce0dd697fec37c6d0dee728d605411e7b0225c13b",
+    "modelproof-board-phone-3x.webp": "958908ad78db6007ec984ac5c13841ed7afed7a9f882804c673cb432f56c89c7"
+  }
+}

@@ -1,0 +1,118 @@
+# Keeps the Modelproof window's picture true to the live Modelproof home.
+# Owner file: automation/jobs/modelproof-capture/README.md
+name: Modelproof capture
+
+on:
+  schedule:
+    # 08:20 UTC daily, after Modelproof's morning data jobs (collect 06:00, verify 07:15 Tue/Fri)
+    - cron: "20 8 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Read, capture and check; commit nothing"
+        type: boolean
+        default: false
+      force:
+        description: "Renew the pictures even if the board is the same (after a Modelproof restyle)"
+        type: boolean
+        default: false
+  # a change to the job itself runs it once on the pull request, as a dry run
+  pull_request:
+    paths:
+      - scripts/capture-modelproof.mjs
+      - scripts/checks/fixtures/modelproof-home.html
+      - .github/workflows/modelproof-capture.yml
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: modelproof-capture
+  cancel-in-progress: false
+
+env:
+  SITE: https://lucascashwell3-ai.github.io/proof/
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      # only a scheduled run on main, or a dispatch on main without dry_run, may publish
+      - name: Mode
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ] || [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "DRY_RUN=true" >> "$GITHUB_ENV"
+          else
+            echo "DRY_RUN=false" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+
+      - name: Self-test on frozen inputs
+        run: node scripts/capture-modelproof.mjs --self-test
+
+      - name: Read the board; renew the pictures if it changed
+        id: capture
+        run: |
+          args=""
+          if [ "$DRY_RUN" = "true" ]; then args="--dry-run"; fi
+          if [ "${{ inputs.force }}" = "true" ]; then args="$args --force"; fi
+          node scripts/capture-modelproof.mjs $args | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the dry-run pictures for a look
+        if: env.DRY_RUN == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelproof-capture-dry-run
+          path: /tmp/mp-capture-*/*.webp
+          retention-days: 7
+
+      # an overlapping run would lose the push race; rebase and retry makes that harmless
+      - name: Publish
+        id: publish
+        if: env.DRY_RUN != 'true' && steps.capture.outputs.changed == 'true'
+        run: |
+          git config user.name "modelproof-capture"
+          git config user.email "actions@github.com"
+          git add assets/img/modelproof-board.webp assets/img/modelproof-board-1x.webp \
+                  assets/img/modelproof-board-phone.webp assets/img/modelproof-board-phone-3x.webp \
+                  data/modelproof-capture.json
+          git commit -m "Modelproof window: renew the capture ($(date -u +%F))"
+          ok=0
+          for i in 1 2 3; do
+            if git push origin HEAD:main; then ok=1; break; fi
+            echo "push attempt $i rejected, rebasing on main"
+            git pull --rebase origin main || true
+            sleep 5
+          done
+          if [ "$ok" != "1" ]; then echo "::error title=Modelproof capture not published::push failed 3 times"; exit 1; fi
+          echo "published=true" >> "$GITHUB_OUTPUT"
+
+      # a push made with this token may not start a Pages build on its own, so ask for one
+      - name: Ask Pages to build
+        if: steps.publish.outputs.published == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" > /dev/null || echo "::warning::Pages build request refused; the push may still start one"
+
+      # the query string skips the CDN's copy, so this sees what the site itself serves
+      - name: Verify the live site serves the new picture
+        if: steps.publish.outputs.published == 'true'
+        run: |
+          want=$(sha256sum assets/img/modelproof-board.webp | cut -d' ' -f1)
+          for i in $(seq 1 30); do
+            got=$(curl -fsS "${SITE}assets/img/modelproof-board.webp?v=${want}" | sha256sum | cut -d' ' -f1) || true
+            if [ "$got" = "$want" ]; then echo "live: the new picture is served (try $i)" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+            sleep 30
+          done
+          echo "::error title=Modelproof capture not live::the site still serves the old picture after 15 minutes; the old one stays up until Pages builds"
+          exit 1
